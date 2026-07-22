@@ -129,8 +129,10 @@ y [src/content.config.ts](../../../src/content.config.ts).
 3. **Cápsula** (`src/content/capsulas/<slug>.mdx`): `titulo`, `serie` (ref: `agua`,
    `el-espacio-donde-vivimos` o `sociedad-justa`), `paperFuente` (ref), `investigadores`
    (refs), `formatos`, `resumenCorto`, `fechaPublicacion`, `revisadoPor`,
-   `fuenteExternaUrl` (el DOI), y `scrolly: "<clave>"`. El cuerpo MDX lleva una nota de
-   atribución en lenguaje propio.
+   `fuenteExternaUrl` (el DOI), y `scrolly: "<clave>"`. **Deja el cuerpo MDX vacío**
+   (solo frontmatter): la atribución ya aparece en "Fuente y créditos" (referencia al
+   paper, `creditoProduccion` si aplica) y en el pie de página. No metas notas del tipo
+   "Esta cápsula está basada en...".
 4. **Registrar el componente** en el mapa de
    [src/pages/capsulas/[id].astro](../../../src/pages/capsulas/[id].astro):
 
