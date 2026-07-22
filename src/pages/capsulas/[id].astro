@@ -4,6 +4,7 @@ import { getCollection, getEntry, render } from 'astro:content';
 import { withBase } from '../../lib/url';
 import ScrollyUtopias from '../../components/ScrollyUtopias.astro';
 import ScrollySequias from '../../components/ScrollySequias.astro';
+import CapsulaCard from '../../components/CapsulaCard.astro';
 
 export async function getStaticPaths() {
   const capsulas = await getCollection('capsulas');
@@ -29,6 +30,14 @@ const creditos = {
   revisadoPor: capsula.data.revisadoPor,
   creditoProduccion: capsula.data.creditoProduccion,
 };
+
+// "Te podría interesar": otras cápsulas, priorizando la misma serie.
+const todas = (await getCollection('capsulas'))
+  .filter((c) => !c.id.startsWith('ejemplo') && c.id !== capsula.id)
+  .sort((a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf());
+const mismaSerie = todas.filter((c) => c.data.serie.id === capsula.data.serie.id);
+const otras = todas.filter((c) => c.data.serie.id !== capsula.data.serie.id);
+const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 ---
 
 <Base title={capsula.data.titulo} bleed={Boolean(ScrollyComp) || esVideo}>
@@ -173,7 +182,30 @@ const creditos = {
 		</>
 	)}
 
+	{relacionadas.length > 0 && (
+		<section class="relacionadas">
+			<h2>Te podría interesar</h2>
+			<div class="rel-grid">
+				{relacionadas.map((c) => <CapsulaCard capsula={c} />)}
+			</div>
+		</section>
+	)}
+
 	<style>
+		.relacionadas {
+			max-width: 64rem;
+			margin: 1rem auto 0;
+			padding: 2.5rem 1.5rem 3.5rem;
+			border-top: 1px solid var(--cg-color-gris-300);
+		}
+		.relacionadas h2 {
+			margin: 0 0 1.25rem 0;
+		}
+		.rel-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+			gap: 1.25rem;
+		}
 		.cap-wrap {
 			max-width: 46rem;
 			margin: 0 auto;
