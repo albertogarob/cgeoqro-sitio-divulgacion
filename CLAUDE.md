@@ -47,8 +47,10 @@ sobre lo que se puede construir, y deben respetarse en todo el desarrollo:
   GitHub Pages distinguen mayúsculas; mantener slugs siempre en minúsculas.
 - **Despliegue**: vía GitHub Actions (`.github/workflows/deploy.yml`, usando
   `withastro/action` + `actions/deploy-pages`), no despliegue manual.
-- Al crear el repositorio real en GitHub, actualizar `site` y `base` en
-  `astro.config.mjs` (hay un TODO marcado ahí) con la URL definitiva.
+- Repo actual: https://github.com/albertogarob/cgeoqro-sitio-divulgacion (**privado**).
+  GitHub Pages en repos privados de cuentas personales requiere plan GitHub
+  Pro/Team/Enterprise; con plan gratuito, el workflow `deploy.yml` no podrá publicar
+  hasta que el repo se haga público o se confirme un plan compatible.
 - Esta restricción es el estado inicial, no necesariamente permanente: si más
   adelante se requiere backend real (ej. CRM con autenticación, base de datos), se
   debe migrar a otro hosting (Vercel, Netlify, servidor propio) y esta sección debe
