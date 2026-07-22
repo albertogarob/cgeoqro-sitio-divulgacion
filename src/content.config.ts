@@ -2,7 +2,7 @@ import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 // Esquema de referencia: docs/content-collections.md
-// Política de derechos de autor obligatoria: ver CLAUDE.md — ninguna colección
+// Política de derechos de autor obligatoria: ver CLAUDE.md. Ninguna colección
 // almacena texto verbatim ni imágenes originales de los papers.
 
 const investigadores = defineCollection({

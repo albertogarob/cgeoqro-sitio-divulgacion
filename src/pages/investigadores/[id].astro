@@ -51,7 +51,7 @@ const { Content } = await render(inv);
 	<p class="meta">Solo metadatos; el texto completo pertenece a las editoriales que lo publicaron.</p>
 	<ul class="lista">
 		{papers.map((p) => (
-			<li>{p.data.titulo} — {p.data.editorial} ({p.data.anioPublicacion}){p.data.doi && <> · DOI: {p.data.doi}</>}</li>
+			<li>{p.data.titulo}. {p.data.editorial} ({p.data.anioPublicacion}){p.data.doi && <> · DOI: {p.data.doi}</>}</li>
 		))}
 	</ul>
 

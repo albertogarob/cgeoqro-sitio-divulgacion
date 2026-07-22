@@ -70,7 +70,7 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 			{paper && (
 				<li>
 					Basado en (referencia, sin reproducir el texto original): {paper.data.titulo}
-					{' — '}{paper.data.editorial} ({paper.data.anioPublicacion})
+					{'. '}{paper.data.editorial} ({paper.data.anioPublicacion})
 				</li>
 			)}
 			<li>Revisado por: {capsula.data.revisadoPor}</li>

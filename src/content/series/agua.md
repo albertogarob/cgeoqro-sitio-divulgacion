@@ -4,6 +4,6 @@ descripcion: "Investigación sobre recursos hídricos, cuencas, disponibilidad y
 colorAcento: "#19439c"
 ---
 
-Serie temática dedicada a divulgar el trabajo de CentroGeo QRO sobre el agua: su
+Serie temática dedicada a divulgar el trabajo de CentroGeo Querétaro sobre el agua: su
 distribución, los retos de su gestión, y cómo la información geoespacial ayuda a
 entenderla y cuidarla.

@@ -15,6 +15,27 @@ const nav = [
   { href: '/entrevistas/', label: '3 Preguntas a...' },
   { href: '/acerca-de/', label: 'Acerca de' },
 ];
+
+// Enlaces institucionales obligatorios del Gobierno de México (replicados del sitio
+// oficial de CentroGeo, www.centrogeo.org.mx).
+const enlacesGob = [
+  { href: 'https://participa.gob.mx', label: 'Participa' },
+  { href: 'http://www.ordenjuridico.gob.mx', label: 'Marco Jurídico' },
+  { href: 'https://consultapublicamx.inai.org.mx/vut-web/', label: 'Plataforma Nacional de Transparencia' },
+  { href: 'https://transparencia.gob.mx', label: 'Transparencia para el pueblo' },
+];
+const enlacesGobmx = [
+  { href: 'https://www.gob.mx/', label: 'Portal de datos abiertos' },
+  { href: 'https://www.gob.mx/accesibilidad', label: 'Declaración de accesibilidad' },
+  { href: 'https://www.gob.mx/terminos', label: 'Términos y Condiciones' },
+  { href: 'https://sidec.buengobierno.gob.mx/#!/', label: 'Denuncia contra servidores públicos' },
+];
+const redes = [
+  { href: 'https://www.facebook.com/CentroGeo/', label: 'Facebook' },
+  { href: 'https://www.instagram.com/centrogeo_', label: 'Instagram' },
+  { href: 'https://x.com/CentroGeo_', label: 'X' },
+  { href: 'https://www.youtube.com/user/cigget', label: 'YouTube' },
+];
 ---
 
 <html lang="es">
@@ -23,7 +44,7 @@ const nav = [
 		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title} · CentroGeo QRO Divulgación</title>
+		<title>{title} · Divulgación CentroGeo Querétaro</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -35,7 +56,7 @@ const nav = [
 		<header>
 			<a class="marca" href={withBase('/')}>
 				<img src={withBase('/branding/logo-centrogeo.svg')} alt="CentroGeo" class="marca-logo" />
-				<span class="marca-sitio">Divulgación QRO</span>
+				<span class="marca-sitio">Divulgación<br />Querétaro</span>
 			</a>
 			<nav>
 				<ul>
@@ -50,14 +71,75 @@ const nav = [
 				<slot />
 			</div>
 		</main>
-		<footer>
-			<p>
-				Prototipo de divulgación científica de CentroGeo Querétaro. Los contenidos son
-				elaboraciones propias inspiradas en publicaciones de investigadores del centro;
-				no reproducen texto ni figuras de los papers originales, protegidos por derechos
-				de autor de sus editoriales. Ver <a href={withBase('/acerca-de/')}>política de atribución</a>.
-			</p>
+
+		<footer class="site-footer">
+			<div class="site-footer-inner">
+				<div class="footer-brand">
+					<img src={withBase('/branding/logo-centrogeo-white.svg')} alt="CentroGeo" class="footer-logo" />
+					<p>
+						Divulgación científica de CentroGeo Querétaro. Traducimos la investigación de
+						nuestros científicos a formatos accesibles para el público general.
+					</p>
+				</div>
+				<div class="footer-col">
+					<h2>Índice del sitio</h2>
+					<ul>
+						{nav.map((item) => (
+							<li><a href={withBase(item.href)}>{item.label}</a></li>
+						))}
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h2>CentroGeo</h2>
+					<ul>
+						<li><a href="https://www.centrogeo.org.mx/" target="_blank" rel="noopener">Sitio institucional</a></li>
+						<li><a href="https://secihti.mx/" target="_blank" rel="noopener">SECIHTI</a></li>
+						{redes.map((r) => (
+							<li><a href={r.href} target="_blank" rel="noopener">{r.label}</a></li>
+						))}
+					</ul>
+				</div>
+			</div>
+			<div class="footer-nota">
+				<p>
+					Prototipo de divulgación científica de CentroGeo Querétaro. Los contenidos son
+					elaboraciones propias inspiradas en publicaciones de investigadores del centro;
+					no reproducen texto ni figuras de los papers originales, protegidos por derechos
+					de autor de sus editoriales. Ver <a href={withBase('/acerca-de/')}>política de atribución</a>.
+				</p>
+			</div>
 		</footer>
+
+		<div class="gob-footer">
+			<div class="gob-footer-inner">
+				<div class="gob-logos">
+					<img src={withBase('/branding/logo-gobmx.svg')} alt="Gobierno de México" />
+					<img src={withBase('/branding/logo-secihti.svg')} alt="SECIHTI" class="logo-mono" />
+				</div>
+				<div class="gob-links">
+					<div class="gob-links-col">
+						<h2>Enlaces</h2>
+						<ul>
+							{enlacesGob.map((e) => (
+								<li><a href={e.href} target="_blank" rel="noopener">{e.label}</a></li>
+							))}
+						</ul>
+					</div>
+					<div class="gob-links-col">
+						<h2>¿Qué es gob.mx?</h2>
+						<p class="gob-desc">
+							Es el portal único de trámites, información y participación ciudadana.
+						</p>
+						<ul>
+							{enlacesGobmx.map((e) => (
+								<li><a href={e.href} target="_blank" rel="noopener">{e.label}</a></li>
+							))}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<style>
 			/* Tokens de identidad visual real de CentroGeo (ver CLAUDE.md, sección
 			   "Identidad visual institucional" y docs/referencia-visual/centrogeo-styles.css).
@@ -72,6 +154,7 @@ const nav = [
 				--cg-color-gris-300: #d9d9d9;
 				--cg-color-gris-500: #343434;
 				--cg-color-gris-700: #232323;
+				--cg-color-vino: #611232;
 				--cg-font-titulo: 'Archivo Expanded', sans-serif;
 				--cg-font-cuerpo: 'Roboto Flex', system-ui, sans-serif;
 				--cg-border-radius-s: 8px;
@@ -83,6 +166,22 @@ const nav = [
 				margin: 0;
 				color: var(--cg-color-gris-500);
 				background: var(--cg-color-gris-100);
+			}
+			:global(h1),
+			:global(h2),
+			:global(h3),
+			:global(h4) {
+				font-family: var(--cg-font-titulo);
+				font-weight: 600;
+				color: var(--cg-color-gris-700);
+				letter-spacing: -0.01em;
+				line-height: 1.15;
+			}
+			:global(a) {
+				color: var(--cg-color-naranja-300);
+			}
+			:global(a:hover) {
+				color: var(--cg-color-naranja-500);
 			}
 			:global(.cg-pill) {
 				display: inline-flex;
@@ -163,22 +262,8 @@ const nav = [
 			:global(.cg-list-card p:last-child) {
 				margin: 0.4rem 0 0 0;
 			}
-			:global(h1),
-			:global(h2),
-			:global(h3),
-			:global(h4) {
-				font-family: var(--cg-font-titulo);
-				font-weight: 600;
-				color: var(--cg-color-gris-700);
-				letter-spacing: -0.01em;
-				line-height: 1.15;
-			}
-			:global(a) {
-				color: var(--cg-color-naranja-300);
-			}
-			:global(a:hover) {
-				color: var(--cg-color-naranja-500);
-			}
+
+			/* ── HEADER ─────────────────────────────────────────── */
 			header {
 				position: sticky;
 				top: 0;
@@ -200,14 +285,15 @@ const nav = [
 				color: var(--cg-color-gris-700) !important;
 			}
 			.marca-logo {
-				height: 32px;
+				height: 34px;
 				width: auto;
 				display: block;
 			}
 			.marca-sitio {
 				font-family: var(--cg-font-titulo);
 				font-weight: 600;
-				font-size: 0.95rem;
+				font-size: 0.82rem;
+				line-height: 1.2;
 				letter-spacing: 0.02em;
 				padding-left: 0.75rem;
 				border-left: 2px solid var(--cg-color-naranja-300);
@@ -229,6 +315,8 @@ const nav = [
 			nav a:hover {
 				color: var(--cg-color-naranja-300);
 			}
+
+			/* ── MAIN SHELL + CARD ──────────────────────────────── */
 			.cg-shell {
 				max-width: 64rem;
 				margin: 0 auto;
@@ -250,18 +338,147 @@ const nav = [
 					border-radius: var(--cg-border-radius-m);
 				}
 			}
-			footer {
+
+			/* ── SITE FOOTER (banda oscura) ─────────────────────── */
+			.site-footer {
 				background: var(--cg-color-gris-700);
 				color: var(--cg-color-gris-300);
-				padding: 1.5rem;
-				font-size: 0.85rem;
 			}
-			footer :global(a) {
+			.site-footer-inner {
+				max-width: 68rem;
+				margin: 0 auto;
+				padding: 3rem 1.5rem 2rem;
+				display: grid;
+				grid-template-columns: 1.6fr 1fr 1fr;
+				gap: 2.5rem;
+			}
+			.footer-logo {
+				height: 40px;
+				width: auto;
+				margin-bottom: 1rem;
+			}
+			.footer-brand p {
+				margin: 0;
+				font-size: 0.9rem;
+				max-width: 24rem;
+				line-height: 1.5;
+			}
+			.footer-col h2 {
+				font-size: 0.85rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--cg-color-blanco);
+				margin: 0 0 1rem 0;
+			}
+			.footer-col ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.footer-col li {
+				margin-bottom: 0.6rem;
+			}
+			.footer-col a {
+				color: var(--cg-color-gris-300);
+				text-decoration: none;
+				font-size: 0.9rem;
+			}
+			.footer-col a:hover {
+				color: var(--cg-color-blanco);
+			}
+			.footer-nota {
+				border-top: 1px solid rgba(255, 255, 255, 0.12);
+			}
+			.footer-nota p {
+				max-width: 68rem;
+				margin: 0 auto;
+				padding: 1.25rem 1.5rem;
+				font-size: 0.8rem;
+				color: rgba(255, 255, 255, 0.55);
+				line-height: 1.5;
+			}
+			.footer-nota a {
 				color: var(--cg-color-gris-300);
 				text-decoration: underline;
 			}
-			footer :global(a:hover) {
+			.footer-nota a:hover {
 				color: var(--cg-color-blanco);
+			}
+
+			/* ── FRANJA GUBERNAMENTAL OBLIGATORIA (vino) ────────── */
+			.gob-footer {
+				background: var(--cg-color-vino);
+				color: #ffffff;
+			}
+			.gob-footer-inner {
+				max-width: 68rem;
+				margin: 0 auto;
+				padding: 2.5rem 1.5rem;
+				display: grid;
+				grid-template-columns: 1fr 2fr;
+				gap: 2.5rem;
+				align-items: start;
+			}
+			.gob-logos {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+				align-items: flex-start;
+			}
+			.gob-logos img {
+				height: 40px;
+				width: auto;
+				max-width: 100%;
+			}
+			.gob-logos .logo-mono {
+				filter: brightness(0) invert(1);
+			}
+			.gob-links {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 2rem;
+			}
+			.gob-links-col h2 {
+				font-size: 0.9rem;
+				color: #ffffff;
+				margin: 0 0 0.9rem 0;
+			}
+			.gob-desc {
+				font-size: 0.82rem;
+				color: rgba(255, 255, 255, 0.75);
+				margin: 0 0 0.9rem 0;
+				line-height: 1.5;
+			}
+			.gob-links-col ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.gob-links-col li {
+				margin-bottom: 0.6rem;
+			}
+			.gob-links-col a {
+				color: rgba(255, 255, 255, 0.85);
+				text-decoration: none;
+				font-size: 0.85rem;
+			}
+			.gob-links-col a:hover {
+				color: #ffffff;
+				text-decoration: underline;
+			}
+
+			@media (max-width: 760px) {
+				.site-footer-inner {
+					grid-template-columns: 1fr;
+					gap: 2rem;
+				}
+				.gob-footer-inner {
+					grid-template-columns: 1fr;
+					gap: 2rem;
+				}
+				.gob-links {
+					grid-template-columns: 1fr;
+				}
 			}
 		</style>
 	</body>
