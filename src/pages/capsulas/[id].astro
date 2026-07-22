@@ -23,7 +23,12 @@ const paper = await getEntry(capsula.data.paperFuente);
 const investigadores = await Promise.all(capsula.data.investigadores.map((ref) => getEntry(ref)));
 
 // Los créditos se repiten en varios layouts.
-const creditos = { investigadores, paper, revisadoPor: capsula.data.revisadoPor };
+const creditos = {
+  investigadores,
+  paper,
+  revisadoPor: capsula.data.revisadoPor,
+  creditoProduccion: capsula.data.creditoProduccion,
+};
 ---
 
 <Base title={capsula.data.titulo} bleed={Boolean(ScrollyComp) || esVideo}>
@@ -61,6 +66,7 @@ const creditos = { investigadores, paper, revisadoPor: capsula.data.revisadoPor 
 								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
 							</li>
 						)}
+						{creditos.creditoProduccion && <li>{creditos.creditoProduccion}</li>}
 						<li>Revisado por: {creditos.revisadoPor}</li>
 					</ul>
 				</section>
@@ -118,6 +124,7 @@ const creditos = { investigadores, paper, revisadoPor: capsula.data.revisadoPor 
 								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
 							</li>
 						)}
+						{creditos.creditoProduccion && <li>{creditos.creditoProduccion}</li>}
 						<li>Revisado por: {creditos.revisadoPor}</li>
 					</ul>
 				</section>

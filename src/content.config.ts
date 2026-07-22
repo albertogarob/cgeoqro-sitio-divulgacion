@@ -60,6 +60,9 @@ const capsulas = defineCollection({
     resumenCorto: z.string(),
     fechaPublicacion: z.date(),
     revisadoPor: z.string(),
+    // Crédito de producción del recurso (ej. video hecho por otro equipo). Se muestra
+    // en "Fuente y créditos".
+    creditoProduccion: z.string().optional(),
   }),
 });
 
