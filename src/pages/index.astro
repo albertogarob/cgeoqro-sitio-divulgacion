@@ -10,12 +10,17 @@ const series = await getCollection('series');
 const investigadores = await getCollection('investigadores');
 const entrevistas = await getCollection('entrevistas');
 
-// Cápsula destacada: preferimos contenido real (no los ejemplos de plantilla) con
-// video; si no hay, la más reciente disponible.
+// Cápsula destacada: preferimos contenido real (no ejemplos de plantilla) y, dentro
+// de eso, un recorrido interactivo (scrollytelling); si no hay, una con video; si no,
+// la más reciente disponible.
 const noEjemplo = capsulas.filter((c) => !c.id.startsWith('ejemplo'));
 const candidatas = noEjemplo.length > 0 ? noEjemplo : capsulas;
-const destacada = candidatas.find((c) => c.data.formatos.includes('video')) ?? candidatas[0];
+const destacada =
+  candidatas.find((c) => c.data.scrolly) ??
+  candidatas.find((c) => c.data.formatos.includes('video')) ??
+  candidatas[0];
 const destacadaSerie = destacada ? await getEntry(destacada.data.serie) : null;
+const destacadaEsScrolly = Boolean(destacada?.data.scrolly);
 
 // Conteo de cápsulas por serie para mostrar en las tarjetas de tema.
 const seriesConConteo = series.map((s) => ({
@@ -148,17 +153,36 @@ const arcos = [
 	{destacada && (
 		<section class="bloque">
 			<h2>Empieza por aquí</h2>
-			<a class="destacada" href={withBase(`/capsulas/${destacada.id}/`)}>
+			<a class:list={['destacada', { 'destacada-scrolly': destacadaEsScrolly }]} href={withBase(`/capsulas/${destacada.id}/`)}>
 				<div class="destacada-media">
+					{destacadaEsScrolly ? (
+						<svg class="destacada-svg" viewBox="0 0 260 200" aria-hidden="true">
+							<g stroke="#e8843f" stroke-width="2" opacity="0.8">
+								<line x1="60" y1="60" x2="120" y2="50" />
+								<line x1="120" y1="50" x2="180" y2="80" />
+								<line x1="180" y1="80" x2="200" y2="140" />
+								<line x1="200" y1="140" x2="110" y2="150" />
+								<line x1="110" y1="150" x2="60" y2="60" />
+								<line x1="120" y1="50" x2="110" y2="150" />
+							</g>
+							<g fill="#e8843f">
+								<circle cx="60" cy="60" r="7" /><circle cx="120" cy="50" r="7" />
+								<circle cx="180" cy="80" r="7" /><circle cx="200" cy="140" r="7" />
+								<circle cx="110" cy="150" r="7" />
+							</g>
+						</svg>
+					) : null}
 					<span class="destacada-formato">
-						{destacada.data.formatos.map((f) => formatoEtiqueta[f] ?? f).join(' · ')}
+						{destacadaEsScrolly ? 'Recorrido interactivo' : destacada.data.formatos.map((f) => formatoEtiqueta[f] ?? f).join(' · ')}
 					</span>
 				</div>
 				<div class="destacada-texto">
 					{destacadaSerie && <span class="cg-pill">{destacadaSerie.data.nombre}</span>}
 					<h3>{destacada.data.titulo}</h3>
 					<p>{destacada.data.resumenCorto}</p>
-					<span class="explorar-flecha">Ver la cápsula &rarr;</span>
+					<span class="explorar-flecha">
+						{destacadaEsScrolly ? 'Iniciar el recorrido' : 'Ver la cápsula'} &rarr;
+					</span>
 				</div>
 			</a>
 		</section>
@@ -352,7 +376,19 @@ const arcos = [
 			align-items: flex-end;
 			padding: 1rem;
 		}
+		.destacada-scrolly .destacada-media {
+			background: radial-gradient(120% 130% at 40% 30%, #16324f 0%, #0c1a2b 60%, #060e18 100%);
+		}
+		.destacada-svg {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			padding: 1.5rem;
+		}
 		.destacada-formato {
+			position: relative;
+			z-index: 1;
 			background: rgba(255, 255, 255, 0.9);
 			color: var(--cg-color-gris-700);
 			font-size: 0.78rem;
