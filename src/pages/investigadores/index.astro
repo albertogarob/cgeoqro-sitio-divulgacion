@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { withBase } from '../../lib/url';
+import Thumb from '../../components/Thumb.astro';
 
 const investigadores = await getCollection('investigadores');
 ---
@@ -13,8 +14,11 @@ const investigadores = await getCollection('investigadores');
 		{investigadores.map((inv) => (
 			<li>
 				<a class="cg-list-card" href={withBase(`/investigadores/${inv.id}/`)}>
-					<h3>{inv.data.nombre}</h3>
-					<p>{inv.data.bioBreve}</p>
+					<Thumb kind="investigador" label={inv.data.nombre} seed={inv.id} />
+					<div class="cg-list-body">
+						<h3>{inv.data.nombre}</h3>
+						<p>{inv.data.bioBreve}</p>
+					</div>
 				</a>
 			</li>
 		))}

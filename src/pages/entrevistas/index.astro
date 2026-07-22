@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { withBase } from '../../lib/url';
+import Thumb from '../../components/Thumb.astro';
 
 const entrevistas = (await getCollection('entrevistas')).sort(
   (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
@@ -22,8 +23,11 @@ const conInvestigador = await Promise.all(
 			{conInvestigador.map(({ entrevista, investigador }) => (
 				<li>
 					<a class="cg-list-card" href={withBase(`/entrevistas/${entrevista.id}/`)}>
-						<h3>{investigador ? investigador.data.nombre : entrevista.id}</h3>
-						<p>{entrevista.data.preguntas[0].pregunta}</p>
+						<Thumb kind="entrevista" label={investigador ? investigador.data.nombre : entrevista.id} seed={entrevista.id} />
+						<div class="cg-list-body">
+							<h3>{investigador ? investigador.data.nombre : entrevista.id}</h3>
+							<p>{entrevista.data.preguntas[0].pregunta}</p>
+						</div>
 					</a>
 				</li>
 			))}

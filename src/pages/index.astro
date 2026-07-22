@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { withBase } from '../lib/url';
+import Thumb from '../components/Thumb.astro';
 
 const capsulas = (await getCollection('capsulas')).sort(
   (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
@@ -215,7 +216,7 @@ const arcos = [
 					href={withBase(`/series/${serie.id}/`)}
 					style={`--acento: ${serie.data.colorAcento ?? 'var(--cg-color-naranja-300)'}`}
 				>
-					<span class="serie-barra"></span>
+					<Thumb kind="serie" accent={serie.data.colorAcento} label={serie.data.nombre} seed={serie.id} />
 					<h3>{serie.data.nombre}</h3>
 					<p>{serie.data.descripcion}</p>
 					<span class="serie-conteo">
@@ -475,38 +476,34 @@ const arcos = [
 			position: relative;
 			display: flex;
 			flex-direction: column;
-			padding: 1.5rem;
-			padding-top: 1.75rem;
 			border-radius: var(--cg-border-radius-m);
 			background: var(--cg-color-blanco);
 			border: 1px solid var(--cg-color-gris-300);
 			text-decoration: none !important;
 			color: var(--cg-color-gris-500) !important;
 			overflow: hidden;
-			transition: transform 150ms ease, box-shadow 150ms ease;
+			transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 		}
 		.serie-card:hover {
 			transform: translateY(-3px);
+			border-color: var(--acento);
 			box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.4);
 		}
-		.serie-barra {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 5px;
-			background: var(--acento);
+		.serie-card :global(.cg-thumb) {
+			height: 104px;
+			width: 100%;
 		}
 		.serie-card h3 {
-			margin: 0 0 0.5rem 0;
+			margin: 1.25rem 1.5rem 0.5rem;
 			color: var(--cg-color-gris-700) !important;
 		}
 		.serie-card p {
-			margin: 0 0 1rem 0;
+			margin: 0 1.5rem 1rem;
 			font-size: 0.92rem;
 			flex-grow: 1;
 		}
 		.serie-conteo {
+			margin: 0 1.5rem 1.5rem;
 			font-size: 0.82rem;
 			font-weight: 600;
 			color: var(--acento);

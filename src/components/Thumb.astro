@@ -1,0 +1,119 @@
+---
+// Thumbnail generado en SVG (original, sin imágenes de terceros; cumple la política
+// de derechos de autor). El motivo depende del tipo de contenido y el fondo usa el
+// color de acento de la serie o un color derivado del nombre.
+
+interface Props {
+  kind: 'video' | 'scrolly' | 'infografia' | 'texto' | 'audio' | 'serie' | 'investigador' | 'entrevista';
+  accent?: string;
+  label?: string;
+  seed?: string;
+}
+
+const { kind, accent, label = '', seed = '' } = Astro.props;
+
+const paleta = ['#c45620', '#19439c', '#2a6f4d', '#916802', '#7a3e12', '#3f4a5a'];
+function hash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+const h = hash(seed || label || kind);
+const bg = accent ?? paleta[h % paleta.length];
+
+const palabras = label.trim().split(/\s+/).filter(Boolean);
+const iniciales = (palabras[0]?.[0] ?? '') + (palabras[1]?.[0] ?? '');
+const inicial = (palabras[0]?.[0] ?? '?').toUpperCase();
+
+// Textura de puntos, desfasada por seed para variar entre tarjetas.
+const off = h % 24;
+const puntos: { x: number; y: number }[] = [];
+for (let y = 20 + off; y < 300; y += 42) {
+  for (let x = 20 + ((y / 42) % 2 === 0 ? 0 : 21); x < 300; x += 42) {
+    puntos.push({ x, y });
+  }
+}
+
+const nodos = [
+  { x: 105, y: 110 }, { x: 195, y: 98 }, { x: 210, y: 180 }, { x: 118, y: 195 }, { x: 152, y: 145 },
+];
+const enlaces = [
+  ['105,110', '152,145'], ['152,145', '195,98'], ['195,98', '210,180'],
+  ['210,180', '118,195'], ['118,195', '105,110'],
+];
+---
+
+<div class="cg-thumb" style={`--bg:${bg}`}>
+	<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+		<rect x="0" y="0" width="300" height="300" fill="var(--bg)" />
+		<polygon points="0,300 300,120 300,300" fill="#000000" opacity="0.16" />
+		<g fill="#ffffff" opacity="0.1">
+			{puntos.map((p) => <circle cx={p.x} cy={p.y} r="3" />)}
+		</g>
+
+		{kind === 'video' && (
+			<g>
+				<circle cx="150" cy="150" r="54" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.95" />
+				<path d="M133,120 L188,150 L133,180 Z" fill="#ffffff" />
+			</g>
+		)}
+		{kind === 'scrolly' && (
+			<g>
+				<g stroke="#ffffff" stroke-width="4" opacity="0.75">
+					{enlaces.map(([a, b]) => {
+						const [x1, y1] = a.split(',');
+						const [x2, y2] = b.split(',');
+						return <line x1={x1} y1={y1} x2={x2} y2={y2} />;
+					})}
+				</g>
+				<g fill="#ffffff">
+					{nodos.map((n) => <circle cx={n.x} cy={n.y} r="11" />)}
+				</g>
+			</g>
+		)}
+		{kind === 'infografia' && (
+			<g fill="#ffffff" opacity="0.92">
+				<rect x="96" y="150" width="30" height="60" rx="4" />
+				<rect x="136" y="104" width="30" height="106" rx="4" />
+				<rect x="176" y="130" width="30" height="80" rx="4" />
+			</g>
+		)}
+		{(kind === 'texto' || kind === 'audio') && (
+			<g fill="#ffffff" opacity="0.9">
+				<rect x="78" y="112" width="150" height="14" rx="7" />
+				<rect x="78" y="142" width="120" height="14" rx="7" />
+				<rect x="78" y="172" width="140" height="14" rx="7" />
+				<rect x="78" y="202" width="90" height="14" rx="7" />
+			</g>
+		)}
+		{kind === 'serie' && (
+			<text x="150" y="205" text-anchor="middle" fill="#ffffff" opacity="0.92"
+				style="font-family:'Archivo Expanded',sans-serif;font-weight:700;font-size:150px">{inicial}</text>
+		)}
+		{kind === 'investigador' && (
+			<g>
+				<circle cx="150" cy="150" r="82" fill="#ffffff" opacity="0.15" />
+				<text x="150" y="188" text-anchor="middle" fill="#ffffff"
+					style="font-family:'Archivo Expanded',sans-serif;font-weight:700;font-size:96px">{iniciales.toUpperCase()}</text>
+			</g>
+		)}
+		{kind === 'entrevista' && (
+			<g>
+				<text x="150" y="235" text-anchor="middle" fill="#ffffff" opacity="0.9"
+					style="font-family:Georgia,serif;font-weight:700;font-size:210px">&#8220;</text>
+			</g>
+		)}
+	</svg>
+</div>
+
+<style>
+	.cg-thumb {
+		background: var(--bg);
+		overflow: hidden;
+	}
+	.cg-thumb svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>

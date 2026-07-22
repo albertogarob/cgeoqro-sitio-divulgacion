@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { withBase } from '../../lib/url';
+import Thumb from '../../components/Thumb.astro';
 
 const series = await getCollection('series');
 ---
@@ -14,8 +15,11 @@ const series = await getCollection('series');
 		{series.map((s) => (
 			<li>
 				<a class="cg-list-card" href={withBase(`/series/${s.id}/`)}>
-					<h3>{s.data.nombre}</h3>
-					<p>{s.data.descripcion}</p>
+					<Thumb kind="serie" accent={s.data.colorAcento} label={s.data.nombre} seed={s.id} />
+					<div class="cg-list-body">
+						<h3>{s.data.nombre}</h3>
+						<p>{s.data.descripcion}</p>
+					</div>
 				</a>
 			</li>
 		))}

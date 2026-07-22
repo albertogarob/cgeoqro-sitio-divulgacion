@@ -2,10 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { withBase } from '../../lib/url';
+import Thumb from '../../components/Thumb.astro';
 
 const capsulas = (await getCollection('capsulas')).sort(
   (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
 );
+
+function tipoCapsula(c: any): 'scrolly' | 'video' | 'infografia' | 'audio' | 'texto' {
+  if (c.data.scrolly) return 'scrolly';
+  if (c.data.formatos.includes('video')) return 'video';
+  if (c.data.formatos.includes('infografia')) return 'infografia';
+  if (c.data.formatos.includes('audio')) return 'audio';
+  return 'texto';
+}
 
 const capsulasConSerie = await Promise.all(
   capsulas.map(async (c) => ({ capsula: c, serie: await getEntry(c.data.serie) }))
@@ -21,13 +30,23 @@ const capsulasConSerie = await Promise.all(
 		{capsulasConSerie.map(({ capsula, serie }) => (
 			<li>
 				<a class="cg-list-card" href={withBase(`/capsulas/${capsula.id}/`)}>
-					<h3>{capsula.data.titulo}</h3>
-					<p class="meta">
-						{serie && <span class="cg-pill">{serie.data.nombre}</span>}
-						{' '}
-						<span class="cg-pill cg-pill-outline">{capsula.data.formatos.join(', ')}</span>
-					</p>
-					<p>{capsula.data.resumenCorto}</p>
+					<Thumb
+						kind={tipoCapsula(capsula)}
+						accent={serie?.data.colorAcento}
+						label={capsula.data.titulo}
+						seed={capsula.id}
+					/>
+					<div class="cg-list-body">
+						<h3>{capsula.data.titulo}</h3>
+						<p class="meta">
+							{serie && <span class="cg-pill">{serie.data.nombre}</span>}
+							{' '}
+							<span class="cg-pill cg-pill-outline">
+								{capsula.data.scrolly ? 'Recorrido interactivo' : capsula.data.formatos.join(', ')}
+							</span>
+						</p>
+						<p>{capsula.data.resumenCorto}</p>
+					</div>
 				</a>
 			</li>
 		))}
@@ -41,6 +60,7 @@ const capsulasConSerie = await Promise.all(
 		}
 		.meta {
 			display: flex;
+			flex-wrap: wrap;
 			gap: 0.5rem;
 			margin: 0.5rem 0;
 		}
