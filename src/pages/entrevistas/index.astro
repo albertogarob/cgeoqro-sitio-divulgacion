@@ -15,21 +15,29 @@ const conInvestigador = await Promise.all(
 	<span class="cg-eyebrow">Divulgación</span>
 	<h1>3 Preguntas a...</h1>
 	<p>Entrevistas breves con investigadores de CentroGeo Querétaro sobre su trabajo.</p>
-	<ul class="lista">
-		{conInvestigador.map(({ entrevista, investigador }) => (
-			<li>
-				<a class="cg-list-card" href={withBase(`/entrevistas/${entrevista.id}/`)}>
-					<h3>{investigador ? investigador.data.nombre : entrevista.id}</h3>
-					<p>{entrevista.data.preguntas[0].pregunta}</p>
-				</a>
-			</li>
-		))}
-	</ul>
+	{conInvestigador.length === 0 ? (
+		<p class="vacio">Próximamente publicaremos las primeras entrevistas.</p>
+	) : (
+		<ul class="lista">
+			{conInvestigador.map(({ entrevista, investigador }) => (
+				<li>
+					<a class="cg-list-card" href={withBase(`/entrevistas/${entrevista.id}/`)}>
+						<h3>{investigador ? investigador.data.nombre : entrevista.id}</h3>
+						<p>{entrevista.data.preguntas[0].pregunta}</p>
+					</a>
+				</li>
+			))}
+		</ul>
+	)}
 	<style>
 		.lista {
 			list-style: none;
 			padding: 0;
 			margin: 0;
+		}
+		.vacio {
+			color: #666;
+			font-style: italic;
 		}
 	</style>
 </Base>

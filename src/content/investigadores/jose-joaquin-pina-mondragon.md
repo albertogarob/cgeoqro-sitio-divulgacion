@@ -8,5 +8,3 @@ lineasInvestigacion:
 sede: "Querétaro"
 carpetaDrive: "https://drive.google.com/drive/folders/173mm3nHDzPU8Cjhz7HAjSxi_GzUXaCcM"
 ---
-
-Datos de contacto y CV completo pendientes de confirmar con el investigador.

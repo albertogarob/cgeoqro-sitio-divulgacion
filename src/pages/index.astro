@@ -34,7 +34,9 @@ const explorar = [
     href: '/entrevistas/',
     titulo: '3 Preguntas a...',
     desc: 'Conversaciones cortas donde cada investigador explica su trabajo en primera persona.',
-    dato: `${entrevistas.length} ${entrevistas.length === 1 ? 'entrevista' : 'entrevistas'}`,
+    dato: entrevistas.length > 0
+      ? `${entrevistas.length} ${entrevistas.length === 1 ? 'entrevista' : 'entrevistas'}`
+      : 'Próximamente',
   },
   {
     href: '/investigadores/',
