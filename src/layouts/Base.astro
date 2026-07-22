@@ -45,8 +45,10 @@ const nav = [
 				</ul>
 			</nav>
 		</header>
-		<main>
-			<slot />
+		<main class="cg-shell">
+			<div class="cg-card">
+				<slot />
+			</div>
 		</main>
 		<footer>
 			<p>
@@ -80,7 +82,57 @@ const nav = [
 				font-family: var(--cg-font-cuerpo);
 				margin: 0;
 				color: var(--cg-color-gris-500);
+				background: var(--cg-color-gris-100);
+			}
+			:global(.cg-pill) {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35rem;
+				padding: 0.2rem 0.7rem;
+				border-radius: 999px;
+				background: var(--cg-color-naranja-100);
+				color: var(--cg-color-naranja-500);
+				font-size: 0.78rem;
+				font-weight: 600;
+				letter-spacing: 0.02em;
+				text-decoration: none !important;
+				white-space: nowrap;
+			}
+			:global(.cg-pill:hover) {
+				background: var(--cg-color-naranja-300);
+				color: var(--cg-color-blanco) !important;
+			}
+			:global(.cg-eyebrow) {
+				display: block;
+				font-family: var(--cg-font-cuerpo);
+				font-size: 0.8rem;
+				font-weight: 700;
+				color: var(--cg-color-naranja-300);
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				margin-bottom: 0.5rem;
+			}
+			:global(.cg-list-card) {
+				display: block;
+				padding: 1.25rem 1.5rem;
+				margin-bottom: 1rem;
+				border-radius: var(--cg-border-radius-m);
 				background: var(--cg-color-blanco);
+				border: 1px solid var(--cg-color-gris-300);
+				transition: border-color 150ms ease, transform 150ms ease;
+				color: var(--cg-color-gris-500) !important;
+				text-decoration: none !important;
+			}
+			:global(.cg-list-card h3) {
+				color: var(--cg-color-gris-700) !important;
+			}
+			:global(.cg-list-card:hover) {
+				border-color: var(--cg-color-naranja-300);
+				transform: translateY(-2px);
+			}
+			:global(.cg-list-card h3),
+			:global(.cg-list-card p:last-child) {
+				margin: 0.4rem 0 0 0;
 			}
 			:global(h1),
 			:global(h2),
@@ -99,6 +151,9 @@ const nav = [
 				color: var(--cg-color-naranja-500);
 			}
 			header {
+				position: sticky;
+				top: 0;
+				z-index: 10;
 				display: flex;
 				flex-wrap: wrap;
 				align-items: center;
@@ -106,7 +161,7 @@ const nav = [
 				gap: 1rem;
 				padding: 1rem 1.5rem;
 				background: var(--cg-color-blanco);
-				border-bottom: 1px solid var(--cg-color-gris-300);
+				box-shadow: 0 10px 22px -24px rgba(0, 0, 0, 0.4), 0 1px 0 var(--cg-color-gris-300);
 			}
 			.marca {
 				display: inline-flex;
@@ -145,11 +200,26 @@ const nav = [
 			nav a:hover {
 				color: var(--cg-color-naranja-300);
 			}
-			main {
-				max-width: 60rem;
+			.cg-shell {
+				max-width: 64rem;
 				margin: 0 auto;
-				padding: 2rem 1.5rem;
+				padding: 2.5rem 1.5rem;
 				min-height: 60vh;
+			}
+			.cg-card {
+				background: var(--cg-color-blanco);
+				border: 1px solid rgba(52, 52, 52, 0.08);
+				border-radius: var(--cg-border-radius-b);
+				box-shadow: 0 26px 60px -42px rgba(0, 0, 0, 0.28);
+				padding: clamp(24px, 4vw, 56px);
+			}
+			@media (max-width: 640px) {
+				.cg-shell {
+					padding: 1.25rem 0.75rem;
+				}
+				.cg-card {
+					border-radius: var(--cg-border-radius-m);
+				}
 			}
 			footer {
 				background: var(--cg-color-gris-700);

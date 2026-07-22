@@ -13,19 +13,22 @@ const capsulasConSerie = await Promise.all(
 ---
 
 <Base title="Cápsulas de conocimiento">
+	<span class="cg-eyebrow">Divulgación</span>
 	<h1>Cápsulas de conocimiento</h1>
 	<p>Unidades breves de divulgación, una por hallazgo o tema, disponibles en varios formatos.</p>
 
 	<ul class="capsulas-lista">
 		{capsulasConSerie.map(({ capsula, serie }) => (
 			<li>
-				<a href={withBase(`/capsulas/${capsula.id}/`)}>{capsula.data.titulo}</a>
-				<p class="meta">
-					{serie && <span>{serie.data.nombre}</span>}
-					{' · '}
-					<span>{capsula.data.formatos.join(', ')}</span>
-				</p>
-				<p>{capsula.data.resumenCorto}</p>
+				<a class="cg-list-card" href={withBase(`/capsulas/${capsula.id}/`)}>
+					<h3>{capsula.data.titulo}</h3>
+					<p class="meta">
+						{serie && <span class="cg-pill">{serie.data.nombre}</span>}
+						{' '}
+						<span class="cg-pill cg-pill-outline">{capsula.data.formatos.join(', ')}</span>
+					</p>
+					<p>{capsula.data.resumenCorto}</p>
+				</a>
 			</li>
 		))}
 	</ul>
@@ -34,15 +37,16 @@ const capsulasConSerie = await Promise.all(
 		.capsulas-lista {
 			list-style: none;
 			padding: 0;
-		}
-		.capsulas-lista li {
-			margin-bottom: 1.5rem;
-			padding-bottom: 1.5rem;
-			border-bottom: 1px solid #eee;
+			margin: 0;
 		}
 		.meta {
-			color: #666;
-			font-size: 0.85rem;
+			display: flex;
+			gap: 0.5rem;
+			margin: 0.5rem 0;
+		}
+		.cg-pill-outline {
+			background: var(--cg-color-gris-100);
+			color: var(--cg-color-gris-500);
 		}
 	</style>
 </Base>

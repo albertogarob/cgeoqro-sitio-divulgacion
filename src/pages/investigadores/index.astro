@@ -7,12 +7,15 @@ const investigadores = await getCollection('investigadores');
 ---
 
 <Base title="Investigadores">
+	<span class="cg-eyebrow">Divulgación</span>
 	<h1>Investigadores de CentroGeo Querétaro</h1>
 	<ul class="lista">
 		{investigadores.map((inv) => (
 			<li>
-				<a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>
-				<p>{inv.data.bioBreve}</p>
+				<a class="cg-list-card" href={withBase(`/investigadores/${inv.id}/`)}>
+					<h3>{inv.data.nombre}</h3>
+					<p>{inv.data.bioBreve}</p>
+				</a>
 			</li>
 		))}
 	</ul>
@@ -20,9 +23,7 @@ const investigadores = await getCollection('investigadores');
 		.lista {
 			list-style: none;
 			padding: 0;
-		}
-		.lista li {
-			margin-bottom: 1.5rem;
+			margin: 0;
 		}
 	</style>
 </Base>

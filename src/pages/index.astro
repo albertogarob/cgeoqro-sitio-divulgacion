@@ -14,8 +14,9 @@ const capsulasConSerie = await Promise.all(
 ---
 
 <Base title="Inicio">
-	<h1>Ciencia de CentroGeo Querétaro, explicada para todos</h1>
-	<p>
+	<span class="cg-eyebrow">CentroGeo Querétaro</span>
+	<h1>Ciencia explicada para todos</h1>
+	<p class="cg-intro">
 		Cápsulas cortas, videos y entrevistas que traducen la investigación de CentroGeo QRO
 		a un lenguaje accesible, sin perder rigor.
 	</p>
@@ -24,7 +25,12 @@ const capsulasConSerie = await Promise.all(
 		<h2>Series temáticas</h2>
 		<ul class="series-lista">
 			{series.map((s) => (
-				<li><a href={withBase(`/series/${s.id}/`)}>{s.data.nombre}</a> — {s.data.descripcion}</li>
+				<li>
+					<a class="cg-list-card" href={withBase(`/series/${s.id}/`)}>
+						<h3>{s.data.nombre}</h3>
+						<p>{s.data.descripcion}</p>
+					</a>
+				</li>
 			))}
 		</ul>
 	</section>
@@ -34,31 +40,33 @@ const capsulasConSerie = await Promise.all(
 		<ul class="capsulas-lista">
 			{capsulasConSerie.map(({ capsula, serie }) => (
 				<li>
-					<a href={withBase(`/capsulas/${capsula.id}/`)}>{capsula.data.titulo}</a>
-					{serie && <span class="etiqueta"> · {serie.data.nombre}</span>}
-					<p>{capsula.data.resumenCorto}</p>
+					<a class="cg-list-card" href={withBase(`/capsulas/${capsula.id}/`)}>
+						<h3>{capsula.data.titulo}</h3>
+						{serie && <span class="cg-pill">{serie.data.nombre}</span>}
+						<p>{capsula.data.resumenCorto}</p>
+					</a>
 				</li>
 			))}
 		</ul>
 	</section>
 
 	<style>
+		.cg-intro {
+			font-size: 1.1rem;
+			max-width: 42rem;
+		}
 		section {
-			margin-bottom: 2.5rem;
+			margin-top: 2.5rem;
 		}
 		.series-lista,
 		.capsulas-lista {
 			list-style: none;
 			padding: 0;
+			margin: 0;
 		}
-		.capsulas-lista li {
-			margin-bottom: 1.25rem;
-			padding-bottom: 1.25rem;
-			border-bottom: 1px solid #eee;
-		}
-		.etiqueta {
-			color: #666;
-			font-size: 0.85rem;
+		.series-lista h3,
+		.capsulas-lista h3 {
+			color: var(--cg-color-gris-700);
 		}
 	</style>
 </Base>
