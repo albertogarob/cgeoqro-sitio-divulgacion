@@ -58,26 +58,17 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 
 			<div class="cap-wrap cap-outro">
 				<article><Content /></article>
-				<section class="atribucion">
-					<h2>Fuente y créditos</h2>
-					<ul>
-						<li>
-							Investigadores: {creditos.investigadores.map((inv, i) => (
-								<>
-									{i > 0 && ', '}
-									{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
-								</>
-							))}
-						</li>
-						{creditos.paper && (
-							<li>
-								Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
-								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
-							</li>
-						)}
-						{creditos.creditoProduccion && <li>{creditos.creditoProduccion}</li>}
-						<li>Revisado por: {creditos.revisadoPor}</li>
-					</ul>
+				<section class="referencia">
+					<h2>Referencia</h2>
+					{creditos.paper && (
+						<p>
+							{creditos.paper.data.titulo}. {creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion}).
+							{creditos.paper.data.doi && (
+								<> <a href={`https://doi.org/${creditos.paper.data.doi}`} target="_blank" rel="noopener">https://doi.org/{creditos.paper.data.doi}</a></>
+							)}
+						</p>
+					)}
+					{creditos.creditoProduccion && <p class="ref-nota">{creditos.creditoProduccion}</p>}
 				</section>
 			</div>
 		</>
@@ -116,26 +107,17 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 
 			<div class="cap-wrap cap-outro">
 				<article><Content /></article>
-				<section class="atribucion">
-					<h2>Fuente y créditos</h2>
-					<ul>
-						<li>
-							Investigadores: {creditos.investigadores.map((inv, i) => (
-								<>
-									{i > 0 && ', '}
-									{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
-								</>
-							))}
-						</li>
-						{creditos.paper && (
-							<li>
-								Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
-								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
-							</li>
-						)}
-						{creditos.creditoProduccion && <li>{creditos.creditoProduccion}</li>}
-						<li>Revisado por: {creditos.revisadoPor}</li>
-					</ul>
+				<section class="referencia">
+					<h2>Referencia</h2>
+					{creditos.paper && (
+						<p>
+							{creditos.paper.data.titulo}. {creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion}).
+							{creditos.paper.data.doi && (
+								<> <a href={`https://doi.org/${creditos.paper.data.doi}`} target="_blank" rel="noopener">https://doi.org/{creditos.paper.data.doi}</a></>
+							)}
+						</p>
+					)}
+					{creditos.creditoProduccion && <p class="ref-nota">{creditos.creditoProduccion}</p>}
 				</section>
 			</div>
 		</>
@@ -159,25 +141,17 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 				<Content />
 			</article>
 
-			<section class="atribucion">
-				<h2>Fuente y créditos</h2>
-				<ul>
-					<li>
-						Investigadores: {creditos.investigadores.map((inv, i) => (
-							<>
-								{i > 0 && ', '}
-								{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
-							</>
-						))}
-					</li>
-					{creditos.paper && (
-						<li>
-							Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
-							{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
-						</li>
-					)}
-					<li>Revisado por: {creditos.revisadoPor}</li>
-				</ul>
+			<section class="referencia">
+				<h2>Referencia</h2>
+				{creditos.paper && (
+					<p>
+						{creditos.paper.data.titulo}. {creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion}).
+						{creditos.paper.data.doi && (
+							<> <a href={`https://doi.org/${creditos.paper.data.doi}`} target="_blank" rel="noopener">https://doi.org/{creditos.paper.data.doi}</a></>
+						)}
+					</p>
+				)}
+				{creditos.creditoProduccion && <p class="ref-nota">{creditos.creditoProduccion}</p>}
 			</section>
 		</>
 	)}
@@ -307,12 +281,28 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		.resumen {
 			font-size: 1.1rem;
 		}
-		.atribucion {
-			margin-top: 2.5rem;
+		.referencia {
+			margin-top: 2rem;
 			padding-top: 1.5rem;
 			border-top: 1px solid #eee;
 			font-size: 0.9rem;
-			color: #444;
+			color: #555;
+		}
+		.referencia h2 {
+			font-size: 1rem;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--cg-color-gris-700) !important;
+			margin: 0 0 0.6rem 0;
+		}
+		.referencia p {
+			margin: 0;
+			line-height: 1.5;
+		}
+		.ref-nota {
+			margin-top: 0.6rem !important;
+			font-style: italic;
+			color: #777;
 		}
 
 		/* ── Modo cine para cápsulas de video (full-bleed) ── */
