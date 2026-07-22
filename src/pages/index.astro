@@ -57,19 +57,72 @@ const formatoEtiqueta = {
   infografia: 'Infografía',
   texto: 'Texto',
 };
+
+// Geometría del globo terráqueo del hero (SVG original, sin usar imágenes de
+// terceros, en cumplimiento de la política de derechos de autor del proyecto).
+// El globo evoca lo geoespacial; los nodos y arcos, el compartir conocimiento.
+const R = 200;
+const cx = 250;
+const cy = 250;
+const persp = 0.32; // achatamiento de las líneas de latitud para dar volumen
+const latitudes = [-160, -120, -80, -40, 0, 40, 80, 120, 160].map((dy) => ({
+  cy: cy + dy,
+  rx: Math.round(Math.sqrt(R * R - dy * dy)),
+  ry: Math.round(Math.sqrt(R * R - dy * dy) * persp),
+}));
+const longitudes = [200, 158, 100, 30].map((rx) => ({ rx }));
+// Nodos sobre la superficie y arcos que los conectan (red de divulgación).
+const nodos = [
+  { x: 150, y: 165 },
+  { x: 330, y: 140 },
+  { x: 360, y: 300 },
+  { x: 175, y: 340 },
+  { x: 250, y: 90 },
+];
+const arcos = [
+  { d: 'M150,165 Q260,80 330,140' },
+  { d: 'M330,140 Q400,230 360,300' },
+  { d: 'M360,300 Q250,380 175,340' },
+  { d: 'M250,90 Q140,120 150,165' },
+];
 ---
 
 <Base title="Inicio">
-	<section class="hero">
-		<span class="cg-eyebrow">Divulgación científica · CentroGeo Querétaro</span>
-		<h1>La ciencia de CentroGeo Querétaro, en formatos que puedes ver, escuchar y compartir</h1>
-		<p class="hero-sub">
-			Traducimos la investigación de nuestros científicos a cápsulas breves, videos y
-			entrevistas pensadas para el público general. Sin tecnicismos, sin perder rigor.
-		</p>
-		<div class="hero-cta">
-			<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
-			<a class="cg-btn cg-btn-secondary" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+	<section slot="hero" class="hero">
+		<svg class="hero-globo" viewBox="0 0 500 500" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+			<defs>
+				<radialGradient id="globoFill" cx="38%" cy="35%" r="75%">
+					<stop offset="0%" stop-color="#1b3a5c" />
+					<stop offset="60%" stop-color="#0c2036" />
+					<stop offset="100%" stop-color="#050d17" />
+				</radialGradient>
+			</defs>
+			<circle cx={cx} cy={cy} r={R} fill="url(#globoFill)" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
+			<g fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1">
+				{latitudes.map((l) => <ellipse cx={cx} cy={l.cy} rx={l.rx} ry={l.ry} />)}
+				{longitudes.map((l) => <ellipse cx={cx} cy={cy} rx={l.rx} ry={R} />)}
+				<line x1={cx} y1={cy - R} x2={cx} y2={cy + R} />
+			</g>
+			<g fill="none" stroke="#c45620" stroke-width="1.5" opacity="0.85">
+				{arcos.map((a) => <path d={a.d} />)}
+			</g>
+			<g>
+				{nodos.map((n) => (
+					<circle cx={n.x} cy={n.y} r="5" fill="#e8843f" />
+				))}
+			</g>
+		</svg>
+		<div class="hero-contenido">
+			<span class="hero-eyebrow">Divulgación científica · CentroGeo Querétaro</span>
+			<h1>La ciencia que se produce aquí, contada para todos</h1>
+			<p class="hero-sub">
+				Traducimos la investigación de CentroGeo Querétaro a cápsulas breves, videos y
+				entrevistas pensadas para el público general. Sin tecnicismos, sin perder rigor.
+			</p>
+			<div class="hero-cta">
+				<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
+				<a class="cg-btn hero-btn-fantasma" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+			</div>
 		</div>
 	</section>
 
@@ -127,28 +180,82 @@ const formatoEtiqueta = {
 	</section>
 
 	<style>
+		/* ── HERO de ancho completo (banda oscura estilo espacial) ── */
 		.hero {
-			padding-bottom: 2.5rem;
-			margin-bottom: 2.5rem;
-			border-bottom: 1px solid var(--cg-color-gris-300);
+			position: relative;
+			overflow: hidden;
+			background:
+				radial-gradient(120% 140% at 82% 20%, rgba(196, 86, 32, 0.35) 0%, rgba(196, 86, 32, 0) 55%),
+				linear-gradient(135deg, #0a1c30 0%, #0c141d 55%, #140b06 100%);
+			color: #ffffff;
+		}
+		.hero-globo {
+			position: absolute;
+			top: 50%;
+			right: -4%;
+			transform: translateY(-50%);
+			height: 150%;
+			width: auto;
+			aspect-ratio: 1 / 1;
+			opacity: 0.9;
+			pointer-events: none;
+		}
+		.hero-contenido {
+			position: relative;
+			z-index: 1;
+			max-width: 64rem;
+			margin: 0 auto;
+			padding: clamp(3rem, 7vw, 5.5rem) 1.5rem;
+		}
+		.hero-eyebrow {
+			display: block;
+			font-size: 0.8rem;
+			font-weight: 700;
+			color: #e8843f;
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			margin-bottom: 0.75rem;
 		}
 		.hero h1 {
-			font-size: clamp(1.8rem, 4.5vw, 3rem);
-			margin: 0 0 1rem 0;
+			color: #ffffff;
+			font-size: clamp(2rem, 5vw, 3.4rem);
+			line-height: 1.08;
+			margin: 0 0 1.1rem 0;
+			max-width: 20ch;
 		}
 		.hero-sub {
-			font-size: 1.15rem;
-			max-width: 44rem;
-			margin: 0 0 1.75rem 0;
+			font-size: clamp(1rem, 2vw, 1.2rem);
+			color: rgba(255, 255, 255, 0.82);
+			max-width: 40rem;
+			margin: 0 0 2rem 0;
+			line-height: 1.5;
 		}
 		.hero-cta {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.75rem;
 		}
+		.hero-btn-fantasma {
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffffff !important;
+			border: 1px solid rgba(255, 255, 255, 0.4);
+		}
+		.hero-btn-fantasma:hover {
+			background: rgba(255, 255, 255, 0.18);
+			border-color: #ffffff;
+		}
+		@media (max-width: 720px) {
+			.hero-globo {
+				right: -30%;
+				opacity: 0.5;
+			}
+		}
 
 		.bloque {
 			margin-bottom: 3rem;
+		}
+		.bloque:first-of-type {
+			margin-top: 0;
 		}
 		.bloque > h2 {
 			margin-top: 0;
