@@ -119,6 +119,16 @@ de Drive, **esta URL de `/preview` sí se puede embeber en un `<iframe>` externo
 y reproduce el video). Ejemplo aplicado en
 `src/content/capsulas/usa-china-siglo-xxi.mdx`.
 
+**Advertencia (observada 2026-07-21 en producción)**: los embeds de `/preview` de
+Drive están sujetos a una **cuota de reproducción diaria por archivo** propia de
+Google Drive; tras varias cargas seguidas del mismo archivo (durante nuestras
+pruebas automatizadas) el iframe mostró "No se pudo cargar el video". Es una
+limitación de Drive, no del código. Por eso `capsulas/[id].astro` agrega un enlace
+de respaldo ("Ábrelo en una pestaña nueva") junto al iframe. **Para contenido de
+video que sí generemos nosotros en el pipeline de producción, preferir alojarlo en
+YouTube (no listado o público) en vez de Google Drive**, ya que YouTube no tiene
+esta cuota y es el estándar de facto para embeds de video en la web.
+
 **"El espacio donde vivimos"** — *no* es un video simple, es un **widget interactivo
 de storytelling** ("Historias entrelazadas en la periferia", basado en el paper de
 Fabricio Espinosa Ortiz, 2024): slides ilustrados con estilo de ilustración
