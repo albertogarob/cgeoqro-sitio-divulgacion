@@ -102,6 +102,19 @@ import scrollama from 'scrollama';
 scrollama().setup({ step: '.scrolly .step', offset: 0.75 }).onStepEnter(r => aplicar(+r.element.dataset.step));
 ```
 
+### Errores comunes (aprendidos en producción)
+
+- **El texto SVG (`<text>`) no se ajusta ni recorta solo**: se desborda y encima. En
+  leyendas, ejes o etiquetas, usa textos **cortos** (ej. "D0 leve", no "D0 Anormalmente
+  seco") y calcula el espaciado con margen (que la separación entre columnas sea mayor
+  que el ancho estimado de la etiqueta más larga). Si la etiqueta es larga, súbela de
+  tamaño de fuente hacia abajo o apílala en dos líneas con varios `<tspan>`.
+- **Subtítulos vs momentos centrados**: los `only` con números/gráficos grandes van al
+  centro; deja las captions a los lados (ver Paso siguiente) para que no se solapen.
+  Verifica siempre con captura, no a ojo del código.
+- **"EU" en papers suele ser "Estados Unidos", no la Unión Europea**: desambigua en la
+  paráfrasis para no confundir al lector.
+
 ## Paso 4. Integrar con las content collections
 
 Esquema de referencia: [docs/content-collections.md](../../../docs/content-collections.md)
