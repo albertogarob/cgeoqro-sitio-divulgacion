@@ -17,20 +17,9 @@ const nav = [
   { href: '/acerca-de/', label: 'Acerca de' },
 ];
 
-// Enlaces institucionales obligatorios del Gobierno de México (replicados del sitio
-// oficial de CentroGeo, www.centrogeo.org.mx).
-const enlacesGob = [
-  { href: 'https://participa.gob.mx', label: 'Participa' },
-  { href: 'http://www.ordenjuridico.gob.mx', label: 'Marco Jurídico' },
-  { href: 'https://consultapublicamx.inai.org.mx/vut-web/', label: 'Plataforma Nacional de Transparencia' },
-  { href: 'https://transparencia.gob.mx', label: 'Transparencia para el pueblo' },
-];
-const enlacesGobmx = [
-  { href: 'https://www.gob.mx/', label: 'Portal de datos abiertos' },
-  { href: 'https://www.gob.mx/accesibilidad', label: 'Declaración de accesibilidad' },
-  { href: 'https://www.gob.mx/terminos', label: 'Términos y Condiciones' },
-  { href: 'https://sidec.buengobierno.gob.mx/#!/', label: 'Denuncia contra servidores públicos' },
-];
+// Nota: la franja gubernamental gob.mx/SECIHTI se retiró mientras el sitio sea un
+// prototipo no autorizado por la institución. Al oficializarse, se puede reponer con
+// los enlaces obligatorios del Gobierno de México.
 const redes = [
   { href: 'https://www.facebook.com/CentroGeo/', label: 'Facebook' },
   { href: 'https://www.instagram.com/centrogeo_', label: 'Instagram' },
@@ -54,6 +43,11 @@ const redes = [
 		/>
 	</head>
 	<body>
+		<div class="aviso-prototipo" role="note">
+			<strong>Prototipo en construcción · sitio no oficial.</strong> Los logotipos e
+			identidad institucional se muestran solo con fines de demostración; su uso aún no
+			ha sido autorizado por CentroGeo.
+		</div>
 		<header>
 			<a class="marca" href={withBase('/')}>
 				<img src={withBase('/branding/logo-centrogeo.svg')} alt="CentroGeo" class="marca-logo" />
@@ -112,43 +106,15 @@ const redes = [
 			</div>
 			<div class="footer-nota">
 				<p>
-					Prototipo de divulgación científica de CentroGeo Querétaro. Los contenidos son
+					<strong>Prototipo no oficial, sin autorización institucional.</strong> Sitio de
+					divulgación en construcción de CentroGeo Querétaro. Los logotipos e identidad
+					institucional se muestran solo con fines de demostración. Los contenidos son
 					elaboraciones propias inspiradas en publicaciones de investigadores del centro;
 					no reproducen texto ni figuras de los papers originales, protegidos por derechos
 					de autor de sus editoriales. Ver <a href={withBase('/acerca-de/')}>política de atribución</a>.
 				</p>
 			</div>
 		</footer>
-
-		<div class="gob-footer">
-			<div class="gob-footer-inner">
-				<div class="gob-logos">
-					<img src={withBase('/branding/logo-gobmx.svg')} alt="Gobierno de México" />
-					<img src={withBase('/branding/logo-secihti.svg')} alt="SECIHTI" class="logo-mono" />
-				</div>
-				<div class="gob-links">
-					<div class="gob-links-col">
-						<h2>Enlaces</h2>
-						<ul>
-							{enlacesGob.map((e) => (
-								<li><a href={e.href} target="_blank" rel="noopener">{e.label}</a></li>
-							))}
-						</ul>
-					</div>
-					<div class="gob-links-col">
-						<h2>¿Qué es gob.mx?</h2>
-						<p class="gob-desc">
-							Es el portal único de trámites, información y participación ciudadana.
-						</p>
-						<ul>
-							{enlacesGobmx.map((e) => (
-								<li><a href={e.href} target="_blank" rel="noopener">{e.label}</a></li>
-							))}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<style>
 			/* Tokens de identidad visual real de CentroGeo (ver CLAUDE.md, sección
@@ -176,6 +142,18 @@ const redes = [
 				margin: 0;
 				color: var(--cg-color-gris-500);
 				background: var(--cg-color-gris-100);
+			}
+			/* Aviso de prototipo no oficial (barra superior). */
+			.aviso-prototipo {
+				background: #916802;
+				color: #fff7e3;
+				font-size: 0.82rem;
+				line-height: 1.4;
+				text-align: center;
+				padding: 0.55rem 1rem;
+			}
+			.aviso-prototipo strong {
+				color: #ffffff;
 			}
 			:global(h1),
 			:global(h2),
@@ -415,79 +393,10 @@ const redes = [
 				color: var(--cg-color-blanco);
 			}
 
-			/* ── FRANJA GUBERNAMENTAL OBLIGATORIA (vino) ────────── */
-			.gob-footer {
-				background: var(--cg-color-vino);
-				color: #ffffff;
-			}
-			.gob-footer-inner {
-				max-width: 68rem;
-				margin: 0 auto;
-				padding: 2.5rem 1.5rem;
-				display: grid;
-				grid-template-columns: 1fr 2fr;
-				gap: 2.5rem;
-				align-items: start;
-			}
-			.gob-logos {
-				display: flex;
-				flex-direction: column;
-				gap: 1.25rem;
-				align-items: flex-start;
-			}
-			.gob-logos img {
-				height: 40px;
-				width: auto;
-				max-width: 100%;
-			}
-			.gob-logos .logo-mono {
-				filter: brightness(0) invert(1);
-			}
-			.gob-links {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 2rem;
-			}
-			.gob-links-col h2 {
-				font-size: 0.9rem;
-				color: #ffffff;
-				margin: 0 0 0.9rem 0;
-			}
-			.gob-desc {
-				font-size: 0.82rem;
-				color: rgba(255, 255, 255, 0.75);
-				margin: 0 0 0.9rem 0;
-				line-height: 1.5;
-			}
-			.gob-links-col ul {
-				list-style: none;
-				margin: 0;
-				padding: 0;
-			}
-			.gob-links-col li {
-				margin-bottom: 0.6rem;
-			}
-			.gob-links-col a {
-				color: rgba(255, 255, 255, 0.85);
-				text-decoration: none;
-				font-size: 0.85rem;
-			}
-			.gob-links-col a:hover {
-				color: #ffffff;
-				text-decoration: underline;
-			}
-
 			@media (max-width: 760px) {
 				.site-footer-inner {
 					grid-template-columns: 1fr;
 					gap: 2rem;
-				}
-				.gob-footer-inner {
-					grid-template-columns: 1fr;
-					gap: 2rem;
-				}
-				.gob-links {
-					grid-template-columns: 1fr;
 				}
 			}
 		</style>
