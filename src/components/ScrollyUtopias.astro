@@ -31,14 +31,14 @@ for (let r = 0; r < 4; r++) {
 }
 
 const pasos = [
-  { n: 0, texto: 'Durante décadas, Iztapalapa fue vista como el "patio trasero" de la Ciudad de México.' },
-  { n: 1, texto: 'Es la alcaldía más poblada de las dieciséis. Casi uno de cada cinco habitantes de la capital vive aquí.' },
-  { n: 2, texto: 'Más de la mitad de su población habita en zonas con desarrollo social bajo o muy bajo. El trabajo de cuidar recae, sobre todo, en las mujeres.' },
-  { n: 3, texto: 'Buena parte de estos barrios se construyó a mano: levantados y organizados por sus propios vecinos, con o sin apoyo del Estado.' },
-  { n: 4, texto: 'Entre 2019 y 2024 surgieron centros comunitarios en los trece distritos: las Utopías.' },
-  { n: 5, texto: 'No solo ofrecen servicios: tejen una red de cuidado colectivo. Unen el derecho a la ciudad con el urbanismo feminista.' },
-  { n: 6, texto: 'Lo que nació en la periferia hoy se expande a toda la ciudad, con reconocimiento internacional.' },
-  { n: 7, texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
+  { n: 0, pos: 'left', texto: 'Durante décadas, Iztapalapa fue vista como el "patio trasero" de la Ciudad de México.' },
+  { n: 1, pos: 'right', texto: 'Es la alcaldía más poblada de las dieciséis. Casi uno de cada cinco habitantes de la capital vive aquí.' },
+  { n: 2, pos: 'left', texto: 'Más de la mitad de su población habita en zonas con desarrollo social bajo o muy bajo. El trabajo de cuidar recae, sobre todo, en las mujeres.' },
+  { n: 3, pos: 'right', texto: 'Buena parte de estos barrios se construyó a mano: levantados y organizados por sus propios vecinos, con o sin apoyo del Estado.' },
+  { n: 4, pos: 'left', texto: 'Entre 2019 y 2024 surgieron centros comunitarios en los trece distritos: las Utopías.' },
+  { n: 5, pos: 'right', texto: 'No solo ofrecen servicios: tejen una red de cuidado colectivo. Unen el derecho a la ciudad con el urbanismo feminista.' },
+  { n: 6, pos: 'left', texto: 'Lo que nació en la periferia hoy se expande a toda la ciudad, con reconocimiento internacional.' },
+  { n: 7, pos: 'right', texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
 ];
 ---
 
@@ -143,7 +143,7 @@ const pasos = [
 
 	<div class="scrolly-steps">
 		{pasos.map((p) => (
-			<div class="step" data-step={p.n}>
+			<div class="step" data-step={p.n} data-pos={p.pos}>
 				<p class="caption">{p.texto}</p>
 			</div>
 		))}
@@ -360,20 +360,23 @@ const pasos = [
 		opacity: 1;
 	}
 
-	/* columna de texto flotante (subtítulos, no diapositivas) */
+	/* texto flotante (subtítulos, no diapositivas); alterna de lado por paso */
 	.scrolly-steps {
 		position: relative;
 		z-index: 3;
 		pointer-events: none;
-		max-width: 30rem;
-		margin-left: clamp(1rem, 6vw, 6rem);
 	}
 	.step {
 		min-height: 92vh;
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		padding: 0 clamp(1rem, 6vw, 6rem);
 	}
+	.step[data-pos='left'] { justify-content: flex-start; }
+	.step[data-pos='right'] { justify-content: flex-end; }
 	.step:first-child { min-height: 85vh; }
+	.caption { max-width: 28rem; }
 	.caption {
 		pointer-events: auto;
 		margin: 0;
@@ -397,11 +400,13 @@ const pasos = [
 	}
 
 	@media (max-width: 720px) {
-		.scrolly-steps {
-			max-width: none;
-			margin-left: 0;
+		.step,
+		.step[data-pos='left'],
+		.step[data-pos='right'] {
+			justify-content: center;
 			padding: 0 1rem;
 		}
+		.caption { max-width: none; }
 		.mom-big { font-size: 52px; }
 	}
 </style>
