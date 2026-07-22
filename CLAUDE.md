@@ -6,6 +6,14 @@ Prototipo de sitio web construido con **Astro** para la divulgación científica
 principalmente al público general, del conocimiento generado por investigadores del
 **CentroGeo Querétaro** a partir de sus publicaciones académicas.
 
+**Doble objetivo del sitio:**
+1. Divulgar al público general el conocimiento producido en CentroGeo Querétaro.
+2. **Dar a conocer al CentroGeo Querétaro como institución** en el estado de Querétaro
+   y en la región del Bajío. Es decir, no solo comunicar la ciencia, sino posicionar y
+   dar visibilidad al centro y su sede de Querétaro a nivel regional. Esto justifica dar
+   prominencia a las páginas institucionales ("¿Qué es el CentroGeo Querétaro?",
+   "¿Quiénes somos?") y no esconderlas.
+
 Nombre del sitio: **Ciencia Geoespacial para Todos · CentroGeo Querétaro**. Junto al
 logo (que ya aporta "CentroGeo") se muestra solo la parte distintiva, "Ciencia
 Geoespacial para Todos".

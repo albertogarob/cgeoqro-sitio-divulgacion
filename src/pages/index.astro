@@ -121,7 +121,12 @@ const arcos = [
 			</p>
 			<div class="hero-cta">
 				<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
+			</div>
+			<div class="hero-conoce">
+				<span class="hero-conoce-label">Conócenos:</span>
 				<a class="cg-btn hero-btn-fantasma" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+				<a class="cg-btn hero-btn-fantasma" href={withBase('/quienes-somos/')}>¿Quiénes somos?</a>
+				<a class="cg-btn hero-btn-fantasma" href={withBase('/centrogeo-queretaro/')}>¿Qué es el CentroGeo Querétaro?</a>
 			</div>
 		</div>
 	</section>
@@ -234,6 +239,25 @@ const arcos = [
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.75rem;
+			margin-bottom: 1.5rem;
+		}
+		.hero-conoce {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.6rem;
+		}
+		.hero-conoce-label {
+			font-size: 0.82rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: rgba(255, 255, 255, 0.6);
+			margin-right: 0.25rem;
+		}
+		.hero-conoce .hero-btn-fantasma {
+			padding: 0.5rem 1rem;
+			font-size: 0.88rem;
 		}
 		.hero-btn-fantasma {
 			background: rgba(255, 255, 255, 0.08);
