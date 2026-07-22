@@ -1,0 +1,307 @@
+---
+// Scrollytelling original sobre la estimación de mapas de sequía con redes
+// Convolución-LSTM (Medrano, Rodríguez, López-Farías et al., Research in Computing
+// Science 152(9), 2023). Texto parafraseado; gráficos SVG propios, sin reproducir
+// figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
+
+const cols = 9;
+const rows = 5;
+const sevColors = ['#f6e27a', '#f0b34e', '#e8843f', '#cf4b2a', '#8f2114']; // D0..D4
+const celdas: { x: number; y: number; sev: number; color: string }[] = [];
+for (let r = 0; r < rows; r++) {
+  for (let c = 0; c < cols; c++) {
+    // La sequía es más severa hacia el oeste (izquierda), con variación deterministaa.
+    const raw = (1 - c / (cols - 1)) * 4 + Math.sin(r * 1.1 + c * 0.35) * 0.9;
+    const sev = Math.max(0, Math.min(4, Math.round(raw)));
+    celdas.push({ x: 240 + c * 72, y: 210 + r * 72, sev, color: sevColors[sev] });
+  }
+}
+const legenda = [
+  { c: '#f6e27a', l: 'D0 leve' },
+  { c: '#f0b34e', l: 'D1 moderada' },
+  { c: '#e8843f', l: 'D2 severa' },
+  { c: '#cf4b2a', l: 'D3 extrema' },
+  { c: '#8f2114', l: 'D4 excepcional' },
+];
+// Miniaturas de la serie de tiempo (3 pasadas + 1 predicción).
+const tira = [220, 400, 580, 760];
+
+const pasos = [
+  { n: 0, pos: 'center', texto: 'La sequía es un desastre lento: un periodo seco prolongado que deja sin agua a personas y ecosistemas.' },
+  { n: 1, pos: 'right', texto: 'No es una sola cosa. Golpea a la agricultura, al agua potable y a las comunidades rurales, muchas veces antes de que se note.' },
+  { n: 2, pos: 'right', texto: 'Para verla, los científicos hacen mapas de sequía con datos de satélites y sensores, en cinco niveles de severidad.' },
+  { n: 3, pos: 'right', texto: 'La pregunta clave: con los mapas pasados, ¿se puede estimar el próximo? Eso exige leer a la vez el espacio y el tiempo.' },
+  { n: 4, pos: 'left', texto: 'La idea: tratar los mapas como una serie de imágenes y usar una red neuronal Convolución-LSTM, que aprende el espacio y su evolución.' },
+  { n: 5, pos: 'left', texto: 'Alimentada con los mapas del monitor de sequías de Estados Unidos en orden cronológico, la red estima cómo se verá el siguiente.' },
+  { n: 6, pos: 'left', texto: 'El resultado supera al método ingenuo: menos error en la estimación. El costo: mucho cómputo y memoria.' },
+  { n: 7, pos: 'center', texto: 'Anticipar la sequía permite cuidar el agua, proteger los cultivos y decidir a tiempo. Ciencia geoespacial al servicio de la sociedad.' },
+];
+---
+
+<section class="scrolly" data-step="0">
+	<div class="scrolly-stage">
+		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+			<defs>
+				<radialGradient id="sqBg" cx="50%" cy="36%" r="85%">
+					<stop offset="0%" stop-color="#20140a" />
+					<stop offset="55%" stop-color="#12100c" />
+					<stop offset="100%" stop-color="#070707" />
+				</radialGradient>
+			</defs>
+			<rect x="0" y="0" width="1000" height="700" fill="url(#sqBg)" />
+
+			<g class="map">
+				<g class="camera">
+					<!-- Contorno del mapa (rejilla) -->
+					<g class="layer" data-from="0">
+						{celdas.map((c) => (
+							<rect x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+								fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
+						))}
+					</g>
+					<!-- Mapa de sequía coloreado por severidad -->
+					<g class="layer color-cells" data-from="2">
+						{celdas.map((c, i) => (
+							<rect class="scell" style={`--i:${i}`} x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+								fill={c.color} opacity="0.92" />
+						))}
+					</g>
+				</g>
+			</g>
+
+			<!-- MOMENTO 1: focos de impacto (celdas más severas laten) -->
+			<g class="only" data-only="1">
+				{celdas.filter((c) => c.sev >= 3).map((c) => (
+					<rect class="foco" x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+						fill="none" stroke="#cf4b2a" stroke-width="3" />
+				))}
+			</g>
+
+			<!-- MOMENTO 2: leyenda de categorías -->
+			<g class="only" data-only="2">
+				<text x="110" y="580" class="mom-sub">Cinco niveles de severidad</text>
+				{legenda.map((g, i) => (
+					<g style={`--i:${i}`} class="leg">
+						<rect x={110 + i * 168} y="600" width="24" height="24" rx="5" fill={g.c} />
+						<text x={142 + i * 168} y="618" class="leg-txt">{g.l}</text>
+					</g>
+				))}
+			</g>
+
+			<!-- MOMENTO 3: serie de tiempo de imágenes -->
+			<g class="only" data-only="3">
+				{tira.map((x, i) => (
+					<g class="frame" style={`--i:${i}`}>
+						<rect x={x} y="250" width="130" height="100" rx="8"
+							fill={i === 3 ? 'rgba(255,255,255,0.06)' : '#2a1a0f'}
+							stroke={i === 3 ? '#e8843f' : 'rgba(255,255,255,0.25)'}
+							stroke-width={i === 3 ? '2' : '1'}
+							stroke-dasharray={i === 3 ? '5 5' : '0'} />
+						{i < 3 && <><rect x={x + 14} y={264} width="45" height="30" rx="3" fill="#e8843f" opacity="0.8" /><rect x={x + 66} y={264} width="45" height="30" rx="3" fill="#f0b34e" opacity="0.7" /><rect x={x + 14} y={302} width="45" height="30" rx="3" fill="#cf4b2a" opacity="0.7" /><rect x={x + 66} y={302} width="45" height="30" rx="3" fill="#8f2114" opacity="0.7" /></>}
+						{i === 3 && <text x={x + 65} y={312} text-anchor="middle" class="qmark">?</text>}
+					</g>
+				))}
+				{[0, 1, 2].map((i) => (
+					<text x={tira[i] + 155} y="308" text-anchor="middle" class="arrow">→</text>
+				))}
+				<text x="285" y="230" class="mom-sub">ayer</text>
+				<text x="825" y="230" class="mom-sub" text-anchor="end">mañana</text>
+			</g>
+
+			<!-- MOMENTO 4: red Convolución-LSTM -->
+			<g class="only" data-only="4">
+				<!-- espacio: kernel que recorre una rejilla -->
+				<g>
+					{[0, 1, 2].map((r) => [0, 1, 2].map((c) => (
+						<rect x={230 + c * 46} y={280 + r * 46} width="40" height="40" rx="4" fill="rgba(232,132,63,0.18)" stroke="#e8843f" stroke-width="1" />
+					)))}
+					<rect class="kernel" x="230" y="280" width="86" height="86" rx="6" fill="none" stroke="#ffffff" stroke-width="3" />
+					<text x="298" y="255" text-anchor="middle" class="mom-sub">Espacio (convolución)</text>
+				</g>
+				<text x="470" y="345" class="arrow">→</text>
+				<!-- tiempo: cadena LSTM -->
+				<g>
+					{[0, 1, 2].map((i) => (
+						<rect class="lstm" style={`--i:${i}`} x={540 + i * 120} y="300" width="90" height="60" rx="10" fill="rgba(232,132,63,0.16)" stroke="#e8843f" stroke-width="1.5" />
+					))}
+					{[0, 1].map((i) => <text x={640 + i * 120} y="335" class="arrow">→</text>)}
+					<text x="675" y="255" text-anchor="middle" class="mom-sub">Tiempo (memoria LSTM)</text>
+				</g>
+			</g>
+
+			<!-- MOMENTO 6: comparación de error -->
+			<g class="only" data-only="6">
+				<text x="500" y="230" text-anchor="middle" class="mom-big">Menos error</text>
+				<text x="250" y="330" class="bar-label">Método ingenuo</text>
+				<rect x="250" y="345" height="34" rx="6" fill="rgba(255,255,255,0.35)" class="bar bar-naive" />
+				<text x="250" y="430" class="bar-label">Convolución-LSTM</text>
+				<rect x="250" y="445" height="34" rx="6" fill="#e8843f" class="bar bar-model" />
+			</g>
+
+			<!-- MOMENTO 7: beneficios -->
+			<g class="only" data-only="7">
+				<g class="clave" style="--i:0"><rect x="150" y="600" width="200" height="58" rx="29" /><text x="250" y="636" text-anchor="middle">Anticipar</text></g>
+				<g class="clave" style="--i:1"><rect x="400" y="600" width="200" height="58" rx="29" /><text x="500" y="636" text-anchor="middle">Cuidar el agua</text></g>
+				<g class="clave" style="--i:2"><rect x="650" y="600" width="200" height="58" rx="29" /><text x="750" y="636" text-anchor="middle">Proteger cultivos</text></g>
+			</g>
+		</svg>
+	</div>
+
+	<div class="scrolly-steps">
+		{pasos.map((p) => (
+			<div class="step" data-step={p.n} data-pos={p.pos}>
+				<p class="caption">{p.texto}</p>
+			</div>
+		))}
+	</div>
+</section>
+
+<script>
+	import scrollama from 'scrollama';
+
+	function initScrolly() {
+		const container = document.querySelector<HTMLElement>('.scrolly');
+		if (!container) return;
+		const header = document.querySelector<HTMLElement>('header');
+		const camera = container.querySelector<SVGGElement>('.camera');
+		const map = container.querySelector<SVGGElement>('.map');
+		const layers = Array.from(container.querySelectorAll<SVGGElement>('.layer'));
+		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
+
+		function setStageTop() {
+			const h = header ? header.offsetHeight : 64;
+			container.style.setProperty('--stage-top', h + 'px');
+		}
+		setStageTop();
+		window.addEventListener('resize', setStageTop);
+
+		const camaras: Record<number, string> = {
+			0: 'translate(0,0) scale(1)',
+			1: 'translate(0,0) scale(1)',
+			2: 'translate(0,0) scale(1)',
+			3: 'translate(0,0) scale(1)',
+			4: 'translate(0,0) scale(1)',
+			5: 'translate(0,0) scale(1)',
+			6: 'translate(0,0) scale(1)',
+			7: 'translate(0,0) scale(1)',
+		};
+
+		function aplicar(step: number) {
+			container.dataset.step = String(step);
+			if (camera) camera.setAttribute('transform', camaras[step] ?? camaras[0]);
+			// El mapa se atenúa cuando el foco es un diagrama externo (serie, red, barras).
+			if (map) map.classList.toggle('dim', step === 3 || step === 4 || step === 6);
+			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
+			onlys.forEach((o) => o.classList.toggle('on', step === Number(o.dataset.only)));
+		}
+
+		aplicar(0);
+
+		const scroller = scrollama();
+		scroller
+			.setup({ step: '.scrolly .step', offset: 0.75 })
+			.onStepEnter((r: { element: HTMLElement }) => {
+				container.querySelectorAll('.step').forEach((el) => el.classList.remove('activo'));
+				r.element.classList.add('activo');
+				aplicar(Number(r.element.dataset.step ?? '0'));
+			});
+		window.addEventListener('resize', scroller.resize);
+	}
+
+	if (document.readyState !== 'loading') initScrolly();
+	else document.addEventListener('DOMContentLoaded', initScrolly);
+</script>
+
+<style>
+	.scrolly {
+		--stage-top: 64px;
+		position: relative;
+		width: 100%;
+	}
+	.scrolly-stage {
+		position: sticky;
+		top: var(--stage-top);
+		height: calc(100vh - var(--stage-top));
+		width: 100%;
+		background: #070707;
+		overflow: hidden;
+	}
+	.mapa { width: 100%; height: 100%; display: block; }
+	.camera { transform-origin: 0 0; transition: transform 1000ms cubic-bezier(0.45, 0.05, 0.2, 1); }
+	.map { transition: opacity 500ms ease, filter 500ms ease; }
+	.map.dim { opacity: 0.25; filter: saturate(0.6); }
+
+	.layer { opacity: 0; transition: opacity 600ms ease; }
+	.layer.on { opacity: 1; }
+
+	/* celdas de color: aparecen en oleada */
+	.color-cells .scell {
+		opacity: 0;
+		transition: opacity 500ms ease;
+		transition-delay: calc(var(--i) * 14ms);
+	}
+	.color-cells.on .scell { opacity: 0.92; }
+
+	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
+	.only.on { opacity: 1; }
+
+	.foco { animation: latir 1.8s ease-in-out infinite; }
+	@keyframes latir { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+	.leg { opacity: 0; transition: opacity 400ms ease; transition-delay: calc(var(--i) * 120ms); }
+	.only.on .leg { opacity: 1; }
+	.leg-txt { font-family: 'Roboto Flex', sans-serif; font-size: 17px; fill: rgba(255,255,255,0.85); }
+
+	.frame { opacity: 0; transform: translateY(12px); transition: opacity 450ms ease, transform 450ms ease; transition-delay: calc(var(--i) * 160ms); }
+	.only.on .frame { opacity: 1; transform: translateY(0); }
+	.qmark { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 46px; fill: #e8843f; }
+	.arrow { font-size: 34px; fill: rgba(255,255,255,0.6); }
+
+	.kernel { animation: recorrer 3s steps(1) infinite; }
+	@keyframes recorrer {
+		0% { transform: translate(0,0); }
+		33% { transform: translate(46px,0); }
+		66% { transform: translate(0,46px); }
+		100% { transform: translate(46px,46px); }
+	}
+	.lstm { opacity: 0; transition: opacity 400ms ease; transition-delay: calc(var(--i) * 220ms); }
+	.only.on .lstm { opacity: 1; }
+
+	.bar { width: 0; transition: width 1000ms cubic-bezier(0.4,0,0.2,1) 200ms; }
+	.only.on .bar-naive { width: 460px; }
+	.only.on .bar-model { width: 180px; }
+	.bar-label { font-family: 'Roboto Flex', sans-serif; font-size: 19px; fill: rgba(255,255,255,0.85); }
+
+	.mom-big { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 60px; fill: #ffffff; }
+	.mom-sub { font-family: 'Roboto Flex', sans-serif; font-size: 20px; fill: rgba(255,255,255,0.8); }
+
+	.clave rect { fill: rgba(232,132,63,0.16); stroke: #e8843f; stroke-width: 1.5; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms); }
+	.clave text { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 20px; fill: #ffffff; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms + 120ms); }
+	.only.on .clave rect, .only.on .clave text { opacity: 1; }
+
+	/* subtítulos flotantes, agrupados por lado, con centros estratégicos */
+	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }
+	.step { min-height: 92vh; display: flex; align-items: center; justify-content: center; padding: 0 clamp(1rem, 6vw, 6rem); }
+	.step[data-pos='left'] { justify-content: flex-start; }
+	.step[data-pos='right'] { justify-content: flex-end; }
+	.step[data-pos='center'] { justify-content: center; }
+	.step:first-child { min-height: 85vh; }
+	.caption {
+		pointer-events: auto; max-width: 27rem; margin: 0; padding: 1.1rem 1.4rem;
+		font-size: clamp(1.15rem, 2.2vw, 1.6rem); line-height: 1.4; font-weight: 500; color: #ffffff;
+		background: rgba(20, 12, 6, 0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+		border-left: 3px solid #e8843f; border-radius: 4px; opacity: 0.35; transform: translateY(10px);
+		transition: opacity 350ms ease, transform 350ms ease;
+	}
+	.step.activo .caption { opacity: 1; transform: translateY(0); }
+	.step[data-pos='center'] .caption {
+		max-width: 40rem; text-align: center; border-left: none; border-top: 3px solid #e8843f;
+		border-radius: 6px; padding: 1.6rem 2rem; font-size: clamp(1.35rem, 2.8vw, 2rem); font-weight: 600; line-height: 1.3;
+	}
+
+	@media (max-width: 720px) {
+		.step, .step[data-pos='left'], .step[data-pos='right'] { justify-content: center; padding: 0 1rem; }
+		.caption { max-width: none; }
+		.mom-big { font-size: 46px; }
+	}
+</style>
