@@ -524,12 +524,15 @@ const arcos = [
 			const n = slides.length;
 			let idx = 0;
 			let timer: ReturnType<typeof setInterval> | null = null;
-			const DELAY = 7000;
+			const DELAY = 5000;
 			const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 			// Anchos explícitos: track = n pantallas, cada slide = 1/n del track.
 			track.style.width = `${n * 100}%`;
 			slides.forEach((s) => { s.style.width = `${100 / n}%`; });
+			// Con "reducir movimiento" el avance es instantáneo (sin deslizamiento),
+			// pero el carrusel sigue pasando solo, como se pidió explícitamente.
+			if (reduce) track.style.transition = 'none';
 
 			slides.forEach((_, i) => {
 				const b = document.createElement('button');
@@ -547,7 +550,7 @@ const arcos = [
 				root!.dataset.slide = String(idx);
 				dots.forEach((d, j) => d.classList.toggle('activo', j === idx));
 			}
-			function play() { if (reduce) return; stop(); timer = setInterval(() => go(idx + 1), DELAY); }
+			function play() { stop(); timer = setInterval(() => go(idx + 1), DELAY); }
 			function stop() { if (timer) clearInterval(timer); timer = null; }
 			function reset() { stop(); play(); }
 
