@@ -107,37 +107,49 @@ no basta — Google Sites carga el contenido embebido vía llamadas autenticadas
 API de Google en el navegador):
 
 **"Sociedad justa"** — un video (`usa_vs_china_sigloxxi_joaquin_pina.mp4`, título en
-pantalla "USA vs China: Siglo XXI") alojado en Google Drive con permisos públicos
-("cualquiera con el link"), embebido vía `drive.google.com/file/d/<id>/preview`.
-Estilo animación tipo pizarra/whiteboard con iconos dibujados a mano. Basado en el
-capítulo de José Joaquín Piña Mondragón, *"Estados Unidos vs. China ¿Conflicto
-comercial o lucha por el liderazgo tecnológico en el siglo XXI?"*, del libro *El
-T-MEC en el marco de la confrontación China-Estados Unidos* (Instituto para el
-Desarrollo Industrial y la Transformación Digital A.C.). Al ser un archivo público
-de Drive, **esta URL de `/preview` sí se puede embeber en un `<iframe>` externo**
-(verificado cargándola en un contexto de navegador sin autenticación: responde 200
-y reproduce el video). Ejemplo aplicado en
-`src/content/capsulas/usa-china-siglo-xxi.mdx`.
+pantalla "USA vs China: Siglo XXI") alojado en Google Drive, embebido dentro de
+Google Sites vía `drive.google.com/file/d/<id>/preview`. Estilo animación tipo
+pizarra/whiteboard con iconos dibujados a mano. Basado en el capítulo de José
+Joaquín Piña Mondragón, *"Estados Unidos vs. China ¿Conflicto comercial o lucha por
+el liderazgo tecnológico en el siglo XXI?"*, del libro *El T-MEC en el marco de la
+confrontación China-Estados Unidos* (Instituto para el Desarrollo Industrial y la
+Transformación Digital A.C.).
 
-**Advertencia (observada 2026-07-21 en producción)**: los embeds de `/preview` de
-Drive están sujetos a restricciones (aparente cuota de reproducción/ancho de banda
-por archivo) propias de Google Drive. Confirmado que el fallo persiste incluso
-entrando directo a la URL de Drive en el navegador (fuera de nuestro sitio), así
-que no es un bug de nuestro `<iframe>` ni de Astro — es un problema del lado de
-Drive con ese archivo específico, posiblemente agravado por nuestras propias
-pruebas automatizadas repetidas contra el mismo archivo. No hay control desde este
-proyecto para forzar su resolución.
+**Corrección importante (2026-07-21, verificado por el usuario en navegador real)**:
+mi primera conclusión de que este video "sí se puede embeber en un iframe externo"
+fue **incorrecta**. Mi prueba con Playwright solo confirmó que la URL de `/preview`
+devuelve HTTP 200 y muestra un botón de reproducir (la carcasa de la página), no que
+el video realmente reproduce — un método de verificación insuficiente. En la
+práctica, el video **carga bien dentro de la página de Ivvan mostrando "No se pudo
+cargar el video" al visitar la misma URL de Drive de forma directa o embebida en un
+sitio externo** (confirmado por el usuario). Si fuera una cuota general del archivo,
+fallaría también dentro del Site de Ivvan, y no es el caso.
 
-Por eso `capsulas/[id].astro` ahora soporta un campo opcional `fuenteExternaUrl`
-en el esquema de `capsulas` (`src/content.config.ts`): cuando existe, el enlace de
-respaldo junto al video apunta a la **página canónica original** (ej. el sitio de
-Google Sites de Ivvan), no a la misma URL de embed que puede estar fallando —
-enlazar al mismo recurso roto como "respaldo" no sirve de nada.
+**Hipótesis de la causa real**: cuando Google Sites inserta un video de Drive, suele
+ofrecer compartirlo como "cualquiera que pueda ver este sitio", un permiso *scoped al
+Site* distinto de compartir el archivo como "cualquiera con el link" en Drive en
+general. Eso explicaría por qué funciona dentro del Site (permiso especial) pero
+falla al acceder a la URL de Drive directamente o embebida en cualquier otro sitio
+externo (que sí queda sujeta a los permisos normales de Drive).
+
+**Conclusión práctica**: este video de Ivvan **no se puede embeber de forma
+confiable en nuestro sitio** con su configuración de permisos actual. Opciones para
+resolverlo, ninguna ejecutable por este proyecto sin ayuda externa:
+1. Pedir al equipo de CentroGeo/Ivvan que cambien el permiso del archivo a
+   "cualquiera con el link puede ver" en Drive (no solo el permiso scoped al Site).
+2. Pedir que resuban el video a YouTube (no listado o público), el estándar de facto
+   para embeds de video externos, sin este tipo de restricción.
+3. Mientras tanto, no confiar en el iframe: usar el enlace directo a la página
+   original de Ivvan como camino principal, no como mero "respaldo".
+
+`capsulas/[id].astro` sigue intentando el iframe (por si el permiso cambia en el
+futuro) pero incluye un campo opcional `fuenteExternaUrl` en el esquema de
+`capsulas` (`src/content.config.ts`) que enlaza a la página canónica original en
+vez de repetir la misma URL de embed que puede estar fallando.
 
 **Para contenido de video que sí generemos nosotros en el pipeline de producción,
-preferir alojarlo en YouTube (no listado o público) en vez de Google Drive**, ya
-que YouTube no tiene esta limitación y es el estándar de facto para embeds de
-video en la web.
+usar YouTube (no listado o público) desde el inicio, no Google Drive**, para evitar
+por completo este problema de permisos scoped-al-Site.
 
 **"El espacio donde vivimos"** — *no* es un video simple, es un **widget interactivo
 de storytelling** ("Historias entrelazadas en la periferia", basado en el paper de
