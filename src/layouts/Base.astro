@@ -24,10 +24,19 @@ const nav = [
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title} · CentroGeo QRO Divulgación</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@500;600;700&family=Roboto+Flex:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body>
 		<header>
-			<p class="marca"><a href={withBase('/')}>CentroGeo QRO — Divulgación</a></p>
+			<a class="marca" href={withBase('/')}>
+				<img src={withBase('/branding/logo-centrogeo.svg')} alt="CentroGeo" class="marca-logo" />
+				<span class="marca-sitio">Divulgación QRO</span>
+			</a>
 			<nav>
 				<ul>
 					{nav.map((item) => (
@@ -48,13 +57,46 @@ const nav = [
 			</p>
 		</footer>
 		<style>
-			/* Estilo neutro provisional: pendiente validar contra identidad visual
-			   institucional de CentroGeo (ver CLAUDE.md). */
+			/* Tokens de identidad visual real de CentroGeo (ver CLAUDE.md, sección
+			   "Identidad visual institucional" y docs/referencia-visual/centrogeo-styles.css).
+			   Tipografía: Roboto Flex (cuerpo) + Archivo Expanded (títulos, sustituto
+			   gratuito de "ingra-wide" de Adobe Typekit, restringido al dominio de CentroGeo). */
+			:global(:root) {
+				--cg-color-blanco: #ffffff;
+				--cg-color-naranja-100: #f4d2c1;
+				--cg-color-naranja-300: #c45620;
+				--cg-color-naranja-500: #9c4419;
+				--cg-color-gris-100: #f3f3f3;
+				--cg-color-gris-300: #d9d9d9;
+				--cg-color-gris-500: #343434;
+				--cg-color-gris-700: #232323;
+				--cg-font-titulo: 'Archivo Expanded', sans-serif;
+				--cg-font-cuerpo: 'Roboto Flex', system-ui, sans-serif;
+				--cg-border-radius-s: 8px;
+				--cg-border-radius-m: 16px;
+				--cg-border-radius-b: 24px;
+			}
 			:global(body) {
-				font-family: system-ui, sans-serif;
+				font-family: var(--cg-font-cuerpo);
 				margin: 0;
-				color: #1a1a1a;
-				background: #fff;
+				color: var(--cg-color-gris-500);
+				background: var(--cg-color-blanco);
+			}
+			:global(h1),
+			:global(h2),
+			:global(h3),
+			:global(h4) {
+				font-family: var(--cg-font-titulo);
+				font-weight: 600;
+				color: var(--cg-color-gris-700);
+				letter-spacing: -0.01em;
+				line-height: 1.15;
+			}
+			:global(a) {
+				color: var(--cg-color-naranja-300);
+			}
+			:global(a:hover) {
+				color: var(--cg-color-naranja-500);
 			}
 			header {
 				display: flex;
@@ -63,12 +105,28 @@ const nav = [
 				justify-content: space-between;
 				gap: 1rem;
 				padding: 1rem 1.5rem;
-				border-bottom: 1px solid #ddd;
+				background: var(--cg-color-blanco);
+				border-bottom: 1px solid var(--cg-color-gris-300);
 			}
-			.marca a {
-				font-weight: 700;
+			.marca {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.75rem;
 				text-decoration: none;
-				color: inherit;
+				color: var(--cg-color-gris-700) !important;
+			}
+			.marca-logo {
+				height: 32px;
+				width: auto;
+				display: block;
+			}
+			.marca-sitio {
+				font-family: var(--cg-font-titulo);
+				font-weight: 600;
+				font-size: 0.95rem;
+				letter-spacing: 0.02em;
+				padding-left: 0.75rem;
+				border-left: 2px solid var(--cg-color-naranja-300);
 			}
 			nav ul {
 				display: flex;
@@ -80,10 +138,12 @@ const nav = [
 			}
 			nav a {
 				text-decoration: none;
-				color: #1a1a1a;
+				color: var(--cg-color-gris-700);
+				font-weight: 500;
+				font-size: 0.95rem;
 			}
 			nav a:hover {
-				text-decoration: underline;
+				color: var(--cg-color-naranja-300);
 			}
 			main {
 				max-width: 60rem;
@@ -92,10 +152,17 @@ const nav = [
 				min-height: 60vh;
 			}
 			footer {
-				border-top: 1px solid #ddd;
+				background: var(--cg-color-gris-700);
+				color: var(--cg-color-gris-300);
 				padding: 1.5rem;
 				font-size: 0.85rem;
-				color: #555;
+			}
+			footer :global(a) {
+				color: var(--cg-color-gris-300);
+				text-decoration: underline;
+			}
+			footer :global(a:hover) {
+				color: var(--cg-color-blanco);
 			}
 		</style>
 	</body>

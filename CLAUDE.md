@@ -267,7 +267,9 @@ divulgación, respetando la política de derechos de autor:
 - [x] Decidir estructura de datos del CRM ligero en Astro (colecciones de contenido:
       ver [docs/content-collections.md](docs/content-collections.md), ya implementado
       en `src/content.config.ts`).
-- [ ] Aplicar la identidad visual real (colores/tipografía de CentroGeo) al layout,
-      reemplazando el estilo neutro provisional de `src/layouts/Base.astro`.
-- [ ] Cargar contenido real (al menos un investigador/paper/cápsula) reemplazando los
-      ejemplos de placeholder en `src/content/`.
+- [x] Aplicar la identidad visual real (colores/tipografía de CentroGeo) al layout
+      (2026-07-21, `src/layouts/Base.astro`: logo, paleta `--cg-color-*`, Roboto
+      Flex + Archivo Expanded como sustituto gratuito de "ingra-wide").
+- [~] Cargar contenido real: ya hay un investigador/paper/cápsula reales (José
+      Joaquín Piña Mondragón), pero el resto sigue siendo contenido de ejemplo en
+      `src/content/`.
