@@ -1,119 +1,151 @@
 ---
 // Thumbnail generado en SVG (original, sin imágenes de terceros; cumple la política
-// de derechos de autor). El motivo depende del tipo de contenido y el fondo usa el
-// color de acento de la serie o un color derivado del nombre.
+// de derechos de autor). Estilo sobrio: fondo neutro oscuro con un toque sutil del
+// color de acento y una figura SVG por tipo de contenido. Los investigadores pueden
+// mostrar una foto real (fotoUrl) cuando exista.
 
 interface Props {
   kind: 'video' | 'scrolly' | 'infografia' | 'texto' | 'audio' | 'serie' | 'investigador' | 'entrevista';
   accent?: string;
-  label?: string;
+  foto?: string;
+  variant?: string;
   seed?: string;
+  label?: string;
 }
 
-const { kind, accent, label = '', seed = '' } = Astro.props;
-
-const paleta = ['#c45620', '#19439c', '#2a6f4d', '#916802', '#7a3e12', '#3f4a5a'];
-function hash(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-const h = hash(seed || label || kind);
-const bg = accent ?? paleta[h % paleta.length];
-
-const palabras = label.trim().split(/\s+/).filter(Boolean);
-const iniciales = (palabras[0]?.[0] ?? '') + (palabras[1]?.[0] ?? '');
-const inicial = (palabras[0]?.[0] ?? '?').toUpperCase();
-
-// Textura de puntos, desfasada por seed para variar entre tarjetas.
-const off = h % 24;
-const puntos: { x: number; y: number }[] = [];
-for (let y = 20 + off; y < 300; y += 42) {
-  for (let x = 20 + ((y / 42) % 2 === 0 ? 0 : 21); x < 300; x += 42) {
-    puntos.push({ x, y });
-  }
-}
+const { kind, accent, foto, variant = '', seed = '', label = '' } = Astro.props;
+const acento = accent ?? '#c45620';
 
 const nodos = [
-  { x: 105, y: 110 }, { x: 195, y: 98 }, { x: 210, y: 180 }, { x: 118, y: 195 }, { x: 152, y: 145 },
+  { x: 105, y: 112 }, { x: 195, y: 100 }, { x: 208, y: 182 }, { x: 120, y: 196 }, { x: 152, y: 148 },
 ];
 const enlaces = [
-  ['105,110', '152,145'], ['152,145', '195,98'], ['195,98', '210,180'],
-  ['210,180', '118,195'], ['118,195', '105,110'],
+  ['105,112', '152,148'], ['152,148', '195,100'], ['195,100', '208,182'],
+  ['208,182', '120,196'], ['120,196', '105,112'],
 ];
+const gris = '#cdd4dd';
 ---
 
-<div class="cg-thumb" style={`--bg:${bg}`}>
-	<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-		<rect x="0" y="0" width="300" height="300" fill="var(--bg)" />
-		<polygon points="0,300 300,120 300,300" fill="#000000" opacity="0.16" />
-		<g fill="#ffffff" opacity="0.1">
-			{puntos.map((p) => <circle cx={p.x} cy={p.y} r="3" />)}
-		</g>
+<div class="cg-thumb" style={`--accent:${acento}`}>
+	{foto ? (
+		<img src={foto} alt={label} class="cg-thumb-img" loading="lazy" />
+	) : (
+		<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+			{kind === 'video' && (
+				<g>
+					<circle cx="150" cy="150" r="54" fill="none" stroke={gris} stroke-width="7" />
+					<path d="M134 122 L188 150 L134 178 Z" fill="var(--accent)" />
+				</g>
+			)}
+			{kind === 'scrolly' && (
+				<g>
+					<g stroke={gris} stroke-width="4" opacity="0.65">
+						{enlaces.map(([a, b]) => {
+							const [x1, y1] = a.split(',');
+							const [x2, y2] = b.split(',');
+							return <line x1={x1} y1={y1} x2={x2} y2={y2} />;
+						})}
+					</g>
+					<g fill="var(--accent)">
+						{nodos.map((n) => <circle cx={n.x} cy={n.y} r="10" />)}
+					</g>
+				</g>
+			)}
+			{kind === 'infografia' && (
+				<g>
+					<rect x="96" y="150" width="30" height="62" rx="4" fill={gris} />
+					<rect x="136" y="104" width="30" height="108" rx="4" fill="var(--accent)" />
+					<rect x="176" y="130" width="30" height="82" rx="4" fill={gris} />
+				</g>
+			)}
+			{(kind === 'texto' || kind === 'audio') && (
+				<g fill={gris}>
+					<rect x="82" y="116" width="140" height="13" rx="6" />
+					<rect x="82" y="144" width="112" height="13" rx="6" />
+					<rect x="82" y="172" width="132" height="13" rx="6" />
+					<rect x="82" y="200" width="84" height="13" rx="6" />
+				</g>
+			)}
 
-		{kind === 'video' && (
-			<g>
-				<circle cx="150" cy="150" r="54" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.95" />
-				<path d="M133,120 L188,150 L133,180 Z" fill="#ffffff" />
-			</g>
-		)}
-		{kind === 'scrolly' && (
-			<g>
-				<g stroke="#ffffff" stroke-width="4" opacity="0.75">
-					{enlaces.map(([a, b]) => {
-						const [x1, y1] = a.split(',');
-						const [x2, y2] = b.split(',');
-						return <line x1={x1} y1={y1} x2={x2} y2={y2} />;
-					})}
+			{kind === 'investigador' && (
+				<g fill={gris}>
+					<circle cx="150" cy="120" r="46" />
+					<path d="M62 258c0-52 40-86 88-86s88 34 88 86z" />
 				</g>
-				<g fill="#ffffff">
-					{nodos.map((n) => <circle cx={n.x} cy={n.y} r="11" />)}
+			)}
+			{kind === 'entrevista' && (
+				<g>
+					<path d="M60 92 h180 a18 18 0 0 1 18 18 v82 a18 18 0 0 1 -18 18 h-104 l-42 40 v-40 h-14 a18 18 0 0 1 -18 -18 v-82 a18 18 0 0 1 18 -18 z" fill={gris} />
+					<g fill="var(--accent)">
+						<circle cx="110" cy="150" r="9" /><circle cx="150" cy="150" r="9" /><circle cx="190" cy="150" r="9" />
+					</g>
 				</g>
-			</g>
-		)}
-		{kind === 'infografia' && (
-			<g fill="#ffffff" opacity="0.92">
-				<rect x="96" y="150" width="30" height="60" rx="4" />
-				<rect x="136" y="104" width="30" height="106" rx="4" />
-				<rect x="176" y="130" width="30" height="80" rx="4" />
-			</g>
-		)}
-		{(kind === 'texto' || kind === 'audio') && (
-			<g fill="#ffffff" opacity="0.9">
-				<rect x="78" y="112" width="150" height="14" rx="7" />
-				<rect x="78" y="142" width="120" height="14" rx="7" />
-				<rect x="78" y="172" width="140" height="14" rx="7" />
-				<rect x="78" y="202" width="90" height="14" rx="7" />
-			</g>
-		)}
-		{kind === 'serie' && (
-			<text x="150" y="205" text-anchor="middle" fill="#ffffff" opacity="0.92"
-				style="font-family:'Archivo Expanded',sans-serif;font-weight:700;font-size:150px">{inicial}</text>
-		)}
-		{kind === 'investigador' && (
-			<g>
-				<circle cx="150" cy="150" r="82" fill="#ffffff" opacity="0.15" />
-				<text x="150" y="188" text-anchor="middle" fill="#ffffff"
-					style="font-family:'Archivo Expanded',sans-serif;font-weight:700;font-size:96px">{iniciales.toUpperCase()}</text>
-			</g>
-		)}
-		{kind === 'entrevista' && (
-			<g>
-				<text x="150" y="235" text-anchor="middle" fill="#ffffff" opacity="0.9"
-					style="font-family:Georgia,serif;font-weight:700;font-size:210px">&#8220;</text>
-			</g>
-		)}
-	</svg>
+			)}
+
+			{kind === 'serie' && variant === 'agua' && (
+				<g>
+					<path d="M150 84 C150 84 200 148 200 184 a50 50 0 0 1 -100 0 C100 148 150 84 150 84 Z" fill="var(--accent)" opacity="0.92" />
+					<path d="M92 224 q18 -16 36 0 t36 0 t36 0" fill="none" stroke={gris} stroke-width="6" opacity="0.6" />
+				</g>
+			)}
+			{kind === 'serie' && variant === 'el-espacio-donde-vivimos' && (
+				<g>
+					<g fill={gris}>
+						<rect x="92" y="150" width="34" height="92" rx="3" />
+						<rect x="133" y="112" width="34" height="130" rx="3" />
+						<rect x="174" y="166" width="34" height="76" rx="3" />
+					</g>
+					<g fill="var(--accent)">
+						<rect x="143" y="128" width="6" height="6" /><rect x="153" y="128" width="6" height="6" />
+						<rect x="143" y="146" width="6" height="6" /><rect x="153" y="146" width="6" height="6" />
+					</g>
+				</g>
+			)}
+			{kind === 'serie' && variant === 'sociedad-justa' && (
+				<g>
+					{[{ x: 106, a: false }, { x: 150, a: true }, { x: 194, a: false }].map((p) => (
+						<g fill={p.a ? 'var(--accent)' : gris}>
+							<circle cx={p.x} cy="128" r="20" />
+							<path d={`M${p.x - 34} 224 c0-26 16-42 34-42 s34 16 34 42 z`} />
+						</g>
+					))}
+				</g>
+			)}
+			{kind === 'serie' && !['agua', 'el-espacio-donde-vivimos', 'sociedad-justa'].includes(variant) && (
+				<g fill="none" stroke={gris} stroke-width="5" opacity="0.7">
+					<circle cx="150" cy="150" r="40" />
+					<circle cx="150" cy="150" r="72" />
+					<circle cx="150" cy="150" r="104" />
+				</g>
+			)}
+		</svg>
+	)}
 </div>
 
 <style>
 	.cg-thumb {
-		background: var(--bg);
+		position: relative;
+		background: linear-gradient(140deg, #1c2531 0%, #0e131b 100%);
 		overflow: hidden;
 	}
-	.cg-thumb svg {
-		display: block;
+	.cg-thumb::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(85% 90% at 80% 12%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 62%);
+		pointer-events: none;
+	}
+	.cg-thumb svg,
+	.cg-thumb-img {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
+	}
+	.cg-thumb svg {
+		z-index: 1;
+	}
+	.cg-thumb-img {
+		object-fit: cover;
 	}
 </style>

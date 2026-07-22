@@ -15,7 +15,7 @@ const series = await getCollection('series');
 		{series.map((s) => (
 			<li>
 				<a class="cg-list-card" href={withBase(`/series/${s.id}/`)}>
-					<Thumb kind="serie" accent={s.data.colorAcento} label={s.data.nombre} seed={s.id} />
+					<Thumb kind="serie" accent={s.data.colorAcento} variant={s.id} label={s.data.nombre} seed={s.id} />
 					<div class="cg-list-body">
 						<h3>{s.data.nombre}</h3>
 						<p>{s.data.descripcion}</p>
