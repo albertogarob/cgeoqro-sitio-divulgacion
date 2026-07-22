@@ -3,9 +3,10 @@ import { withBase } from '../lib/url';
 
 interface Props {
   title: string;
+  bleed?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, bleed = false } = Astro.props;
 
 const nav = [
   { href: '/', label: 'Inicio' },
@@ -67,11 +68,17 @@ const redes = [
 			</nav>
 		</header>
 		<slot name="hero" />
-		<main class="cg-shell">
-			<div class="cg-card">
+		{bleed ? (
+			<main class="cg-bleed">
 				<slot />
-			</div>
-		</main>
+			</main>
+		) : (
+			<main class="cg-shell">
+				<div class="cg-card">
+					<slot />
+				</div>
+			</main>
+		)}
 
 		<footer class="site-footer">
 			<div class="site-footer-inner">
