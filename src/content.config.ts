@@ -54,6 +54,9 @@ const capsulas = defineCollection({
     // la URL de embed. Se usa como respaldo cuando el embed falla (ver CLAUDE.md,
     // limitación de cuota diaria de Google Drive).
     fuenteExternaUrl: z.string().url().optional(),
+    // Clave de un componente de scrollytelling dedicado a renderizar en lugar del
+    // cuerpo estándar (ej. "utopias"). Ver src/components/Scrolly*.astro.
+    scrolly: z.string().optional(),
     resumenCorto: z.string(),
     fechaPublicacion: z.date(),
     revisadoPor: z.string(),

@@ -2,14 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import { withBase } from '../../lib/url';
+import ScrollyUtopias from '../../components/ScrollyUtopias.astro';
 
 export async function getStaticPaths() {
   const capsulas = await getCollection('capsulas');
   return capsulas.map((capsula) => ({ params: { id: capsula.id }, props: { capsula } }));
 }
 
+// Componentes de scrollytelling disponibles, indexados por la clave `scrolly`.
+const scrollyComponents: Record<string, any> = { utopias: ScrollyUtopias };
+
 const { capsula } = Astro.props;
 const { Content } = await render(capsula);
+const ScrollyComp = capsula.data.scrolly ? scrollyComponents[capsula.data.scrolly] : null;
 
 const serie = await getEntry(capsula.data.serie);
 const paper = await getEntry(capsula.data.paperFuente);
@@ -51,6 +56,8 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 	{capsula.data.audioUrl && (
 		<p><a href={capsula.data.audioUrl} target="_blank" rel="noopener">Escuchar audio</a></p>
 	)}
+
+	{ScrollyComp && <ScrollyComp />}
 
 	<article>
 		<Content />

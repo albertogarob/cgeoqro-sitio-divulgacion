@@ -1,0 +1,292 @@
+---
+// Scrollytelling original sobre el Programa Utopías en Iztapalapa (paper de Karol
+// Yáñez Soria et al., Geopauta 2026, CC BY). Texto parafraseado; gráfico SVG propio,
+// sin reproducir figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
+
+// Geometría del "mapa" estilizado de Iztapalapa (13 celdas = 13 distritos).
+const celdas = [
+  { x: 250, y: 90 }, { x: 330, y: 90 },
+  { x: 170, y: 170 }, { x: 250, y: 170 }, { x: 330, y: 170 }, { x: 410, y: 170 },
+  { x: 130, y: 250 }, { x: 210, y: 250 }, { x: 290, y: 250 }, { x: 370, y: 250 }, { x: 450, y: 250 },
+  { x: 250, y: 330 }, { x: 330, y: 330 },
+];
+// Nodos = Utopías distribuidas.
+const nodos = [
+  { x: 250, y: 90 }, { x: 330, y: 90 }, { x: 170, y: 170 }, { x: 410, y: 170 },
+  { x: 130, y: 250 }, { x: 290, y: 250 }, { x: 450, y: 250 }, { x: 250, y: 330 }, { x: 330, y: 330 },
+];
+// Red de cuidados (conexiones entre nodos).
+const enlaces = [
+  ['250,90', '170,170'], ['170,170', '130,250'], ['130,250', '290,250'],
+  ['290,250', '450,250'], ['450,250', '410,170'], ['410,170', '330,90'],
+  ['290,250', '250,330'], ['250,330', '330,330'], ['330,90', '250,90'],
+];
+// Nodos exteriores (expansión a otras alcaldías de la ciudad).
+const exteriores = [
+  { x: 40, y: 90 }, { x: 545, y: 110 }, { x: 60, y: 400 }, { x: 560, y: 380 }, { x: 300, y: 470 },
+];
+
+const pasos = [
+  {
+    n: 0,
+    titulo: 'Iztapalapa',
+    texto: 'Durante décadas fue vista como el "patio trasero" de la Ciudad de México. Es la alcaldía más poblada de las dieciséis: cerca de 1.8 millones de personas, casi uno de cada cinco habitantes de la capital.',
+  },
+  {
+    n: 1,
+    titulo: 'Una desigualdad marcada',
+    texto: 'Más de la mitad de su población vive en zonas clasificadas con desarrollo social bajo o muy bajo. Es una zona joven y, a la vez, con una población de adultos mayores que crece rápido. El trabajo de cuidar a otros recae, sobre todo, en las mujeres.',
+  },
+  {
+    n: 2,
+    titulo: 'Una ciudad hecha a mano',
+    texto: 'Buena parte de Iztapalapa se construyó desde abajo: barrios levantados y organizados por sus propios vecinos, con o sin apoyo del Estado. De esa historia de autogestión nacen redes comunitarias que siguen vivas hoy.',
+  },
+  {
+    n: 3,
+    titulo: 'Las Utopías',
+    texto: 'Entre 2019 y 2024 se levantaron centros comunitarios en los trece distritos de la alcaldía: espacios con servicios sociales, culturales, deportivos y ambientales. Entre 2022 y 2024 sumaron más de ocho millones de visitas.',
+  },
+  {
+    n: 4,
+    titulo: 'El giro del cuidado',
+    texto: 'Su aporte no es solo ofrecer servicios, sino organizar el cuidado colectivo en el territorio. Unen el "derecho a la ciudad" con el urbanismo feminista, en diálogo con experiencias como las de Barcelona y Bogotá.',
+  },
+  {
+    n: 5,
+    titulo: 'De la periferia al mundo',
+    texto: 'Lo que nació en una zona marginada hoy se proyecta a cien nuevos proyectos en toda la ciudad, y ha recibido visitantes de veinte países y reconocimientos internacionales, incluida una distinción de ONU-Hábitat.',
+  },
+  {
+    n: 6,
+    titulo: '¿Hacia ciudades cuidadoras?',
+    texto: 'Tres rasgos la hacen distinta: un liderazgo feminista con raíces en los barrios, una idea amplia de los cuidados que valora saberes populares, y una innovación local que se vuelve política pública. Los retos: sostener el financiamiento, coordinar instituciones y mantener el cuidado en el tiempo.',
+  },
+];
+---
+
+<div class="scrolly" data-step="0">
+	<figure class="scrolly-figura">
+		<svg viewBox="0 0 600 520" class="mapa" aria-hidden="true">
+			<defs>
+				<radialGradient id="scrollyBg" cx="42%" cy="34%" r="80%">
+					<stop offset="0%" stop-color="#16324f" />
+					<stop offset="60%" stop-color="#0c1a2b" />
+					<stop offset="100%" stop-color="#060e18" />
+				</radialGradient>
+				<filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+					<feGaussianBlur stdDeviation="5" result="b" />
+					<feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+				</filter>
+			</defs>
+			<rect x="0" y="0" width="600" height="520" fill="url(#scrollyBg)" rx="16" />
+
+			<!-- Expansión a la ciudad (nodos exteriores) -->
+			<g class="capa" data-from="5">
+				<ellipse cx="290" cy="210" rx="285" ry="235" fill="none"
+					stroke="rgba(232,132,63,0.5)" stroke-width="1.5" stroke-dasharray="6 8" />
+				{exteriores.map((e) => (
+					<circle cx={e.x} cy={e.y} r="6" fill="#e8843f" opacity="0.55" />
+				))}
+			</g>
+
+			<!-- Cluster de la alcaldía (se reduce un poco al expandir) -->
+			<g class="cluster">
+				<!-- Celdas (13 distritos) -->
+				<g class="capa" data-from="0">
+					{celdas.map((c) => (
+						<rect x={c.x - 31} y={c.y - 31} width="62" height="62" rx="10"
+							fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+					))}
+				</g>
+				<!-- Marginación (tinte cálido sobre las celdas) -->
+				<g class="capa" data-from="1">
+					{celdas.map((c) => (
+						<rect x={c.x - 31} y={c.y - 31} width="62" height="62" rx="10"
+							fill="rgba(196,86,32,0.22)" />
+					))}
+				</g>
+				<!-- Ciudad hecha a mano (retícula interna punteada) -->
+				<g class="capa" data-from="2" stroke="rgba(255,255,255,0.28)" stroke-width="1" stroke-dasharray="2 4">
+					{celdas.map((c) => (
+						<>
+							<line x1={c.x - 31} y1={c.y} x2={c.x + 31} y2={c.y} />
+							<line x1={c.x} y1={c.y - 31} x2={c.x} y2={c.y + 31} />
+						</>
+					))}
+				</g>
+				<!-- Red de cuidados (enlaces entre Utopías) -->
+				<g class="capa" data-from="4" stroke="#e8843f" stroke-width="2" fill="none" opacity="0.85">
+					{enlaces.map(([a, b]) => {
+						const [x1, y1] = a.split(',');
+						const [x2, y2] = b.split(',');
+						return <line x1={x1} y1={y1} x2={x2} y2={y2} />;
+					})}
+				</g>
+				<!-- Utopías (nodos) -->
+				<g class="capa capa-nodos" data-from="3" filter="url(#glow)">
+					{nodos.map((nd) => (
+						<circle cx={nd.x} cy={nd.y} r="9" fill="#e8843f" />
+					))}
+				</g>
+			</g>
+		</svg>
+	</figure>
+
+	<div class="scrolly-pasos">
+		{pasos.map((p) => (
+			<div class="paso" data-step={p.n}>
+				<div class="paso-caja">
+					<span class="paso-num">{String(p.n + 1).padStart(2, '0')}</span>
+					<h3>{p.titulo}</h3>
+					<p>{p.texto}</p>
+				</div>
+			</div>
+		))}
+	</div>
+</div>
+
+<script>
+	import scrollama from 'scrollama';
+
+	function initScrolly() {
+		const container = document.querySelector<HTMLElement>('.scrolly');
+		if (!container) return;
+		const capas = Array.from(container.querySelectorAll<HTMLElement>('.capa'));
+		const cluster = container.querySelector<SVGGElement>('.cluster');
+
+		function aplicar(step: number) {
+			container.dataset.step = String(step);
+			capas.forEach((capa) => {
+				const from = Number(capa.dataset.from ?? '0');
+				capa.classList.toggle('on', step >= from);
+			});
+			// Al expandir a la ciudad (paso 5+), el cluster se reduce un poco.
+			if (cluster) {
+				cluster.style.transform = step >= 5 ? 'scale(0.82)' : 'scale(1)';
+			}
+		}
+
+		aplicar(0);
+
+		const scroller = scrollama();
+		scroller
+			.setup({ step: '.scrolly .paso', offset: 0.6 })
+			.onStepEnter((response: { element: HTMLElement }) => {
+				const step = Number(response.element.dataset.step ?? '0');
+				container.querySelectorAll('.paso').forEach((el) => el.classList.remove('activo'));
+				response.element.classList.add('activo');
+				aplicar(step);
+			});
+
+		window.addEventListener('resize', scroller.resize);
+	}
+
+	if (document.readyState !== 'loading') initScrolly();
+	else document.addEventListener('DOMContentLoaded', initScrolly);
+</script>
+
+<style>
+	.scrolly {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		position: relative;
+	}
+	.scrolly-figura {
+		margin: 0;
+		position: sticky;
+		top: 1.5rem;
+		height: fit-content;
+		align-self: start;
+	}
+	.mapa {
+		width: 100%;
+		height: auto;
+		border-radius: 16px;
+		display: block;
+	}
+	.cluster {
+		transform-origin: 290px 210px;
+		transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	.capa {
+		opacity: 0;
+		transition: opacity 500ms ease;
+	}
+	.capa.on {
+		opacity: 1;
+	}
+	.capa-nodos circle {
+		transition: opacity 500ms ease;
+	}
+
+	.scrolly-pasos {
+		display: flex;
+		flex-direction: column;
+	}
+	.paso {
+		min-height: 82vh;
+		display: flex;
+		align-items: center;
+	}
+	.paso:first-child {
+		min-height: 55vh;
+	}
+	.paso:last-child {
+		min-height: 70vh;
+	}
+	.paso-caja {
+		background: var(--cg-color-blanco);
+		border: 1px solid var(--cg-color-gris-300);
+		border-radius: var(--cg-border-radius-m);
+		padding: 1.5rem 1.75rem;
+		box-shadow: 0 16px 40px -34px rgba(0, 0, 0, 0.5);
+		opacity: 0.45;
+		transform: translateY(8px);
+		transition: opacity 300ms ease, transform 300ms ease, border-color 300ms ease;
+	}
+	.paso.activo .paso-caja {
+		opacity: 1;
+		transform: translateY(0);
+		border-color: var(--cg-color-naranja-300);
+	}
+	.paso-num {
+		display: inline-block;
+		font-family: var(--cg-font-titulo);
+		font-weight: 700;
+		font-size: 0.85rem;
+		color: var(--cg-color-naranja-300);
+		letter-spacing: 0.1em;
+		margin-bottom: 0.5rem;
+	}
+	.paso-caja h3 {
+		margin: 0 0 0.6rem 0;
+	}
+	.paso-caja p {
+		margin: 0;
+		line-height: 1.55;
+	}
+
+	@media (max-width: 720px) {
+		.scrolly {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+		.scrolly-figura {
+			position: sticky;
+			top: 0;
+			padding: 0.75rem 0;
+			background: var(--cg-color-blanco);
+			z-index: 2;
+		}
+		.mapa {
+			max-height: 42vh;
+			width: auto;
+			margin: 0 auto;
+		}
+		.paso {
+			min-height: 70vh;
+		}
+	}
+</style>
