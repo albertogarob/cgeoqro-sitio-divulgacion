@@ -120,14 +120,24 @@ y reproduce el video). Ejemplo aplicado en
 `src/content/capsulas/usa-china-siglo-xxi.mdx`.
 
 **Advertencia (observada 2026-07-21 en producción)**: los embeds de `/preview` de
-Drive están sujetos a una **cuota de reproducción diaria por archivo** propia de
-Google Drive; tras varias cargas seguidas del mismo archivo (durante nuestras
-pruebas automatizadas) el iframe mostró "No se pudo cargar el video". Es una
-limitación de Drive, no del código. Por eso `capsulas/[id].astro` agrega un enlace
-de respaldo ("Ábrelo en una pestaña nueva") junto al iframe. **Para contenido de
-video que sí generemos nosotros en el pipeline de producción, preferir alojarlo en
-YouTube (no listado o público) en vez de Google Drive**, ya que YouTube no tiene
-esta cuota y es el estándar de facto para embeds de video en la web.
+Drive están sujetos a restricciones (aparente cuota de reproducción/ancho de banda
+por archivo) propias de Google Drive. Confirmado que el fallo persiste incluso
+entrando directo a la URL de Drive en el navegador (fuera de nuestro sitio), así
+que no es un bug de nuestro `<iframe>` ni de Astro — es un problema del lado de
+Drive con ese archivo específico, posiblemente agravado por nuestras propias
+pruebas automatizadas repetidas contra el mismo archivo. No hay control desde este
+proyecto para forzar su resolución.
+
+Por eso `capsulas/[id].astro` ahora soporta un campo opcional `fuenteExternaUrl`
+en el esquema de `capsulas` (`src/content.config.ts`): cuando existe, el enlace de
+respaldo junto al video apunta a la **página canónica original** (ej. el sitio de
+Google Sites de Ivvan), no a la misma URL de embed que puede estar fallando —
+enlazar al mismo recurso roto como "respaldo" no sirve de nada.
+
+**Para contenido de video que sí generemos nosotros en el pipeline de producción,
+preferir alojarlo en YouTube (no listado o público) en vez de Google Drive**, ya
+que YouTube no tiene esta limitación y es el estándar de facto para embeds de
+video en la web.
 
 **"El espacio donde vivimos"** — *no* es un video simple, es un **widget interactivo
 de storytelling** ("Historias entrelazadas en la periferia", basado en el paper de

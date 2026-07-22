@@ -50,6 +50,10 @@ const capsulas = defineCollection({
     formatos: z.array(z.enum(['video', 'audio', 'infografia', 'texto'])),
     videoUrl: z.string().url().optional(),
     audioUrl: z.string().url().optional(),
+    // Página canónica externa del recurso (ej. Google Sites de origen), distinta de
+    // la URL de embed. Se usa como respaldo cuando el embed falla (ver CLAUDE.md,
+    // limitación de cuota diaria de Google Drive).
+    fuenteExternaUrl: z.string().url().optional(),
     resumenCorto: z.string(),
     fechaPublicacion: z.date(),
     revisadoPor: z.string(),

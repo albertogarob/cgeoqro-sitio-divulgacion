@@ -39,7 +39,11 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 				></iframe>
 			</div>
 			<p class="video-fallback">
-				¿No carga el video? <a href={capsula.data.videoUrl} target="_blank" rel="noopener">Ábrelo en una pestaña nueva</a>.
+				¿No carga el video? {capsula.data.fuenteExternaUrl ? (
+					<a href={capsula.data.fuenteExternaUrl} target="_blank" rel="noopener">Ver en la fuente original</a>
+				) : (
+					<a href={capsula.data.videoUrl} target="_blank" rel="noopener">Ábrelo en una pestaña nueva</a>
+				)}.
 			</p>
 		</>
 	)}
