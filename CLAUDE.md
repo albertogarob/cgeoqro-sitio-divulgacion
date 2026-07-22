@@ -6,7 +6,9 @@ Prototipo de sitio web construido con **Astro** para la divulgación científica
 principalmente al público general, del conocimiento generado por investigadores del
 **CentroGeo Querétaro** a partir de sus publicaciones académicas.
 
-Nombre del sitio: **Divulgación CentroGeo Querétaro**.
+Nombre del sitio: **Ciencia Geoespacial para Todos · CentroGeo Querétaro**. Junto al
+logo (que ya aporta "CentroGeo") se muestra solo la parte distintiva, "Ciencia
+Geoespacial para Todos".
 
 ## Convenciones de escritura del sitio (reglas obligatorias)
 
