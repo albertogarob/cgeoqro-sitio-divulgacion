@@ -100,24 +100,40 @@ Ivvan, compañero del equipo, ya generó dos recursos de divulgación a partir d
 - https://sites.google.com/centrogeo.edu.mx/divulgacioncentrogeo-qro/temas/sociedad-justa
 
 Estas páginas forman parte de un sitio en Google Sites organizado en tres líneas
-temáticas: **Agua**, **El espacio donde vivimos**, y **Sociedad justa**. El segundo
-ejemplo revisado presenta un video de divulgación basado en un capítulo de libro
-académico sobre geopolítica tecnológica (rivalidad EE.UU.–China), con tono
-académico-profesional dirigido a público interesado en política internacional.
+temáticas: **Agua**, **El espacio donde vivimos**, y **Sociedad justa**.
 
-Nota (confirmado 2026-07-21, segundo intento): el contenido embebido (video/diapositivas
-en sí) **no es accesible por fetch automatizado**. Google Sites carga estos "Custom
-embeds" mediante un iframe que a su vez ejecuta una llamada autenticada a la API de
-Google (`gapi`) en el navegador del usuario; ni `curl` ni un fetch de solo-HTML pueden
-seguir esa cadena. Esto no es una limitación temporal, es estructural mientras el
-contenido viva en Google Sites.
+**Cerrado 2026-07-21** (inspección con Playwright headless, ya que el fetch estático
+no basta — Google Sites carga el contenido embebido vía llamadas autenticadas a la
+API de Google en el navegador):
 
-**Antes de definir plantillas o guiones de las "cápsulas de conocimiento", alguien debe
-revisar manualmente ambos enlaces en el navegador** para identificar: duración de los
-videos, estructura narrativa (introducción/problema/hallazgos/cierre), nivel técnico
-del lenguaje, y estilo visual de las diapositivas. Usar esto como línea base de
-consistencia con el trabajo ya iniciado por el equipo, en lugar de partir de cero.
-Este punto sigue pendiente de cerrarse.
+**"Sociedad justa"** — un video (`usa_vs_china_sigloxxi_joaquin_pina.mp4`, título en
+pantalla "USA vs China: Siglo XXI") alojado en Google Drive con permisos públicos
+("cualquiera con el link"), embebido vía `drive.google.com/file/d/<id>/preview`.
+Estilo animación tipo pizarra/whiteboard con iconos dibujados a mano. Basado en el
+capítulo de José Joaquín Piña Mondragón, *"Estados Unidos vs. China ¿Conflicto
+comercial o lucha por el liderazgo tecnológico en el siglo XXI?"*, del libro *El
+T-MEC en el marco de la confrontación China-Estados Unidos* (Instituto para el
+Desarrollo Industrial y la Transformación Digital A.C.). Al ser un archivo público
+de Drive, **esta URL de `/preview` sí se puede embeber en un `<iframe>` externo**
+(verificado cargándola en un contexto de navegador sin autenticación: responde 200
+y reproduce el video). Ejemplo aplicado en
+`src/content/capsulas/usa-china-siglo-xxi.mdx`.
+
+**"El espacio donde vivimos"** — *no* es un video simple, es un **widget interactivo
+de storytelling** ("Historias entrelazadas en la periferia", basado en el paper de
+Fabricio Espinosa Ortiz, 2024): slides ilustrados con estilo de ilustración
+generada por IA, música ambiental opcional, texto narrativo en lenguaje llano, y un
+recuadro fijo "¿Por qué importa este conocimiento?" en cada slide. Se sirve a
+través de un proxy interno de Google Sites (`*-atari-embeds.googleusercontent.com`,
+subdominio dinámico por sesión) — **no tiene una URL pública estable para embeber**,
+y además la página completa de Google Sites envía `X-Frame-Options: DENY`, por lo
+que tampoco se puede iframe-ar la página en sí.
+
+**Conclusión práctica**: este segundo formato (ilustración propia + paráfrasis +
+callout de "por qué importa") es exactamente el patrón de cápsula que ya definimos
+en este documento (ver "Pipeline de generación de contenido" y "Conceptos de
+divulgación"). En vez de intentar reembeberlo, lo replicamos como plantilla propia
+para nuestras cápsulas.
 
 ## Identidad visual institucional
 
@@ -210,9 +226,8 @@ divulgación, respetando la política de derechos de autor:
 
 ## Próximos pasos / roadmap abierto
 
-- [ ] Revisar en navegador los dos recursos de Ivvan y documentar hallazgos concretos
-      (duración, estructura, tono) en este archivo — bloqueado para automatización,
-      requiere revisión humana (ver sección de Referencias existentes).
+- [x] Revisar los dos recursos de Ivvan y documentar hallazgos concretos (2026-07-21,
+      vía Playwright headless; ver sección de Referencias existentes de estilo).
 - [x] Revisar de nuevo el sitio central de CentroGeo y extraer paleta/tipografía real
       (2026-07-21, ver sección Identidad visual institucional).
 - [ ] Definir mecanismo de acceso reproducible a la carpeta de Drive de papers.
