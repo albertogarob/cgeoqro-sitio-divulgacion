@@ -112,6 +112,35 @@ const nav = [
 				letter-spacing: 0.1em;
 				margin-bottom: 0.5rem;
 			}
+			:global(.cg-btn) {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				padding: 0.7rem 1.4rem;
+				border-radius: 999px;
+				font-weight: 600;
+				font-size: 0.95rem;
+				text-decoration: none !important;
+				transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+			}
+			:global(.cg-btn-primary) {
+				background: var(--cg-color-naranja-300);
+				color: var(--cg-color-blanco) !important;
+				border: 1px solid var(--cg-color-naranja-300);
+			}
+			:global(.cg-btn-primary:hover) {
+				background: var(--cg-color-naranja-500);
+				border-color: var(--cg-color-naranja-500);
+			}
+			:global(.cg-btn-secondary) {
+				background: transparent;
+				color: var(--cg-color-gris-700) !important;
+				border: 1px solid var(--cg-color-gris-300);
+			}
+			:global(.cg-btn-secondary:hover) {
+				border-color: var(--cg-color-naranja-300);
+				color: var(--cg-color-naranja-300) !important;
+			}
 			:global(.cg-list-card) {
 				display: block;
 				padding: 1.25rem 1.5rem;

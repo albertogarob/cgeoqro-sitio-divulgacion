@@ -7,66 +7,292 @@ const capsulas = (await getCollection('capsulas')).sort(
   (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
 );
 const series = await getCollection('series');
+const investigadores = await getCollection('investigadores');
+const entrevistas = await getCollection('entrevistas');
 
-const capsulasConSerie = await Promise.all(
-  capsulas.map(async (c) => ({ capsula: c, serie: await getEntry(c.data.serie) }))
-);
+// Cápsula destacada: preferimos contenido real (no los ejemplos de plantilla) con
+// video; si no hay, la más reciente disponible.
+const noEjemplo = capsulas.filter((c) => !c.id.startsWith('ejemplo'));
+const candidatas = noEjemplo.length > 0 ? noEjemplo : capsulas;
+const destacada = candidatas.find((c) => c.data.formatos.includes('video')) ?? candidatas[0];
+const destacadaSerie = destacada ? await getEntry(destacada.data.serie) : null;
+
+// Conteo de cápsulas por serie para mostrar en las tarjetas de tema.
+const seriesConConteo = series.map((s) => ({
+  serie: s,
+  total: capsulas.filter((c) => c.data.serie.id === s.id).length,
+}));
+
+// Secciones de orientación: qué puede explorar el usuario.
+const explorar = [
+  {
+    href: '/capsulas/',
+    titulo: 'Cápsulas de conocimiento',
+    desc: 'Piezas breves, una por hallazgo. En video, audio, infografía o texto.',
+    dato: `${capsulas.length} ${capsulas.length === 1 ? 'cápsula' : 'cápsulas'}`,
+  },
+  {
+    href: '/series/',
+    titulo: 'Series temáticas',
+    desc: 'El conocimiento agrupado por tema: Agua, El espacio donde vivimos y Sociedad justa.',
+    dato: `${series.length} series`,
+  },
+  {
+    href: '/entrevistas/',
+    titulo: '3 Preguntas a...',
+    desc: 'Conversaciones cortas donde cada investigador explica su trabajo en primera persona.',
+    dato: `${entrevistas.length} ${entrevistas.length === 1 ? 'entrevista' : 'entrevistas'}`,
+  },
+  {
+    href: '/investigadores/',
+    titulo: 'Investigadores',
+    desc: 'Conoce a quienes hacen la ciencia y descubre todas sus cápsulas y publicaciones.',
+    dato: `${investigadores.length} ${investigadores.length === 1 ? 'investigador' : 'investigadores'}`,
+  },
+];
+
+const formatoEtiqueta = {
+  video: 'Video',
+  audio: 'Audio',
+  infografia: 'Infografía',
+  texto: 'Texto',
+};
 ---
 
 <Base title="Inicio">
-	<span class="cg-eyebrow">CentroGeo Querétaro</span>
-	<h1>Ciencia explicada para todos</h1>
-	<p class="cg-intro">
-		Cápsulas cortas, videos y entrevistas que traducen la investigación de CentroGeo QRO
-		a un lenguaje accesible, sin perder rigor.
-	</p>
-
-	<section>
-		<h2>Series temáticas</h2>
-		<ul class="series-lista">
-			{series.map((s) => (
-				<li>
-					<a class="cg-list-card" href={withBase(`/series/${s.id}/`)}>
-						<h3>{s.data.nombre}</h3>
-						<p>{s.data.descripcion}</p>
-					</a>
-				</li>
-			))}
-		</ul>
+	<section class="hero">
+		<span class="cg-eyebrow">Divulgación científica · CentroGeo Querétaro</span>
+		<h1>La ciencia de CentroGeo QRO, en formatos que puedes ver, escuchar y compartir</h1>
+		<p class="hero-sub">
+			Traducimos la investigación de nuestros científicos a cápsulas breves, videos y
+			entrevistas pensadas para el público general. Sin tecnicismos, sin perder rigor.
+		</p>
+		<div class="hero-cta">
+			<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
+			<a class="cg-btn cg-btn-secondary" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+		</div>
 	</section>
 
-	<section>
-		<h2>Últimas cápsulas de conocimiento</h2>
-		<ul class="capsulas-lista">
-			{capsulasConSerie.map(({ capsula, serie }) => (
-				<li>
-					<a class="cg-list-card" href={withBase(`/capsulas/${capsula.id}/`)}>
-						<h3>{capsula.data.titulo}</h3>
-						{serie && <span class="cg-pill">{serie.data.nombre}</span>}
-						<p>{capsula.data.resumenCorto}</p>
-					</a>
-				</li>
+	<section class="bloque">
+		<h2>¿Qué vas a encontrar aquí?</h2>
+		<div class="explorar-grid">
+			{explorar.map((item) => (
+				<a class="explorar-card" href={withBase(item.href)}>
+					<span class="explorar-dato">{item.dato}</span>
+					<h3>{item.titulo}</h3>
+					<p>{item.desc}</p>
+					<span class="explorar-flecha">Ver &rarr;</span>
+				</a>
 			))}
-		</ul>
+		</div>
+	</section>
+
+	{destacada && (
+		<section class="bloque">
+			<h2>Empieza por aquí</h2>
+			<a class="destacada" href={withBase(`/capsulas/${destacada.id}/`)}>
+				<div class="destacada-media">
+					<span class="destacada-formato">
+						{destacada.data.formatos.map((f) => formatoEtiqueta[f] ?? f).join(' · ')}
+					</span>
+				</div>
+				<div class="destacada-texto">
+					{destacadaSerie && <span class="cg-pill">{destacadaSerie.data.nombre}</span>}
+					<h3>{destacada.data.titulo}</h3>
+					<p>{destacada.data.resumenCorto}</p>
+					<span class="explorar-flecha">Ver la cápsula &rarr;</span>
+				</div>
+			</a>
+		</section>
+	)}
+
+	<section class="bloque">
+		<h2>Explora por tema</h2>
+		<div class="series-grid">
+			{seriesConConteo.map(({ serie, total }) => (
+				<a
+					class="serie-card"
+					href={withBase(`/series/${serie.id}/`)}
+					style={`--acento: ${serie.data.colorAcento ?? 'var(--cg-color-naranja-300)'}`}
+				>
+					<span class="serie-barra"></span>
+					<h3>{serie.data.nombre}</h3>
+					<p>{serie.data.descripcion}</p>
+					<span class="serie-conteo">
+						{total > 0 ? `${total} ${total === 1 ? 'cápsula' : 'cápsulas'}` : 'Próximamente'}
+					</span>
+				</a>
+			))}
+		</div>
 	</section>
 
 	<style>
-		.cg-intro {
-			font-size: 1.1rem;
-			max-width: 42rem;
+		.hero {
+			padding-bottom: 2.5rem;
+			margin-bottom: 2.5rem;
+			border-bottom: 1px solid var(--cg-color-gris-300);
 		}
-		section {
-			margin-top: 2.5rem;
+		.hero h1 {
+			font-size: clamp(1.8rem, 4.5vw, 3rem);
+			margin: 0 0 1rem 0;
 		}
-		.series-lista,
-		.capsulas-lista {
-			list-style: none;
-			padding: 0;
-			margin: 0;
+		.hero-sub {
+			font-size: 1.15rem;
+			max-width: 44rem;
+			margin: 0 0 1.75rem 0;
 		}
-		.series-lista h3,
-		.capsulas-lista h3 {
+		.hero-cta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+		}
+
+		.bloque {
+			margin-bottom: 3rem;
+		}
+		.bloque > h2 {
+			margin-top: 0;
+		}
+
+		.explorar-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+			gap: 1rem;
+		}
+		.explorar-card {
+			display: flex;
+			flex-direction: column;
+			padding: 1.5rem;
+			border-radius: var(--cg-border-radius-m);
+			background: var(--cg-color-gris-100);
+			border: 1px solid transparent;
+			text-decoration: none !important;
+			color: var(--cg-color-gris-500) !important;
+			transition: border-color 150ms ease, transform 150ms ease, background-color 150ms ease;
+		}
+		.explorar-card:hover {
+			background: var(--cg-color-blanco);
+			border-color: var(--cg-color-naranja-300);
+			transform: translateY(-3px);
+		}
+		.explorar-dato {
+			font-size: 0.8rem;
+			font-weight: 700;
+			color: var(--cg-color-naranja-300);
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+		.explorar-card h3 {
+			margin: 0.4rem 0;
+			color: var(--cg-color-gris-700) !important;
+			font-size: 1.15rem;
+		}
+		.explorar-card p {
+			margin: 0 0 1rem 0;
+			font-size: 0.92rem;
+			flex-grow: 1;
+		}
+		.explorar-flecha {
+			font-weight: 600;
+			color: var(--cg-color-naranja-300);
+			font-size: 0.9rem;
+		}
+
+		.destacada {
+			display: grid;
+			grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+			gap: 0;
+			border-radius: var(--cg-border-radius-m);
+			overflow: hidden;
+			border: 1px solid var(--cg-color-gris-300);
+			text-decoration: none !important;
+			color: var(--cg-color-gris-500) !important;
+			transition: border-color 150ms ease, box-shadow 150ms ease;
+		}
+		.destacada:hover {
+			border-color: var(--cg-color-naranja-300);
+			box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.4);
+		}
+		.destacada-media {
+			position: relative;
+			min-height: 12rem;
+			background: linear-gradient(135deg, var(--cg-color-gris-700), var(--cg-color-naranja-500));
+			display: flex;
+			align-items: flex-end;
+			padding: 1rem;
+		}
+		.destacada-formato {
+			background: rgba(255, 255, 255, 0.9);
 			color: var(--cg-color-gris-700);
+			font-size: 0.78rem;
+			font-weight: 700;
+			padding: 0.3rem 0.7rem;
+			border-radius: 999px;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		.destacada-texto {
+			padding: 1.75rem;
+		}
+		.destacada-texto h3 {
+			margin: 0.6rem 0;
+			color: var(--cg-color-gris-700) !important;
+			font-size: 1.4rem;
+		}
+		.destacada-texto p {
+			margin: 0 0 1rem 0;
+		}
+
+		.series-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+			gap: 1rem;
+		}
+		.serie-card {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			padding: 1.5rem;
+			padding-top: 1.75rem;
+			border-radius: var(--cg-border-radius-m);
+			background: var(--cg-color-blanco);
+			border: 1px solid var(--cg-color-gris-300);
+			text-decoration: none !important;
+			color: var(--cg-color-gris-500) !important;
+			overflow: hidden;
+			transition: transform 150ms ease, box-shadow 150ms ease;
+		}
+		.serie-card:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.4);
+		}
+		.serie-barra {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 5px;
+			background: var(--acento);
+		}
+		.serie-card h3 {
+			margin: 0 0 0.5rem 0;
+			color: var(--cg-color-gris-700) !important;
+		}
+		.serie-card p {
+			margin: 0 0 1rem 0;
+			font-size: 0.92rem;
+			flex-grow: 1;
+		}
+		.serie-conteo {
+			font-size: 0.82rem;
+			font-weight: 600;
+			color: var(--acento);
+		}
+
+		@media (max-width: 640px) {
+			.destacada {
+				grid-template-columns: 1fr;
+			}
 		}
 	</style>
 </Base>
