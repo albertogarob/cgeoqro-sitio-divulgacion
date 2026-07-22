@@ -1,0 +1,78 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry, render } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const capsulas = await getCollection('capsulas');
+  return capsulas.map((capsula) => ({ params: { id: capsula.id }, props: { capsula } }));
+}
+
+const { capsula } = Astro.props;
+const { Content } = await render(capsula);
+
+const serie = await getEntry(capsula.data.serie);
+const paper = await getEntry(capsula.data.paperFuente);
+const investigadores = await Promise.all(capsula.data.investigadores.map((ref) => getEntry(ref)));
+---
+
+<Base title={capsula.data.titulo}>
+	<p><a href={withBase('/capsulas/')}>← Todas las cápsulas</a></p>
+	<h1>{capsula.data.titulo}</h1>
+	<p class="meta">
+		{serie && <a href={withBase(`/series/${serie.id}/`)}>{serie.data.nombre}</a>}
+		{' · '}
+		{capsula.data.formatos.join(', ')}
+	</p>
+
+	<p class="resumen"><strong>{capsula.data.resumenCorto}</strong></p>
+
+	{capsula.data.videoUrl && (
+		<p><a href={capsula.data.videoUrl} target="_blank" rel="noopener">Ver video</a></p>
+	)}
+	{capsula.data.audioUrl && (
+		<p><a href={capsula.data.audioUrl} target="_blank" rel="noopener">Escuchar audio</a></p>
+	)}
+
+	<article>
+		<Content />
+	</article>
+
+	<section class="atribucion">
+		<h2>Fuente y créditos</h2>
+		<ul>
+			<li>
+				Investigadores: {investigadores.map((inv, i) => (
+					<>
+						{i > 0 && ', '}
+						{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
+					</>
+				))}
+			</li>
+			{paper && (
+				<li>
+					Basado en (referencia, sin reproducir el texto original): {paper.data.titulo}
+					{' — '}{paper.data.editorial} ({paper.data.anioPublicacion})
+				</li>
+			)}
+			<li>Revisado por: {capsula.data.revisadoPor}</li>
+		</ul>
+	</section>
+
+	<style>
+		.meta {
+			color: #666;
+			font-size: 0.9rem;
+		}
+		.resumen {
+			font-size: 1.1rem;
+		}
+		.atribucion {
+			margin-top: 2.5rem;
+			padding-top: 1.5rem;
+			border-top: 1px solid #eee;
+			font-size: 0.9rem;
+			color: #444;
+		}
+	</style>
+</Base>

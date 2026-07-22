@@ -1,25 +1,64 @@
 ---
-import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { withBase } from '../lib/url';
 
-// Placeholder de validación: lista las cápsulas de ejemplo para confirmar que
-// las content collections (src/content.config.ts) cargan correctamente.
-const capsulas = await getCollection('capsulas');
-const base = import.meta.env.BASE_URL;
+const capsulas = (await getCollection('capsulas')).sort(
+  (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
+);
+const series = await getCollection('series');
+
+const capsulasConSerie = await Promise.all(
+  capsulas.map(async (c) => ({ capsula: c, serie: await getEntry(c.data.serie) }))
+);
 ---
 
-<html lang="es">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>CentroGeo QRO — Divulgación</title>
-	</head>
-	<body>
-		<h1>CentroGeo QRO — Divulgación</h1>
-		<p>Prototipo. Cápsulas de conocimiento cargadas ({capsulas.length}):</p>
-		<ul>
-			{capsulas.map((c) => <li>{c.data.titulo} — {c.data.resumenCorto}</li>)}
+<Base title="Inicio">
+	<h1>Ciencia de CentroGeo Querétaro, explicada para todos</h1>
+	<p>
+		Cápsulas cortas, videos y entrevistas que traducen la investigación de CentroGeo QRO
+		a un lenguaje accesible, sin perder rigor.
+	</p>
+
+	<section>
+		<h2>Series temáticas</h2>
+		<ul class="series-lista">
+			{series.map((s) => (
+				<li><a href={withBase(`/series/${s.id}/`)}>{s.data.nombre}</a> — {s.data.descripcion}</li>
+			))}
 		</ul>
-	</body>
-</html>
+	</section>
+
+	<section>
+		<h2>Últimas cápsulas de conocimiento</h2>
+		<ul class="capsulas-lista">
+			{capsulasConSerie.map(({ capsula, serie }) => (
+				<li>
+					<a href={withBase(`/capsulas/${capsula.id}/`)}>{capsula.data.titulo}</a>
+					{serie && <span class="etiqueta"> · {serie.data.nombre}</span>}
+					<p>{capsula.data.resumenCorto}</p>
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<style>
+		section {
+			margin-bottom: 2.5rem;
+		}
+		.series-lista,
+		.capsulas-lista {
+			list-style: none;
+			padding: 0;
+		}
+		.capsulas-lista li {
+			margin-bottom: 1.25rem;
+			padding-bottom: 1.25rem;
+			border-bottom: 1px solid #eee;
+		}
+		.etiqueta {
+			color: #666;
+			font-size: 0.85rem;
+		}
+	</style>
+</Base>

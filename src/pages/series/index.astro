@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+const series = await getCollection('series');
+---
+
+<Base title="Series">
+	<h1>Series temáticas</h1>
+	<p>Los ejes de investigación de CentroGeo QRO agrupados por tema.</p>
+	<ul class="lista">
+		{series.map((s) => (
+			<li>
+				<a href={withBase(`/series/${s.id}/`)}>{s.data.nombre}</a>
+				<p>{s.data.descripcion}</p>
+			</li>
+		))}
+	</ul>
+	<style>
+		.lista {
+			list-style: none;
+			padding: 0;
+		}
+		.lista li {
+			margin-bottom: 1.5rem;
+		}
+	</style>
+</Base>

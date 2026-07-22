@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+const capsulas = (await getCollection('capsulas')).sort(
+  (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
+);
+
+const capsulasConSerie = await Promise.all(
+  capsulas.map(async (c) => ({ capsula: c, serie: await getEntry(c.data.serie) }))
+);
+---
+
+<Base title="Cápsulas de conocimiento">
+	<h1>Cápsulas de conocimiento</h1>
+	<p>Unidades breves de divulgación, una por hallazgo o tema, disponibles en varios formatos.</p>
+
+	<ul class="capsulas-lista">
+		{capsulasConSerie.map(({ capsula, serie }) => (
+			<li>
+				<a href={withBase(`/capsulas/${capsula.id}/`)}>{capsula.data.titulo}</a>
+				<p class="meta">
+					{serie && <span>{serie.data.nombre}</span>}
+					{' · '}
+					<span>{capsula.data.formatos.join(', ')}</span>
+				</p>
+				<p>{capsula.data.resumenCorto}</p>
+			</li>
+		))}
+	</ul>
+
+	<style>
+		.capsulas-lista {
+			list-style: none;
+			padding: 0;
+		}
+		.capsulas-lista li {
+			margin-bottom: 1.5rem;
+			padding-bottom: 1.5rem;
+			border-bottom: 1px solid #eee;
+		}
+		.meta {
+			color: #666;
+			font-size: 0.85rem;
+		}
+	</style>
+</Base>

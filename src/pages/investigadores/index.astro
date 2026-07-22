@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+const investigadores = await getCollection('investigadores');
+---
+
+<Base title="Investigadores">
+	<h1>Investigadores de CentroGeo Querétaro</h1>
+	<ul class="lista">
+		{investigadores.map((inv) => (
+			<li>
+				<a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>
+				<p>{inv.data.bioBreve}</p>
+			</li>
+		))}
+	</ul>
+	<style>
+		.lista {
+			list-style: none;
+			padding: 0;
+		}
+		.lista li {
+			margin-bottom: 1.5rem;
+		}
+	</style>
+</Base>

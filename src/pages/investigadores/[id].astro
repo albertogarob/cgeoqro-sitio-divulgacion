@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const investigadores = await getCollection('investigadores');
+  const papers = await getCollection('papers');
+  const capsulas = await getCollection('capsulas');
+  const entrevistas = await getCollection('entrevistas');
+
+  return investigadores.map((inv) => ({
+    params: { id: inv.id },
+    props: {
+      inv,
+      papers: papers.filter((p) => p.data.investigador.id === inv.id),
+      capsulas: capsulas.filter((c) => c.data.investigadores.some((ref) => ref.id === inv.id)),
+      entrevistas: entrevistas.filter((e) => e.data.investigador.id === inv.id),
+    },
+  }));
+}
+
+const { inv, papers, capsulas, entrevistas } = Astro.props;
+const { Content } = await render(inv);
+---
+
+<Base title={inv.data.nombre}>
+	<p><a href={withBase('/investigadores/')}>← Todos los investigadores</a></p>
+	<h1>{inv.data.nombre}</h1>
+	<p>{inv.data.bioBreve}</p>
+	<p class="meta">Líneas de investigación: {inv.data.lineasInvestigacion.join(', ')}</p>
+	<article><Content /></article>
+
+	<h2>Cápsulas de conocimiento</h2>
+	{capsulas.length === 0 && <p>Aún no hay cápsulas publicadas.</p>}
+	<ul class="lista">
+		{capsulas.map((c) => (
+			<li><a href={withBase(`/capsulas/${c.id}/`)}>{c.data.titulo}</a></li>
+		))}
+	</ul>
+
+	<h2>3 Preguntas a...</h2>
+	{entrevistas.length === 0 && <p>Aún no hay entrevistas publicadas.</p>}
+	<ul class="lista">
+		{entrevistas.map((e) => (
+			<li><a href={withBase(`/entrevistas/${e.id}/`)}>Entrevista del {e.data.fechaPublicacion.toLocaleDateString('es-MX')}</a></li>
+		))}
+	</ul>
+
+	<h2>Publicaciones (referencia)</h2>
+	<p class="meta">Solo metadatos; el texto completo pertenece a las editoriales que lo publicaron.</p>
+	<ul class="lista">
+		{papers.map((p) => (
+			<li>{p.data.titulo} — {p.data.editorial} ({p.data.anioPublicacion}){p.data.doi && <> · DOI: {p.data.doi}</>}</li>
+		))}
+	</ul>
+
+	<style>
+		.lista {
+			list-style: none;
+			padding: 0;
+		}
+		.lista li {
+			margin-bottom: 0.75rem;
+		}
+		.meta {
+			color: #666;
+			font-size: 0.9rem;
+		}
+	</style>
+</Base>

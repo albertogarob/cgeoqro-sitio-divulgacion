@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const entrevistas = await getCollection('entrevistas');
+  return entrevistas.map((entrevista) => ({ params: { id: entrevista.id }, props: { entrevista } }));
+}
+
+const { entrevista } = Astro.props;
+const investigador = await getEntry(entrevista.data.investigador);
+const paper = entrevista.data.paperRelacionado ? await getEntry(entrevista.data.paperRelacionado) : null;
+---
+
+<Base title={investigador ? `3 preguntas a ${investigador.data.nombre}` : 'Entrevista'}>
+	<p><a href={withBase('/entrevistas/')}>← Todas las entrevistas</a></p>
+	<h1>3 preguntas a {investigador?.data.nombre}</h1>
+	{investigador && (
+		<p class="meta"><a href={withBase(`/investigadores/${investigador.id}/`)}>Ver perfil de {investigador.data.nombre}</a></p>
+	)}
+
+	<ol class="preguntas">
+		{entrevista.data.preguntas.map((qa) => (
+			<li>
+				<p class="pregunta">{qa.pregunta}</p>
+				<p class="respuesta">{qa.respuesta}</p>
+			</li>
+		))}
+	</ol>
+
+	{paper && (
+		<p class="meta">
+			A propósito de: {paper.data.titulo} — {paper.data.editorial} ({paper.data.anioPublicacion})
+		</p>
+	)}
+
+	<style>
+		.preguntas {
+			list-style: none;
+			padding: 0;
+		}
+		.preguntas li {
+			margin-bottom: 1.5rem;
+		}
+		.pregunta {
+			font-weight: 700;
+		}
+		.meta {
+			color: #666;
+			font-size: 0.9rem;
+		}
+	</style>
+</Base>

@@ -1,0 +1,102 @@
+---
+import { withBase } from '../lib/url';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+const nav = [
+  { href: '/', label: 'Inicio' },
+  { href: '/capsulas/', label: 'Cápsulas' },
+  { href: '/series/', label: 'Series' },
+  { href: '/investigadores/', label: 'Investigadores' },
+  { href: '/entrevistas/', label: '3 Preguntas a...' },
+  { href: '/acerca-de/', label: 'Acerca de' },
+];
+---
+
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} · CentroGeo QRO Divulgación</title>
+	</head>
+	<body>
+		<header>
+			<p class="marca"><a href={withBase('/')}>CentroGeo QRO — Divulgación</a></p>
+			<nav>
+				<ul>
+					{nav.map((item) => (
+						<li><a href={withBase(item.href)}>{item.label}</a></li>
+					))}
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer>
+			<p>
+				Prototipo de divulgación científica de CentroGeo Querétaro. Los contenidos son
+				elaboraciones propias inspiradas en publicaciones de investigadores del centro;
+				no reproducen texto ni figuras de los papers originales, protegidos por derechos
+				de autor de sus editoriales. Ver <a href={withBase('/acerca-de/')}>política de atribución</a>.
+			</p>
+		</footer>
+		<style>
+			/* Estilo neutro provisional: pendiente validar contra identidad visual
+			   institucional de CentroGeo (ver CLAUDE.md). */
+			:global(body) {
+				font-family: system-ui, sans-serif;
+				margin: 0;
+				color: #1a1a1a;
+				background: #fff;
+			}
+			header {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+				padding: 1rem 1.5rem;
+				border-bottom: 1px solid #ddd;
+			}
+			.marca a {
+				font-weight: 700;
+				text-decoration: none;
+				color: inherit;
+			}
+			nav ul {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1.25rem;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			nav a {
+				text-decoration: none;
+				color: #1a1a1a;
+			}
+			nav a:hover {
+				text-decoration: underline;
+			}
+			main {
+				max-width: 60rem;
+				margin: 0 auto;
+				padding: 2rem 1.5rem;
+				min-height: 60vh;
+			}
+			footer {
+				border-top: 1px solid #ddd;
+				padding: 1.5rem;
+				font-size: 0.85rem;
+				color: #555;
+			}
+		</style>
+	</body>
+</html>

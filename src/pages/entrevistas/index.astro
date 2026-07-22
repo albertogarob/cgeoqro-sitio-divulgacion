@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+const entrevistas = (await getCollection('entrevistas')).sort(
+  (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
+);
+const conInvestigador = await Promise.all(
+  entrevistas.map(async (e) => ({ entrevista: e, investigador: await getEntry(e.data.investigador) }))
+);
+---
+
+<Base title="3 Preguntas a...">
+	<h1>3 Preguntas a...</h1>
+	<p>Entrevistas breves con investigadores de CentroGeo QRO sobre su trabajo.</p>
+	<ul class="lista">
+		{conInvestigador.map(({ entrevista, investigador }) => (
+			<li>
+				<a href={withBase(`/entrevistas/${entrevista.id}/`)}>
+					{investigador ? investigador.data.nombre : entrevista.id}
+				</a>
+				<p>{entrevista.data.preguntas[0].pregunta}</p>
+			</li>
+		))}
+	</ul>
+	<style>
+		.lista {
+			list-style: none;
+			padding: 0;
+		}
+		.lista li {
+			margin-bottom: 1.25rem;
+		}
+	</style>
+</Base>

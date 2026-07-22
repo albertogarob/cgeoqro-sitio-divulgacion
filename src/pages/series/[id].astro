@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const series = await getCollection('series');
+  const capsulas = await getCollection('capsulas');
+  return series.map((serie) => ({
+    params: { id: serie.id },
+    props: { serie, capsulas: capsulas.filter((c) => c.data.serie.id === serie.id) },
+  }));
+}
+
+const { serie, capsulas } = Astro.props;
+const { Content } = await render(serie);
+---
+
+<Base title={serie.data.nombre}>
+	<p><a href={withBase('/series/')}>← Todas las series</a></p>
+	<h1>{serie.data.nombre}</h1>
+	<p>{serie.data.descripcion}</p>
+	<article><Content /></article>
+
+	<h2>Cápsulas de esta serie</h2>
+	{capsulas.length === 0 && <p>Aún no hay cápsulas publicadas en esta serie.</p>}
+	<ul class="lista">
+		{capsulas.map((c) => (
+			<li>
+				<a href={withBase(`/capsulas/${c.id}/`)}>{c.data.titulo}</a>
+				<p>{c.data.resumenCorto}</p>
+			</li>
+		))}
+	</ul>
+
+	<style>
+		.lista {
+			list-style: none;
+			padding: 0;
+		}
+		.lista li {
+			margin-bottom: 1.25rem;
+		}
+	</style>
+</Base>
