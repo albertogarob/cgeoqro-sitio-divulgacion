@@ -105,34 +105,68 @@ ejemplo revisado presenta un video de divulgación basado en un capítulo de lib
 académico sobre geopolítica tecnológica (rivalidad EE.UU.–China), con tono
 académico-profesional dirigido a público interesado en política internacional.
 
-Nota: el contenido embebido (video/diapositivas en sí) no es accesible por fetch
-automatizado (Google Sites renderiza vía JavaScript y los recursos están incrustados).
-**Antes de definir plantillas o guiones de las "cápsulas de conocimiento", revisar
-manualmente ambos enlaces en el navegador** para identificar: duración de los videos,
-estructura narrativa (introducción/problema/hallazgos/cierre), nivel técnico del
-lenguaje, y estilo visual de las diapositivas. Usar esto como línea base de
+Nota (confirmado 2026-07-21, segundo intento): el contenido embebido (video/diapositivas
+en sí) **no es accesible por fetch automatizado**. Google Sites carga estos "Custom
+embeds" mediante un iframe que a su vez ejecuta una llamada autenticada a la API de
+Google (`gapi`) en el navegador del usuario; ni `curl` ni un fetch de solo-HTML pueden
+seguir esa cadena. Esto no es una limitación temporal, es estructural mientras el
+contenido viva en Google Sites.
+
+**Antes de definir plantillas o guiones de las "cápsulas de conocimiento", alguien debe
+revisar manualmente ambos enlaces en el navegador** para identificar: duración de los
+videos, estructura narrativa (introducción/problema/hallazgos/cierre), nivel técnico
+del lenguaje, y estilo visual de las diapositivas. Usar esto como línea base de
 consistencia con el trabajo ya iniciado por el equipo, en lugar de partir de cero.
+Este punto sigue pendiente de cerrarse.
 
 ## Identidad visual institucional
 
-El sitio debe seguir los estándares visuales institucionales de CentroGeo
-(https://www.centrogeo.org.mx/). Al momento de este análisis inicial, el sitio central
-estaba en construcción ("Estamos trabajando en nuestro sitio para darte un mejor
-servicio") y solo expone: logotipo institucional (wordmark horizontal, con variante
-blanca para fondos oscuros) y un tono formal/gubernamental. No se encontró manual de
-marca ni paleta de colores explícita.
+**Actualizado 2026-07-21**: el sitio central de CentroGeo (https://www.centrogeo.org.mx/)
+ya no está en construcción. Tiene un sistema de diseño real con variables CSS
+propias, extraído de `https://www.centrogeo.org.mx/css/styles.css`. Copia de
+referencia guardada en [docs/referencia-visual/](docs/referencia-visual/)
+(`centrogeo-styles.css`, `logo_centrogeo_wide.svg`, `logo_centrogeo_wide-white.svg`).
 
-**Antes de fijar estilos, componentes o layout en Astro:**
-1. Volver a revisar https://www.centrogeo.org.mx/ (puede que ya no esté en
-   construcción) para extraer paleta de colores, tipografía, y patrones de layout
-   reales.
-2. Buscar si existe un manual de identidad gráfica institucional (PDF o página
-   dedicada) en el sitio o solicitarlo al equipo de CentroGeo.
-3. Cualquier decisión de diseño (colores, tipografía, componentes UI) debe
-   verificarse contra esta identidad institucional antes de introducir estilos
-   propios o genéricos. Si no hay información suficiente, usar un estilo neutro e
-   institucional (formal, sobrio) como default temporal, dejando explícito que es
-   provisional hasta validar contra el manual de marca real.
+**Tipografía:**
+- Títulos: `"ingra-wide"` (vía Adobe Typekit, `use.typekit.net/etx4aom.css`), pesos 300–700.
+- Cuerpo: `"Roboto Flex"` (Google Fonts), pesos 300–700.
+- Topbar/footer gubernamental (gob.mx): `"Montserrat"`.
+
+**Paleta de colores (tokens `--cg-color-*`):**
+| Token | Hex | Uso observado |
+|---|---|---|
+| `naranja-300` | `#c45620` | Color de acento principal: títulos, links activos, botones primarios |
+| `naranja-500` | `#9c4419` | Hover de acento |
+| `naranja-100` | `#f4d2c1` | Fondos suaves de acento |
+| `cafe` | `#6e3d14` | Acompaña al naranja en el logo |
+| `gris-700` | `#232323` | Texto de encabezados, footer oscuro |
+| `gris-500` | `#343434` | Texto de cuerpo |
+| `gris-300` / `gris-100` | `#d9d9d9` / `#f3f3f3` | Fondos y bordes suaves |
+| `blanco` | `#ffffff` | Fondos de tarjetas/header |
+| `verde-500`, `azul-500`, `amarillo-500` (+ variantes `-100`) | `#2a6f4d`, `#19439c`, `#916802` | Colores de estado/categoría secundarios |
+| Topbar/footer gob.mx | `#611232` (vino) sobre `#13322b` | Franja gubernamental obligatoria, no forma parte de la identidad propia de CentroGeo |
+
+**Otros tokens reutilizables**: radios de borde (`--cg-border-radius-s/m/b`: 8/16/24px),
+espaciado en escala de 8px (`--cg-space-size-*`), sombras suaves
+(`--cg-box-shadow-s/m`), transición estándar `200ms ease`.
+
+**Logotipo**: wordmark horizontal `logo_centrogeo_wide.svg` (colores naranja/café),
+con variante blanca para fondos oscuros. Siempre acompañado del logo de SECIHTI y,
+en el topbar/footer, del logo de gob.mx (franja institucional obligatoria del
+gobierno mexicano — mantenerla si el sitio se presenta como oficial de CentroGeo,
+opcional si este prototipo se posiciona como proyecto independiente de divulgación).
+
+**Aplicación a este proyecto**: al maquetar el sitio Astro, usar `naranja-300`
+(`#c45620`) como acento primario, `Roboto Flex` para cuerpo y `ingra-wide` (o una
+alternativa gratuita similar tipo "Archivo Expanded" si Typekit no es accesible
+fuera del dominio de CentroGeo) para títulos, y respetar la escala de espaciado de
+8px. Esto reemplaza el placeholder neutro usado en `src/layouts/Base.astro`
+mientras no se aplique — pendiente de implementación real.
+
+**Pendiente**: no se encontró un manual de marca formal en PDF, solo el CSS en
+producción; si el equipo de CentroGeo tiene un brand book más completo (uso del
+isotipo, versiones mínimas, zona de protección del logo), solicitarlo para
+completar este apartado.
 
 ## Pipeline de generación de contenido (tipo NotebookLM)
 
@@ -177,10 +211,16 @@ divulgación, respetando la política de derechos de autor:
 ## Próximos pasos / roadmap abierto
 
 - [ ] Revisar en navegador los dos recursos de Ivvan y documentar hallazgos concretos
-      (duración, estructura, tono) en este archivo.
-- [ ] Revisar de nuevo el sitio central de CentroGeo cuando esté completo y extraer
-      paleta/tipografía real.
+      (duración, estructura, tono) en este archivo — bloqueado para automatización,
+      requiere revisión humana (ver sección de Referencias existentes).
+- [x] Revisar de nuevo el sitio central de CentroGeo y extraer paleta/tipografía real
+      (2026-07-21, ver sección Identidad visual institucional).
 - [ ] Definir mecanismo de acceso reproducible a la carpeta de Drive de papers.
 - [ ] Prototipar el pipeline de ingestión → guion → video con un solo paper de prueba.
-- [ ] Decidir estructura de datos del CRM ligero en Astro (colecciones de contenido:
-      investigadores, papers, cápsulas).
+- [x] Decidir estructura de datos del CRM ligero en Astro (colecciones de contenido:
+      ver [docs/content-collections.md](docs/content-collections.md), ya implementado
+      en `src/content.config.ts`).
+- [ ] Aplicar la identidad visual real (colores/tipografía de CentroGeo) al layout,
+      reemplazando el estilo neutro provisional de `src/layouts/Base.astro`.
+- [ ] Cargar contenido real (al menos un investigador/paper/cápsula) reemplazando los
+      ejemplos de placeholder en `src/content/`.
