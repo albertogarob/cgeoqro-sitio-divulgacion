@@ -30,15 +30,17 @@ for (let r = 0; r < 4; r++) {
   }
 }
 
+// Posiciones agrupadas para no marear (tandas de 2-3 por lado) y con texto central
+// en los momentos estratégicos: la apertura (paso 0) y el cierre (paso 7).
 const pasos = [
-  { n: 0, pos: 'left', texto: 'Durante décadas, Iztapalapa fue vista como el "patio trasero" de la Ciudad de México.' },
+  { n: 0, pos: 'center', texto: 'Durante décadas, Iztapalapa fue vista como el "patio trasero" de la Ciudad de México.' },
   { n: 1, pos: 'right', texto: 'Es la alcaldía más poblada de las dieciséis. Casi uno de cada cinco habitantes de la capital vive aquí.' },
-  { n: 2, pos: 'left', texto: 'Más de la mitad de su población habita en zonas con desarrollo social bajo o muy bajo. El trabajo de cuidar recae, sobre todo, en las mujeres.' },
+  { n: 2, pos: 'right', texto: 'Más de la mitad de su población habita en zonas con desarrollo social bajo o muy bajo. El trabajo de cuidar recae, sobre todo, en las mujeres.' },
   { n: 3, pos: 'right', texto: 'Buena parte de estos barrios se construyó a mano: levantados y organizados por sus propios vecinos, con o sin apoyo del Estado.' },
   { n: 4, pos: 'left', texto: 'Entre 2019 y 2024 surgieron centros comunitarios en los trece distritos: las Utopías.' },
-  { n: 5, pos: 'right', texto: 'No solo ofrecen servicios: tejen una red de cuidado colectivo. Unen el derecho a la ciudad con el urbanismo feminista.' },
+  { n: 5, pos: 'left', texto: 'No solo ofrecen servicios: tejen una red de cuidado colectivo. Unen el derecho a la ciudad con el urbanismo feminista.' },
   { n: 6, pos: 'left', texto: 'Lo que nació en la periferia hoy se expande a toda la ciudad, con reconocimiento internacional.' },
-  { n: 7, pos: 'right', texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
+  { n: 7, pos: 'center', texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
 ];
 ---
 
@@ -375,8 +377,22 @@ const pasos = [
 	}
 	.step[data-pos='left'] { justify-content: flex-start; }
 	.step[data-pos='right'] { justify-content: flex-end; }
+	.step[data-pos='center'] { justify-content: center; }
 	.step:first-child { min-height: 85vh; }
-	.caption { max-width: 28rem; }
+	.caption { max-width: 27rem; }
+
+	/* Momentos estratégicos: texto central, más grande y con acento superior. */
+	.step[data-pos='center'] .caption {
+		max-width: 40rem;
+		text-align: center;
+		border-left: none;
+		border-top: 3px solid #e8843f;
+		border-radius: 6px;
+		padding: 1.6rem 2rem;
+		font-size: clamp(1.35rem, 2.8vw, 2rem);
+		font-weight: 600;
+		line-height: 1.3;
+	}
 	.caption {
 		pointer-events: auto;
 		margin: 0;
