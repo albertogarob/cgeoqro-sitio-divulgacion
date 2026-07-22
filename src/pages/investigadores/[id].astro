@@ -26,9 +26,16 @@ const { Content } = await render(inv);
 
 <Base title={inv.data.nombre}>
 	<p><a href={withBase('/investigadores/')}>← Todos los investigadores</a></p>
-	<h1>{inv.data.nombre}</h1>
-	<p>{inv.data.bioBreve}</p>
-	<p class="meta">Líneas de investigación: {inv.data.lineasInvestigacion.join(', ')}</p>
+	<div class="perfil-encabezado">
+		{inv.data.fotoUrl && (
+			<img class="perfil-foto" src={withBase(inv.data.fotoUrl)} alt={inv.data.nombre} />
+		)}
+		<div>
+			<h1>{inv.data.nombre}</h1>
+			<p class="perfil-bio">{inv.data.bioBreve}</p>
+			<p class="meta">Líneas de investigación: {inv.data.lineasInvestigacion.join(', ')}</p>
+		</div>
+	</div>
 	<article><Content /></article>
 
 	<h2>Cápsulas de conocimiento</h2>
@@ -56,6 +63,26 @@ const { Content } = await render(inv);
 	</ul>
 
 	<style>
+		.perfil-encabezado {
+			display: flex;
+			gap: 1.5rem;
+			align-items: center;
+			margin: 0.5rem 0 1.5rem;
+		}
+		.perfil-foto {
+			flex: 0 0 110px;
+			width: 110px;
+			height: 110px;
+			border-radius: 50%;
+			object-fit: cover;
+			background: var(--cg-color-gris-300);
+		}
+		.perfil-encabezado h1 {
+			margin: 0 0 0.5rem 0;
+		}
+		.perfil-bio {
+			margin: 0 0 0.5rem 0;
+		}
 		.lista {
 			list-style: none;
 			padding: 0;
@@ -66,6 +93,13 @@ const { Content } = await render(inv);
 		.meta {
 			color: #666;
 			font-size: 0.9rem;
+		}
+		@media (max-width: 520px) {
+			.perfil-encabezado {
+				flex-direction: column;
+				text-align: center;
+				align-items: center;
+			}
 		}
 	</style>
 </Base>

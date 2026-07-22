@@ -182,6 +182,26 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		</>
 	)}
 
+	{investigadores.filter(Boolean).length > 0 && (
+		<section class="autor-bloque">
+			<h2>{investigadores.length > 1 ? 'Sobre los investigadores' : 'Sobre el investigador'}</h2>
+			{investigadores.filter(Boolean).map((inv) => (
+				<div class="autor-card">
+					{inv.data.fotoUrl ? (
+						<img class="autor-foto" src={withBase(inv.data.fotoUrl)} alt={inv.data.nombre} loading="lazy" />
+					) : (
+						<div class="autor-foto autor-foto-vacia" aria-hidden="true"></div>
+					)}
+					<div class="autor-info">
+						<h3>{inv.data.nombre}</h3>
+						<p>{inv.data.bioBreve}</p>
+						<a href={withBase(`/investigadores/${inv.id}/`)}>Ver perfil completo &rarr;</a>
+					</div>
+				</div>
+			))}
+		</section>
+	)}
+
 	{relacionadas.length > 0 && (
 		<section class="relacionadas">
 			<h2>Te podría interesar</h2>
@@ -192,6 +212,61 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 	)}
 
 	<style>
+		.autor-bloque {
+			max-width: 46rem;
+			margin: 0 auto;
+			padding: 2.5rem 1.5rem 0.5rem;
+		}
+		.autor-bloque h2 {
+			margin: 0 0 1.25rem 0;
+		}
+		.autor-card {
+			display: flex;
+			gap: 1.25rem;
+			align-items: center;
+			padding: 1.25rem;
+			border-radius: var(--cg-border-radius-m);
+			background: var(--cg-color-gris-100);
+			border: 1px solid var(--cg-color-gris-300);
+			margin-bottom: 1rem;
+		}
+		.autor-foto {
+			flex: 0 0 84px;
+			width: 84px;
+			height: 84px;
+			border-radius: 50%;
+			object-fit: cover;
+			background: var(--cg-color-gris-300);
+		}
+		.autor-foto-vacia {
+			background: linear-gradient(140deg, #1c2531, #0e131b);
+		}
+		.autor-info h3 {
+			margin: 0 0 0.35rem 0;
+			font-size: 1.15rem;
+			color: var(--cg-color-gris-700) !important;
+		}
+		.autor-info p {
+			margin: 0 0 0.5rem 0;
+			font-size: 0.92rem;
+		}
+		.autor-info a {
+			font-weight: 600;
+			font-size: 0.9rem;
+			color: var(--cg-color-naranja-300);
+			text-decoration: none;
+		}
+		.autor-info a:hover {
+			color: var(--cg-color-naranja-500);
+		}
+		@media (max-width: 480px) {
+			.autor-card {
+				flex-direction: column;
+				text-align: center;
+				align-items: center;
+			}
+		}
+
 		.relacionadas {
 			max-width: 64rem;
 			margin: 1rem auto 0;

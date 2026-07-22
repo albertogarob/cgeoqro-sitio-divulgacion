@@ -122,7 +122,10 @@ y [src/content.config.ts](../../../src/content.config.ts).
 
 1. **Investigador** (`src/content/investigadores/<slug>.md`) si no existe: `nombre`,
    `bioBreve` (honesta, sin inventar cargos), `lineasInvestigacion`, `sede: "Querétaro"`,
-   `carpetaDrive` (URL de su subcarpeta).
+   `carpetaDrive` (URL de su subcarpeta). Foto y bio reales del perfil institucional en
+   `https://web.centrogeo.org.mx/areas-profile/<slug>` (slug tipo inicial+apellido, ej.
+   `agarcia`, `rlopez`, `jpina`, `kyanez`): descarga el avatar a
+   `public/investigadores/<id>.<ext>`, ponlo en `fotoUrl`, y usa la semblanza como bio.
 2. **Paper** (`src/content/papers/<slug>.md`), **solo metadatos**: `titulo`,
    `investigador` (ref), `editorial` (incluye la licencia si es CC), `anioPublicacion`,
    `doi`, `driveFileId`, `estadoPipeline: "publicado"`, `temasClave`. Nunca el texto.

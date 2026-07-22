@@ -1,11 +1,18 @@
 ---
 nombre: "Karol Yáñez Soria"
-bioBreve: "Investigadora en geografía urbana, urbanismo feminista y el derecho a la ciudad, con trabajo sobre los cuidados, el mejoramiento barrial y la acción climática en América Latina."
+fotoUrl: "/investigadores/karol-yanez-soria.jpg"
+bioBreve: "Doctora en Planeación y Desarrollo. Trabaja en indicadores urbano-ambientales, resiliencia climática, género e inclusión social, y coproducción de conocimiento en CentroGeo Querétaro."
 lineasInvestigacion:
-  - "Geografía urbana"
-  - "Urbanismo feminista y cuidados"
-  - "Derecho a la ciudad"
-  - "Acción climática y mejoramiento barrial"
+  - "Indicadores urbano-ambientales"
+  - "Resiliencia climática"
+  - "Gobernanza metropolitana"
+  - "Inclusión social y género"
 sede: "Querétaro"
 carpetaDrive: "https://drive.google.com/drive/folders/1fd761Wrzq9THZloQwqRX5nHDCslzkalh"
 ---
+
+La Dra. Karol Yáñez Soria es Doctora en Planeación y Desarrollo por University College
+London y miembro del Sistema Nacional de Investigadores. En CentroGeo trabaja en
+indicadores urbano-ambientales, resiliencia climática, gobernanza metropolitana, e
+inclusión social y de género, con un enfoque en la coproducción de conocimiento entre
+arte, ciencia y ciudadanía.
