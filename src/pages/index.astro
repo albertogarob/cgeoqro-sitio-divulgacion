@@ -10,18 +10,6 @@ const series = await getCollection('series');
 const investigadores = await getCollection('investigadores');
 const entrevistas = await getCollection('entrevistas');
 
-// Cápsula destacada: preferimos contenido real (no ejemplos de plantilla) y, dentro
-// de eso, un recorrido interactivo (scrollytelling); si no hay, una con video; si no,
-// la más reciente disponible.
-const noEjemplo = capsulas.filter((c) => !c.id.startsWith('ejemplo'));
-const candidatas = noEjemplo.length > 0 ? noEjemplo : capsulas;
-const destacada =
-  candidatas.find((c) => c.data.scrolly) ??
-  candidatas.find((c) => c.data.formatos.includes('video')) ??
-  candidatas[0];
-const destacadaSerie = destacada ? await getEntry(destacada.data.serie) : null;
-const destacadaEsScrolly = Boolean(destacada?.data.scrolly);
-
 // Conteo de cápsulas por serie para mostrar en las tarjetas de tema.
 const seriesConConteo = series.map((s) => ({
   serie: s,
@@ -63,6 +51,20 @@ const formatoEtiqueta = {
   texto: 'Texto',
 };
 
+// Cápsulas reales (sin ejemplos) para el carrusel del hero, ya ordenadas por fecha.
+const capsReales = capsulas.filter((c) => !c.id.startsWith('ejemplo'));
+const capsCarrusel = await Promise.all(
+  capsReales.map(async (c) => ({
+    c,
+    serie: await getEntry(c.data.serie),
+    esScrolly: Boolean(c.data.scrolly),
+    formatoLabel: c.data.scrolly
+      ? 'Recorrido interactivo'
+      : c.data.formatos.map((f) => formatoEtiqueta[f] ?? f).join(' · '),
+    cta: c.data.scrolly ? 'Iniciar el recorrido' : 'Ver la cápsula',
+  }))
+);
+
 // Geometría del globo terráqueo del hero (SVG original, sin usar imágenes de
 // terceros, en cumplimiento de la política de derechos de autor del proyecto).
 // El globo evoca lo geoespacial; los nodos y arcos, el compartir conocimiento.
@@ -93,7 +95,7 @@ const arcos = [
 ---
 
 <Base title="Inicio">
-	<section slot="hero" class="hero">
+	<section slot="hero" class="hero" data-carrusel data-slide="0">
 		<svg class="hero-globo" viewBox="0 0 500 500" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
 			<defs>
 				<radialGradient id="globoFill" cx="38%" cy="35%" r="75%">
@@ -117,23 +119,75 @@ const arcos = [
 				))}
 			</g>
 		</svg>
-		<div class="hero-contenido">
-			<span class="hero-eyebrow">Divulgación científica · CentroGeo Querétaro</span>
-			<h1>La ciencia que se produce aquí, contada para todos</h1>
-			<p class="hero-sub">
-				Traducimos la investigación de CentroGeo Querétaro a cápsulas breves, videos y
-				entrevistas pensadas para el público general. Sin tecnicismos, sin perder rigor.
-			</p>
-			<div class="hero-cta">
-				<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
-			</div>
-			<div class="hero-conoce">
-				<span class="hero-conoce-label">Conócenos:</span>
-				<a class="cg-btn hero-btn-fantasma" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
-				<a class="cg-btn hero-btn-fantasma" href={withBase('/quienes-somos/')}>¿Quiénes somos?</a>
-				<a class="cg-btn hero-btn-fantasma" href={withBase('/centrogeo-queretaro/')}>¿Qué es el CentroGeo Querétaro?</a>
+
+		<div class="carrusel-viewport">
+			<div class="carrusel-track">
+				<!-- Slide 0: banner de bienvenida -->
+				<div class="slide slide-intro">
+					<div class="hero-contenido">
+						<span class="hero-eyebrow">Divulgación científica · CentroGeo Querétaro</span>
+						<h1>La ciencia que se produce aquí, contada para todos</h1>
+						<p class="hero-sub">
+							Traducimos la investigación de CentroGeo Querétaro a cápsulas breves, videos y
+							entrevistas pensadas para el público general. Sin tecnicismos, sin perder rigor.
+						</p>
+						<div class="hero-cta">
+							<a class="cg-btn cg-btn-primary" href={withBase('/capsulas/')}>Explorar las cápsulas</a>
+						</div>
+						<div class="hero-conoce">
+							<span class="hero-conoce-label">Conócenos:</span>
+							<a class="cg-btn hero-btn-fantasma" href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+							<a class="cg-btn hero-btn-fantasma" href={withBase('/quienes-somos/')}>¿Quiénes somos?</a>
+							<a class="cg-btn hero-btn-fantasma" href={withBase('/centrogeo-queretaro/')}>¿Qué es el CentroGeo Querétaro?</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Slides de cápsulas -->
+				{capsCarrusel.map(({ c, serie, esScrolly, formatoLabel, cta }) => (
+					<div class="slide slide-capsula">
+						<div class="hero-contenido">
+							<span class="hero-eyebrow">
+								{serie ? serie.data.nombre : 'Cápsula'} · {formatoLabel}
+							</span>
+							<h2>{c.data.titulo}</h2>
+							<p class="hero-sub">{c.data.resumenCorto}</p>
+							<div class="hero-cta">
+								<a class="cg-btn cg-btn-primary" href={withBase(`/capsulas/${c.id}/`)}>{cta} &rarr;</a>
+							</div>
+						</div>
+						<div class="slide-visual">
+							{esScrolly ? (
+								<svg viewBox="0 0 260 200" aria-hidden="true">
+									<g stroke="#e8843f" stroke-width="2" opacity="0.85">
+										<line x1="60" y1="60" x2="120" y2="50" />
+										<line x1="120" y1="50" x2="180" y2="80" />
+										<line x1="180" y1="80" x2="200" y2="140" />
+										<line x1="200" y1="140" x2="110" y2="150" />
+										<line x1="110" y1="150" x2="60" y2="60" />
+										<line x1="120" y1="50" x2="110" y2="150" />
+									</g>
+									<g fill="#e8843f">
+										<circle cx="60" cy="60" r="8" /><circle cx="120" cy="50" r="8" />
+										<circle cx="180" cy="80" r="8" /><circle cx="200" cy="140" r="8" />
+										<circle cx="110" cy="150" r="8" />
+									</g>
+								</svg>
+							) : (
+								<svg viewBox="0 0 200 200" aria-hidden="true">
+									<circle cx="100" cy="100" r="70" fill="none" stroke="#e8843f" stroke-width="3" opacity="0.85" />
+									<path d="M84,66 L142,100 L84,134 Z" fill="#e8843f" />
+								</svg>
+							)}
+						</div>
+					</div>
+				))}
 			</div>
 		</div>
+
+		<button class="carrusel-flecha carrusel-prev" type="button" aria-label="Anterior">&#8249;</button>
+		<button class="carrusel-flecha carrusel-next" type="button" aria-label="Siguiente">&#8250;</button>
+		<div class="carrusel-puntos" role="tablist" aria-label="Ir a la diapositiva"></div>
 	</section>
 
 	<section class="bloque">
@@ -149,44 +203,6 @@ const arcos = [
 			))}
 		</div>
 	</section>
-
-	{destacada && (
-		<section class="bloque">
-			<h2>Empieza por aquí</h2>
-			<a class:list={['destacada', { 'destacada-scrolly': destacadaEsScrolly }]} href={withBase(`/capsulas/${destacada.id}/`)}>
-				<div class="destacada-media">
-					{destacadaEsScrolly ? (
-						<svg class="destacada-svg" viewBox="0 0 260 200" aria-hidden="true">
-							<g stroke="#e8843f" stroke-width="2" opacity="0.8">
-								<line x1="60" y1="60" x2="120" y2="50" />
-								<line x1="120" y1="50" x2="180" y2="80" />
-								<line x1="180" y1="80" x2="200" y2="140" />
-								<line x1="200" y1="140" x2="110" y2="150" />
-								<line x1="110" y1="150" x2="60" y2="60" />
-								<line x1="120" y1="50" x2="110" y2="150" />
-							</g>
-							<g fill="#e8843f">
-								<circle cx="60" cy="60" r="7" /><circle cx="120" cy="50" r="7" />
-								<circle cx="180" cy="80" r="7" /><circle cx="200" cy="140" r="7" />
-								<circle cx="110" cy="150" r="7" />
-							</g>
-						</svg>
-					) : null}
-					<span class="destacada-formato">
-						{destacadaEsScrolly ? 'Recorrido interactivo' : destacada.data.formatos.map((f) => formatoEtiqueta[f] ?? f).join(' · ')}
-					</span>
-				</div>
-				<div class="destacada-texto">
-					{destacadaSerie && <span class="cg-pill">{destacadaSerie.data.nombre}</span>}
-					<h3>{destacada.data.titulo}</h3>
-					<p>{destacada.data.resumenCorto}</p>
-					<span class="explorar-flecha">
-						{destacadaEsScrolly ? 'Iniciar el recorrido' : 'Ver la cápsula'} &rarr;
-					</span>
-				</div>
-			</a>
-		</section>
-	)}
 
 	<section class="bloque">
 		<h2>Explora por tema</h2>
@@ -232,9 +248,94 @@ const arcos = [
 		.hero-contenido {
 			position: relative;
 			z-index: 1;
+		}
+		/* ── Carrusel ── */
+		.carrusel-viewport {
+			position: relative;
+			z-index: 1;
+			overflow: hidden;
+		}
+		.carrusel-track {
+			display: flex;
+			transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.slide {
+			flex: 0 0 auto;
+			min-height: clamp(30rem, 66vh, 40rem);
+			display: flex;
+			align-items: center;
+			box-sizing: border-box;
+		}
+		.slide-intro .hero-contenido {
 			max-width: 64rem;
 			margin: 0 auto;
-			padding: clamp(3rem, 7vw, 5.5rem) 1.5rem;
+			padding: clamp(2.5rem, 6vw, 4.5rem) 1.5rem;
+			width: 100%;
+		}
+		.slide-capsula {
+			max-width: 64rem;
+			width: 100%;
+			margin: 0 auto;
+			padding: clamp(2.5rem, 6vw, 4.5rem) 1.5rem;
+			display: grid;
+			grid-template-columns: 1.5fr 1fr;
+			gap: 2.5rem;
+			align-items: center;
+		}
+		.slide-visual {
+			display: flex;
+			justify-content: center;
+		}
+		.slide-visual svg {
+			width: 100%;
+			max-width: 220px;
+			height: auto;
+		}
+		.carrusel-flecha {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 3;
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			border: 1px solid rgba(255, 255, 255, 0.4);
+			background: rgba(255, 255, 255, 0.1);
+			color: #ffffff;
+			font-size: 1.6rem;
+			line-height: 1;
+			cursor: pointer;
+			transition: background-color 150ms ease, border-color 150ms ease;
+		}
+		.carrusel-flecha:hover {
+			background: rgba(255, 255, 255, 0.22);
+			border-color: #ffffff;
+		}
+		.carrusel-prev { left: 1rem; }
+		.carrusel-next { right: 1rem; }
+		.carrusel-puntos {
+			position: absolute;
+			bottom: 1rem;
+			left: 0;
+			right: 0;
+			display: flex;
+			justify-content: center;
+			gap: 0.5rem;
+			z-index: 3;
+		}
+		.carrusel-puntos :global(.punto) {
+			width: 9px;
+			height: 9px;
+			padding: 0;
+			border-radius: 50%;
+			border: none;
+			background: rgba(255, 255, 255, 0.35);
+			cursor: pointer;
+			transition: background-color 150ms ease, transform 150ms ease;
+		}
+		.carrusel-puntos :global(.punto.activo) {
+			background: #e8843f;
+			transform: scale(1.25);
 		}
 		.hero-eyebrow {
 			display: block;
@@ -245,10 +346,11 @@ const arcos = [
 			letter-spacing: 0.12em;
 			margin-bottom: 0.75rem;
 		}
-		.hero h1 {
+		.hero h1,
+		.hero h2 {
 			color: #ffffff;
-			font-size: clamp(2rem, 5vw, 3.4rem);
-			line-height: 1.08;
+			font-size: clamp(1.8rem, 4.4vw, 3rem);
+			line-height: 1.1;
 			margin: 0 0 1.1rem 0;
 			max-width: 20ch;
 		}
@@ -295,8 +397,17 @@ const arcos = [
 		@media (max-width: 720px) {
 			.hero-globo {
 				right: -30%;
-				opacity: 0.5;
+				opacity: 0.35;
 			}
+			.slide-capsula {
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+			.slide-visual {
+				display: none;
+			}
+			.carrusel-prev { left: 0.25rem; }
+			.carrusel-next { right: 0.25rem; }
 		}
 
 		.bloque {
@@ -353,63 +464,6 @@ const arcos = [
 			font-size: 0.9rem;
 		}
 
-		.destacada {
-			display: grid;
-			grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
-			gap: 0;
-			border-radius: var(--cg-border-radius-m);
-			overflow: hidden;
-			border: 1px solid var(--cg-color-gris-300);
-			text-decoration: none !important;
-			color: var(--cg-color-gris-500) !important;
-			transition: border-color 150ms ease, box-shadow 150ms ease;
-		}
-		.destacada:hover {
-			border-color: var(--cg-color-naranja-300);
-			box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.4);
-		}
-		.destacada-media {
-			position: relative;
-			min-height: 12rem;
-			background: linear-gradient(135deg, var(--cg-color-gris-700), var(--cg-color-naranja-500));
-			display: flex;
-			align-items: flex-end;
-			padding: 1rem;
-		}
-		.destacada-scrolly .destacada-media {
-			background: radial-gradient(120% 130% at 40% 30%, #16324f 0%, #0c1a2b 60%, #060e18 100%);
-		}
-		.destacada-svg {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			padding: 1.5rem;
-		}
-		.destacada-formato {
-			position: relative;
-			z-index: 1;
-			background: rgba(255, 255, 255, 0.9);
-			color: var(--cg-color-gris-700);
-			font-size: 0.78rem;
-			font-weight: 700;
-			padding: 0.3rem 0.7rem;
-			border-radius: 999px;
-			text-transform: uppercase;
-			letter-spacing: 0.04em;
-		}
-		.destacada-texto {
-			padding: 1.75rem;
-		}
-		.destacada-texto h3 {
-			margin: 0.6rem 0;
-			color: var(--cg-color-gris-700) !important;
-			font-size: 1.4rem;
-		}
-		.destacada-texto p {
-			margin: 0 0 1rem 0;
-		}
-
 		.series-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
@@ -456,10 +510,68 @@ const arcos = [
 			color: var(--acento);
 		}
 
-		@media (max-width: 640px) {
-			.destacada {
-				grid-template-columns: 1fr;
-			}
-		}
 	</style>
+
+	<script>
+		function initCarrusel() {
+			const root = document.querySelector<HTMLElement>('.hero[data-carrusel]');
+			if (!root) return;
+			const track = root.querySelector<HTMLElement>('.carrusel-track');
+			const slides = Array.from(root.querySelectorAll<HTMLElement>('.slide'));
+			const dotsWrap = root.querySelector<HTMLElement>('.carrusel-puntos');
+			if (!track || !dotsWrap || slides.length === 0) return;
+
+			const n = slides.length;
+			let idx = 0;
+			let timer: ReturnType<typeof setInterval> | null = null;
+			const DELAY = 7000;
+			const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			// Anchos explícitos: track = n pantallas, cada slide = 1/n del track.
+			track.style.width = `${n * 100}%`;
+			slides.forEach((s) => { s.style.width = `${100 / n}%`; });
+
+			slides.forEach((_, i) => {
+				const b = document.createElement('button');
+				b.className = 'punto';
+				b.setAttribute('role', 'tab');
+				b.setAttribute('aria-label', `Diapositiva ${i + 1}`);
+				b.addEventListener('click', () => { go(i); reset(); });
+				dotsWrap.appendChild(b);
+			});
+			const dots = Array.from(dotsWrap.querySelectorAll<HTMLElement>('.punto'));
+
+			function go(i: number) {
+				idx = (i + n) % n;
+				track!.style.transform = `translateX(-${idx * (100 / n)}%)`;
+				root!.dataset.slide = String(idx);
+				dots.forEach((d, j) => d.classList.toggle('activo', j === idx));
+			}
+			function play() { if (reduce) return; stop(); timer = setInterval(() => go(idx + 1), DELAY); }
+			function stop() { if (timer) clearInterval(timer); timer = null; }
+			function reset() { stop(); play(); }
+
+			root.querySelector('.carrusel-prev')?.addEventListener('click', () => { go(idx - 1); reset(); });
+			root.querySelector('.carrusel-next')?.addEventListener('click', () => { go(idx + 1); reset(); });
+			root.addEventListener('mouseenter', stop);
+			root.addEventListener('mouseleave', play);
+			root.addEventListener('focusin', stop);
+			root.addEventListener('focusout', play);
+
+			// Swipe en móvil.
+			let sx = 0;
+			track.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; stop(); }, { passive: true });
+			track.addEventListener('touchend', (e) => {
+				const dx = e.changedTouches[0].clientX - sx;
+				if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+				play();
+			}, { passive: true });
+
+			go(0);
+			play();
+		}
+
+		if (document.readyState !== 'loading') initCarrusel();
+		else document.addEventListener('DOMContentLoaded', initCarrusel);
+	</script>
 </Base>
