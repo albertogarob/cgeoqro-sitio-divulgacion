@@ -1,0 +1,59 @@
+---
+import { withBase } from '../lib/url';
+
+interface Props {
+  activo: 'esto' | 'quienes' | 'centrogeo';
+}
+
+const { activo } = Astro.props;
+
+const tabs = [
+  { id: 'esto', href: '/acerca-de/', label: '¿Qué es esto?' },
+  { id: 'quienes', href: '/quienes-somos/', label: '¿Quiénes somos?' },
+  { id: 'centrogeo', href: '/centrogeo-queretaro/', label: '¿Qué es el CentroGeo Querétaro?' },
+];
+---
+
+<nav class="acerca-nav" aria-label="Secciones de Acerca">
+	{tabs.map((t) => (
+		<a
+			href={withBase(t.href)}
+			class:list={['acerca-tab', { activo: t.id === activo }]}
+			aria-current={t.id === activo ? 'page' : undefined}
+		>
+			{t.label}
+		</a>
+	))}
+</nav>
+
+<style>
+	.acerca-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--cg-color-gris-300);
+	}
+	.acerca-tab {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 1rem;
+		border-radius: 999px;
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--cg-color-gris-700);
+		background: var(--cg-color-gris-100);
+		border: 1px solid transparent;
+		transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+	}
+	.acerca-tab:hover {
+		border-color: var(--cg-color-naranja-300);
+		color: var(--cg-color-naranja-300);
+	}
+	.acerca-tab.activo {
+		background: var(--cg-color-naranja-300);
+		color: var(--cg-color-blanco);
+	}
+</style>

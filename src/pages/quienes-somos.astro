@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import AcercaNav from '../components/AcercaNav.astro';
+import { withBase } from '../lib/url';
+---
+
+<Base title="¿Quiénes somos?">
+	<AcercaNav activo="quienes" />
+	<h1>¿Quiénes somos?</h1>
+	<p>
+		Somos una iniciativa de divulgación de <strong>CentroGeo Querétaro</strong>: un esfuerzo
+		colaborativo entre investigadores del centro y un equipo de divulgación que trabaja para
+		acercar la ciencia geoespacial al público general.
+	</p>
+
+	<h2>Qué hacemos</h2>
+	<p>
+		Tomamos las publicaciones académicas de los investigadores del centro y las convertimos en
+		contenidos breves y accesibles: cápsulas de conocimiento, videos, infografías y entrevistas.
+		El objetivo no es simplificar la ciencia hasta vaciarla, sino traducirla a un lenguaje que
+		cualquier persona pueda entender, conservando el rigor del trabajo original.
+	</p>
+
+	<h2>Cómo trabajamos</h2>
+	<p>
+		Cada contenido nace de una publicación real y pasa por dos filtros antes de publicarse: uno
+		de precisión, para que lo que decimos sea fiel a la investigación, y otro de derechos de
+		autor, para no reproducir material protegido por las editoriales. Puedes leer los detalles en
+		<a href={withBase('/acerca-de/')}>¿Qué es esto?</a>
+	</p>
+
+	<h2>Las voces detrás de la ciencia</h2>
+	<p>
+		El corazón de este proyecto son los investigadores de CentroGeo Querétaro. Conoce a quienes
+		hacen la ciencia que aquí divulgamos en la sección de
+		<a href={withBase('/investigadores/')}>Investigadores</a>, donde cada perfil reúne sus
+		cápsulas, entrevistas y publicaciones.
+	</p>
+</Base>
