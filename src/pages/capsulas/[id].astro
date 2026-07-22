@@ -16,13 +16,17 @@ const scrollyComponents: Record<string, any> = { utopias: ScrollyUtopias, sequia
 const { capsula } = Astro.props;
 const { Content } = await render(capsula);
 const ScrollyComp = capsula.data.scrolly ? scrollyComponents[capsula.data.scrolly] : null;
+const esVideo = Boolean(capsula.data.videoUrl) && !ScrollyComp;
 
 const serie = await getEntry(capsula.data.serie);
 const paper = await getEntry(capsula.data.paperFuente);
 const investigadores = await Promise.all(capsula.data.investigadores.map((ref) => getEntry(ref)));
+
+// Los créditos se repiten en varios layouts.
+const creditos = { investigadores, paper, revisadoPor: capsula.data.revisadoPor };
 ---
 
-<Base title={capsula.data.titulo} bleed={Boolean(ScrollyComp)}>
+<Base title={capsula.data.titulo} bleed={Boolean(ScrollyComp) || esVideo}>
 	{ScrollyComp ? (
 		<>
 			<div class="cap-wrap cap-intro">
@@ -44,20 +48,77 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 					<h2>Fuente y créditos</h2>
 					<ul>
 						<li>
-							Investigadores: {investigadores.map((inv, i) => (
+							Investigadores: {creditos.investigadores.map((inv, i) => (
 								<>
 									{i > 0 && ', '}
 									{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
 								</>
 							))}
 						</li>
-						{paper && (
+						{creditos.paper && (
 							<li>
-								Basado en (referencia, sin reproducir el texto original): {paper.data.titulo}
-								{'. '}{paper.data.editorial} ({paper.data.anioPublicacion})
+								Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
+								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
 							</li>
 						)}
-						<li>Revisado por: {capsula.data.revisadoPor}</li>
+						<li>Revisado por: {creditos.revisadoPor}</li>
+					</ul>
+				</section>
+			</div>
+		</>
+	) : esVideo ? (
+		<>
+			<div class="cap-wrap cap-intro">
+				<p><a href={withBase('/capsulas/')}>← Todas las cápsulas</a></p>
+				<h1>{capsula.data.titulo}</h1>
+				<p class="meta">
+					{serie && <a href={withBase(`/series/${serie.id}/`)}>{serie.data.nombre}</a>}
+					{' · Video'}
+				</p>
+				<p class="resumen"><strong>{capsula.data.resumenCorto}</strong></p>
+			</div>
+
+			<div class="cine">
+				<div class="cine-inner">
+					<div class="cine-video">
+						<iframe
+							src={capsula.data.videoUrl}
+							allow="autoplay; fullscreen"
+							allowfullscreen
+							loading="lazy"
+							title={`Video: ${capsula.data.titulo}`}
+						></iframe>
+					</div>
+					<p class="cine-fallback">
+						¿No carga el video? Puede deberse a permisos de Google Drive. {capsula.data.fuenteExternaUrl ? (
+							<a href={capsula.data.fuenteExternaUrl} target="_blank" rel="noopener">Míralo en la fuente original</a>
+						) : (
+							<a href={capsula.data.videoUrl} target="_blank" rel="noopener">Ábrelo en una pestaña nueva</a>
+						)}.
+					</p>
+				</div>
+			</div>
+
+			<div class="cap-wrap cap-outro">
+				<article><Content /></article>
+				<section class="atribucion">
+					<h2>Fuente y créditos</h2>
+					<ul>
+						<li>
+							Investigadores: {creditos.investigadores.map((inv, i) => (
+								<>
+									{i > 0 && ', '}
+									{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
+								</>
+							))}
+						</li>
+						{creditos.paper && (
+							<li>
+								Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
+								{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
+							</li>
+						)}
+						<li>Revisado por: {creditos.revisadoPor}</li>
 					</ul>
 				</section>
 			</div>
@@ -74,27 +135,6 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 
 			<p class="resumen"><strong>{capsula.data.resumenCorto}</strong></p>
 
-			{capsula.data.videoUrl && (
-				<>
-					<div class="video-wrapper">
-						<iframe
-							src={capsula.data.videoUrl}
-							allow="autoplay"
-							allowfullscreen
-							loading="lazy"
-							title={`Video: ${capsula.data.titulo}`}
-						></iframe>
-					</div>
-					<p class="video-fallback">
-						Este video puede no cargar en algunos navegadores por permisos de Google
-						Drive. {capsula.data.fuenteExternaUrl ? (
-							<a href={capsula.data.fuenteExternaUrl} target="_blank" rel="noopener">Míralo directamente en la fuente original</a>
-						) : (
-							<a href={capsula.data.videoUrl} target="_blank" rel="noopener">Ábrelo en una pestaña nueva</a>
-						)}.
-					</p>
-				</>
-			)}
 			{capsula.data.audioUrl && (
 				<p><a href={capsula.data.audioUrl} target="_blank" rel="noopener">Escuchar audio</a></p>
 			)}
@@ -107,20 +147,20 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 				<h2>Fuente y créditos</h2>
 				<ul>
 					<li>
-						Investigadores: {investigadores.map((inv, i) => (
+						Investigadores: {creditos.investigadores.map((inv, i) => (
 							<>
 								{i > 0 && ', '}
 								{inv && <a href={withBase(`/investigadores/${inv.id}/`)}>{inv.data.nombre}</a>}
 							</>
 						))}
 					</li>
-					{paper && (
+					{creditos.paper && (
 						<li>
-							Basado en (referencia, sin reproducir el texto original): {paper.data.titulo}
-							{'. '}{paper.data.editorial} ({paper.data.anioPublicacion})
+							Basado en (referencia, sin reproducir el texto original): {creditos.paper.data.titulo}
+							{'. '}{creditos.paper.data.editorial} ({creditos.paper.data.anioPublicacion})
 						</li>
 					)}
-					<li>Revisado por: {capsula.data.revisadoPor}</li>
+					<li>Revisado por: {creditos.revisadoPor}</li>
 				</ul>
 			</section>
 		</>
@@ -146,26 +186,6 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 			font-size: 0.95rem;
 			margin-top: 1.5rem;
 		}
-		.video-wrapper {
-			position: relative;
-			width: 100%;
-			padding-top: 56.25%;
-			margin: 1.5rem 0;
-			border-radius: 8px;
-			overflow: hidden;
-		}
-		.video-wrapper iframe {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			border: 0;
-		}
-		.video-fallback {
-			font-size: 0.85rem;
-			color: #666;
-			margin-top: -1rem;
-		}
 		.meta {
 			color: #666;
 			font-size: 0.9rem;
@@ -179,6 +199,41 @@ const investigadores = await Promise.all(capsula.data.investigadores.map((ref) =
 			border-top: 1px solid #eee;
 			font-size: 0.9rem;
 			color: #444;
+		}
+
+		/* ── Modo cine para cápsulas de video (full-bleed) ── */
+		.cine {
+			background: radial-gradient(120% 100% at 50% 0%, #16181c 0%, #0a0a0b 70%);
+			padding: clamp(1.5rem, 4vw, 3.5rem) 1rem;
+		}
+		.cine-inner {
+			max-width: min(94vw, 1280px);
+			margin: 0 auto;
+		}
+		.cine-video {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			border-radius: 12px;
+			overflow: hidden;
+			background: #000;
+			box-shadow: 0 40px 90px -45px rgba(0, 0, 0, 0.9);
+		}
+		.cine-video iframe {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			border: 0;
+		}
+		.cine-fallback {
+			text-align: center;
+			color: rgba(255, 255, 255, 0.55);
+			font-size: 0.85rem;
+			margin: 1rem 0 0 0;
+		}
+		.cine-fallback a {
+			color: var(--cg-color-naranja-300);
 		}
 	</style>
 </Base>
