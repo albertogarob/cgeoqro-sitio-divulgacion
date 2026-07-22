@@ -4,7 +4,19 @@
 
 Prototipo de sitio web construido con **Astro** para la divulgación científica, dirigida
 principalmente al público general, del conocimiento generado por investigadores del
-**CentroGeo Querétaro (CentroGeo QRO)** a partir de sus publicaciones académicas.
+**CentroGeo Querétaro** a partir de sus publicaciones académicas.
+
+Nombre del sitio: **Divulgación CentroGeo Querétaro**.
+
+## Convenciones de escritura del sitio (reglas obligatorias)
+
+Aplican a todo texto visible del sitio y a cualquier contenido generado:
+
+- **Nunca escribir "QRO"**. Siempre usar "Querétaro" completo. (Excepción técnica:
+  identificadores internos, rutas de carpetas y el nombre del repo pueden conservar
+  "CGeoQRO"/"qro", pero nada de eso debe aparecer en texto visible al usuario.)
+- **Prohibido usar em-dashes (—)**. Usar comas, puntos, o reestructurar la frase.
+  Aplica también a los comentarios de código.
 
 Astro debe funcionar no solo como generador de sitio estático, sino también como un
 **CRM ligero**: gestión de investigadores, sus papers, y los contenidos de divulgación
