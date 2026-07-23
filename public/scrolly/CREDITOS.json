@@ -1,0 +1,26 @@
+[
+  {
+    "archivo": "/scrolly/sequia-tierra-seca.jpg",
+    "rol": "opener: tierra agrietada",
+    "titulo": "File:Drought land dry mud BOUHANIFIA Algeria.jpg",
+    "licencia": "CC BY-SA 4.0",
+    "autor": "Hydrosami",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Drought_land_dry_mud_BOUHANIFIA_Algeria.jpg"
+  },
+  {
+    "archivo": "/scrolly/sequia-embalse-seco.jpg",
+    "rol": "impacto: embalse seco",
+    "titulo": "File:Yesa - Embalse - Sequía 01.jpg",
+    "licencia": "CC BY-SA 4.0",
+    "autor": "Basotxerri",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Yesa_-_Embalse_-_Sequ%C3%ADa_01.jpg"
+  },
+  {
+    "archivo": "/scrolly/sequia-riego.jpg",
+    "rol": "cierre: riego / agua",
+    "titulo": "File:Irrigation and Water (20150827-NRCS-LSC-0363).jpg",
+    "licencia": "Public domain",
+    "autor": "USDAgov",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Irrigation_and_Water_(20150827-NRCS-LSC-0363).jpg"
+  }
+]

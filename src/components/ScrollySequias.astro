@@ -3,6 +3,11 @@
 // Convolución-LSTM (Medrano, Rodríguez, López-Farías et al., Research in Computing
 // Science 152(9), 2023). Texto parafraseado; gráficos SVG propios, sin reproducir
 // figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
+//
+// Fondos fotográficos de apertura/impacto/cierre: fotos con licencia libre (CC BY-SA /
+// dominio público) descargadas de Wikimedia Commons, NO figuras del paper. Créditos y
+// licencia en public/scrolly/CREDITOS.json.
+import { withBase } from '../lib/url';
 
 const cols = 9;
 const rows = 5;
@@ -36,20 +41,24 @@ const pasos = [
   { n: 6, pos: 'left', texto: 'El resultado supera al método ingenuo: menos error en la estimación. El costo: mucho cómputo y memoria.' },
   { n: 7, pos: 'center', texto: 'Anticipar la sequía permite cuidar el agua, proteger los cultivos y decidir a tiempo. Ciencia geoespacial al servicio de la sociedad.' },
 ];
+
+// Atribución de las fotos de fondo (licencia libre, no figuras del paper).
+const creditosFotos = [
+  { autor: 'Hydrosami', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Drought_land_dry_mud_BOUHANIFIA_Algeria.jpg' },
+  { autor: 'Basotxerri', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Yesa_-_Embalse_-_Sequ%C3%ADa_01.jpg' },
+  { autor: 'USDA', licencia: 'dominio público', fuente: 'https://commons.wikimedia.org/wiki/File:Irrigation_and_Water_(20150827-NRCS-LSC-0363).jpg' },
+];
 ---
 
 <section class="scrolly" data-step="0">
 	<div class="scrolly-stage">
+		<div class="photo-bg" aria-hidden="true">
+			<img class="photo" data-photo="0" src={withBase('/scrolly/sequia-tierra-seca.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="1" src={withBase('/scrolly/sequia-embalse-seco.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="7" src={withBase('/scrolly/sequia-riego.jpg')} alt="" loading="lazy" />
+			<div class="photo-scrim"></div>
+		</div>
 		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-			<defs>
-				<radialGradient id="sqBg" cx="50%" cy="36%" r="85%">
-					<stop offset="0%" stop-color="#20140a" />
-					<stop offset="55%" stop-color="#12100c" />
-					<stop offset="100%" stop-color="#070707" />
-				</radialGradient>
-			</defs>
-			<rect x="0" y="0" width="1000" height="700" fill="url(#sqBg)" />
-
 			<g class="map">
 				<g class="camera">
 					<!-- Contorno del mapa (rejilla) -->
@@ -154,6 +163,17 @@ const pasos = [
 			</div>
 		))}
 	</div>
+
+	<p class="foto-creditos">
+		Fotografías de fondo (licencia libre, no son figuras del artículo):{' '}
+		{creditosFotos.map((c, i) => (
+			<>
+				{i > 0 && ' · '}
+				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia})
+			</>
+		))}
+		{' '}vía Wikimedia Commons.
+	</p>
 </section>
 
 <script>
@@ -167,6 +187,11 @@ const pasos = [
 		const map = container.querySelector<SVGGElement>('.map');
 		const layers = Array.from(container.querySelectorAll<SVGGElement>('.layer'));
 		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
+		const photos = Array.from(container.querySelectorAll<HTMLImageElement>('.photo'));
+		const scrim = container.querySelector<HTMLElement>('.photo-scrim');
+		// Pasos con fondo fotográfico full-bleed (apertura, impacto y cierre). En ellos
+		// se oculta la visualización del mapa; el resto conserva el SVG científico.
+		const PASOS_FOTO = [0, 1, 7];
 
 		function setStageTop() {
 			const h = header ? header.offsetHeight : 64;
@@ -189,10 +214,22 @@ const pasos = [
 		function aplicar(step: number) {
 			container.dataset.step = String(step);
 			if (camera) camera.setAttribute('transform', camaras[step] ?? camaras[0]);
-			// El mapa se atenúa cuando el foco es un diagrama externo (serie, red, barras).
-			if (map) map.classList.toggle('dim', step === 3 || step === 4 || step === 6);
+			const esFoto = PASOS_FOTO.includes(step);
+			// El mapa se atenúa en diagramas externos (serie, red, barras) y se oculta por
+			// completo en los pasos con fondo fotográfico.
+			if (map) {
+				map.classList.toggle('dim', step === 3 || step === 4 || step === 6);
+				map.classList.toggle('hide', esFoto);
+			}
+			photos.forEach((p) => p.classList.toggle('on', Number(p.dataset.photo) === step));
+			if (scrim) scrim.classList.toggle('on', esFoto);
 			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
-			onlys.forEach((o) => o.classList.toggle('on', step === Number(o.dataset.only)));
+			// En pasos de foto se ocultan los "momentos" ligados al mapa; se preserva solo
+			// el paso 7 (chips de beneficios), que se lee bien sobre la foto de cierre.
+			onlys.forEach((o) => {
+				const n = Number(o.dataset.only);
+				o.classList.toggle('on', n === step && (!esFoto || n === 7));
+			});
 		}
 
 		aplicar(0);
@@ -223,13 +260,27 @@ const pasos = [
 		top: var(--stage-top);
 		height: calc(100vh - var(--stage-top));
 		width: 100%;
-		background: #070707;
+		background: radial-gradient(120% 90% at 50% 36%, #20140a 0%, #12100c 55%, #070707 100%);
 		overflow: hidden;
 	}
-	.mapa { width: 100%; height: 100%; display: block; }
+	.mapa { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
 	.camera { transform-origin: 0 0; transition: transform 1000ms cubic-bezier(0.45, 0.05, 0.2, 1); }
 	.map { transition: opacity 500ms ease, filter 500ms ease; }
 	.map.dim { opacity: 0.25; filter: saturate(0.6); }
+	.map.hide { opacity: 0; }
+
+	/* Capa de fondos fotográficos (full-bleed) en pasos narrativos. */
+	.photo-bg { position: absolute; inset: 0; z-index: 0; }
+	.photo-bg .photo {
+		position: absolute; inset: 0; width: 100%; height: 100%;
+		object-fit: cover; opacity: 0; transition: opacity 900ms ease;
+	}
+	.photo-bg .photo.on { opacity: 1; }
+	.photo-scrim {
+		position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease;
+		background: linear-gradient(180deg, rgba(7,7,7,0.5) 0%, rgba(7,7,7,0.22) 42%, rgba(7,7,7,0.74) 100%);
+	}
+	.photo-scrim.on { opacity: 1; }
 
 	.layer { opacity: 0; transition: opacity 600ms ease; }
 	.layer.on { opacity: 1; }
@@ -278,6 +329,13 @@ const pasos = [
 	.clave rect { fill: rgba(232,132,63,0.16); stroke: #e8843f; stroke-width: 1.5; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms); }
 	.clave text { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 20px; fill: #ffffff; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms + 120ms); }
 	.only.on .clave rect, .only.on .clave text { opacity: 1; }
+
+	.foto-creditos {
+		max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
+		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
+	}
+	.foto-creditos a { color: #a06a4a; text-decoration: none; }
+	.foto-creditos a:hover { text-decoration: underline; }
 
 	/* subtítulos flotantes, agrupados por lado, con centros estratégicos */
 	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }

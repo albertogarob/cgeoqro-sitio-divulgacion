@@ -88,10 +88,37 @@ cambiar (son correcciones ya validadas con el usuario):
   `transform` por paso, aplicado a un grupo `.camera`; transición CSS suave.
 - **Capas acumulativas**: grupos `.layer[data-from]` que encienden con `.on` cuando
   `step >= from`; **momentos** `.only[data-only]` que se muestran solo en su paso.
-- Gráficos **SVG originales** (malla, nodos, formas estilizadas). Sin fotos, salvo que
-  el usuario aporte imágenes propias o de dominio público verificado.
+- Gráficos **SVG originales** (malla, nodos, formas estilizadas) para los momentos de
+  datos, que son el centro de la narrativa.
+- **Fondos fotográficos de licencia libre** como *bookends* (ver más abajo): dan la
+  textura documental / NatGeo que pidió el equipo, sin usar figuras del paper.
 - Tipografía del sitio: `Archivo Expanded` (títulos), `Roboto Flex` (cuerpo). Acento
   `#e8843f` / `#c45620`.
+
+### Fondos fotográficos (patrón "bookend", validado con Ivvan)
+
+El equipo pidió "más gráficas, fotografías e imágenes" en los recorridos. La forma que
+funciona sin pelear con la visualización científica es usar fotos **solo en los pasos
+narrativos de apertura/impacto/cierre**, ocultando el SVG en esos pasos, y dejar los
+pasos intermedios como ciencia pura (mapa, red, barras). Arco: realidad -> abstracción
+-> realidad. Referencia ya implementada: `ScrollySequias.astro`.
+
+- **Origen de las fotos**: nunca figuras del paper. Descarga de **Wikimedia Commons**
+  con licencia **CC0 / dominio público / CC BY / CC BY-SA**, verificando la licencia
+  **una por una** vía la API (`extmetadata.LicenseShortName`). Wikimedia exige
+  `User-Agent` propio y rechaza tamaños de thumbnail arbitrarios: usa `iiurlwidth` de la
+  API para obtener un `thumburl` válido, no construyas la URL `/thumb/` a mano. Optimiza
+  a ~1600px de ancho, JPEG progresivo calidad ~82, y guarda en `public/scrolly/`.
+- **Atribución obligatoria** (CC BY / BY-SA la requieren): guarda un manifiesto
+  `public/scrolly/CREDITOS.json` (archivo, título, licencia, autor, fuente) y muestra
+  una línea discreta de créditos al final del componente (`.foto-creditos`).
+- **Técnica (full-bleed real, sin letterbox)**: capa HTML `.photo-bg` (con `<img
+  object-fit:cover>` + un `.photo-scrim` de gradiente para legibilidad) **detrás** del
+  SVG; el SVG pierde su `<rect>` de fondo opaco y el degradado oscuro pasa al
+  `background` del `.scrolly-stage`. En `aplicar(step)`: enciende la foto cuyo
+  `data-photo` coincide, activa el scrim, pon `.map.hide` (opacity 0) en esos pasos, y
+  **suprime los `.only` ligados al mapa** en pasos de foto (excepción: chips de cierre
+  que se leen bien sobre la foto).
 
 Scrollama se inicializa así (dispara en `onStepEnter`, offset ~0.75):
 

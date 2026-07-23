@@ -73,6 +73,14 @@ const entrevistas = defineCollection({
     preguntas: z.array(z.object({ pregunta: z.string(), respuesta: z.string() })).length(3),
     paperRelacionado: reference('papers').optional(),
     fechaPublicacion: z.date(),
+    // Video opcional de la entrevista, en modo cine arriba de las preguntas. Usar
+    // siempre YouTube (no listado o público), no Google Drive: ver CLAUDE.md sobre
+    // los permisos scoped-al-Site de Drive. Puede ser un video con avatar de IA
+    // generado desde un guion propio (parafraseado, sin texto verbatim del paper).
+    videoUrl: z.string().url().optional(),
+    // Nota de producción del video (ej. "Avatar generado con IA a partir de un guion
+    // de divulgación propio"). Se muestra bajo el reproductor.
+    videoNota: z.string().optional(),
   }),
 });
 
