@@ -22,5 +22,29 @@
     "licencia": "Public domain",
     "autor": "USDAgov",
     "fuente": "https://commons.wikimedia.org/wiki/File:Irrigation_and_Water_(20150827-NRCS-LSC-0363).jpg"
+  },
+  {
+    "archivo": "/scrolly/utopias-periferia.jpg",
+    "rol": "opener: periferia autoconstruida",
+    "titulo": "File:Ecatepec de Morelos (2).jpg",
+    "licencia": "CC BY-SA 4.0",
+    "autor": "Gzzz",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Ecatepec_de_Morelos_(2).jpg"
+  },
+  {
+    "archivo": "/scrolly/utopias-autoconstruccion.jpg",
+    "rol": "paso 3: barrios hechos a mano",
+    "titulo": "File:Ecatepec de Morelos (3).jpg",
+    "licencia": "CC BY-SA 4.0",
+    "autor": "Gzzz",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Ecatepec_de_Morelos_(3).jpg"
+  },
+  {
+    "archivo": "/scrolly/utopias-comunidad.jpg",
+    "rol": "cierre: vida comunitaria / tianguis",
+    "titulo": "File:Mty Tianguis 01.jpg",
+    "licencia": "Public domain",
+    "autor": "Rollcloud",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Mty_Tianguis_01.jpg"
   }
 ]

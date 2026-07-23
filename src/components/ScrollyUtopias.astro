@@ -2,6 +2,11 @@
 // Scrollytelling original sobre el Programa Utopías en Iztapalapa (paper de Karol
 // Yáñez Soria et al., Geopauta 2026, CC BY). Texto parafraseado; gráfico SVG propio,
 // sin reproducir figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
+//
+// Fondos fotográficos de apertura/autoconstrucción/cierre: fotos ilustrativas con
+// licencia libre (CC BY-SA / dominio público, vía Wikimedia Commons), NO figuras del
+// paper ni fotos del propio programa. Créditos y licencia en public/scrolly/CREDITOS.json.
+import { withBase } from '../lib/url';
 
 const celdas = [
   { x: 460, y: 180 }, { x: 540, y: 180 },
@@ -42,23 +47,30 @@ const pasos = [
   { n: 6, pos: 'left', texto: 'Lo que nació en la periferia hoy se expande a toda la ciudad, con reconocimiento internacional.' },
   { n: 7, pos: 'center', texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
 ];
+
+// Atribución de las fotos de fondo (licencia libre, ilustrativas, no del paper).
+const creditosFotos = [
+  { autor: 'Gzzz', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Ecatepec_de_Morelos_(2).jpg' },
+  { autor: 'Gzzz', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Ecatepec_de_Morelos_(3).jpg' },
+  { autor: 'Rollcloud', licencia: 'dominio público', fuente: 'https://commons.wikimedia.org/wiki/File:Mty_Tianguis_01.jpg' },
+];
 ---
 
 <section class="scrolly" data-step="0">
 	<div class="scrolly-stage">
+		<div class="photo-bg" aria-hidden="true">
+			<img class="photo" data-photo="0" src={withBase('/scrolly/utopias-periferia.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="3" src={withBase('/scrolly/utopias-autoconstruccion.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="7" src={withBase('/scrolly/utopias-comunidad.jpg')} alt="" loading="lazy" />
+			<div class="photo-scrim"></div>
+		</div>
 		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
 			<defs>
-				<radialGradient id="scBg" cx="50%" cy="38%" r="85%">
-					<stop offset="0%" stop-color="#173352" />
-					<stop offset="55%" stop-color="#0c1a2b" />
-					<stop offset="100%" stop-color="#050c15" />
-				</radialGradient>
 				<filter id="scGlow" x="-80%" y="-80%" width="260%" height="260%">
 					<feGaussianBlur stdDeviation="6" result="b" />
 					<feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
 				</filter>
 			</defs>
-			<rect x="0" y="0" width="1000" height="700" fill="url(#scBg)" />
 
 			<!-- ELEMENTO PERSISTENTE: el mapa, movido por la "cámara" -->
 			<g class="map">
@@ -150,6 +162,17 @@ const pasos = [
 			</div>
 		))}
 	</div>
+
+	<p class="foto-creditos">
+		Fotografías de fondo (ilustrativas, licencia libre, no son del artículo ni del programa):{' '}
+		{creditosFotos.map((c, i) => (
+			<>
+				{i > 0 && ' · '}
+				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia})
+			</>
+		))}
+		{' '}vía Wikimedia Commons.
+	</p>
 </section>
 
 <script>
@@ -164,6 +187,10 @@ const pasos = [
 		const map = container.querySelector<SVGGElement>('.map');
 		const layers = Array.from(container.querySelectorAll<SVGGElement>('.layer'));
 		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
+		const photos = Array.from(container.querySelectorAll<HTMLImageElement>('.photo'));
+		const scrim = container.querySelector<HTMLElement>('.photo-scrim');
+		// Pasos con fondo fotográfico full-bleed (apertura, autoconstrucción y cierre).
+		const PASOS_FOTO = [0, 3, 7];
 
 		// Encaje del escenario justo debajo del navbar (evita que lo tape).
 		function setStageTop() {
@@ -201,9 +228,21 @@ const pasos = [
 		function aplicar(step: number) {
 			container.dataset.step = String(step);
 			if (camera) camera.setAttribute('transform', camaras[step] ?? camaras[0]);
-			if (map) map.classList.toggle('dim', step === 1 || step === 2);
+			const esFoto = PASOS_FOTO.includes(step);
+			// El mapa se atenúa en momentos con overlay y se oculta en pasos con foto.
+			if (map) {
+				map.classList.toggle('dim', step === 1 || step === 2);
+				map.classList.toggle('hide', esFoto);
+			}
+			photos.forEach((p) => p.classList.toggle('on', Number(p.dataset.photo) === step));
+			if (scrim) scrim.classList.toggle('on', esFoto);
 			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
-			onlys.forEach((o) => o.classList.toggle('on', step === Number(o.dataset.only)));
+			// En pasos de foto se ocultan los "momentos" ligados al mapa; se preserva el
+			// paso 7 (chips de claves), que se lee bien sobre la foto de cierre.
+			onlys.forEach((o) => {
+				const n = Number(o.dataset.only);
+				o.classList.toggle('on', n === step && (!esFoto || n === 7));
+			});
 			// Contadores del paso activo.
 			const activeOnly = onlys.find((o) => Number(o.dataset.only) === step);
 			if (activeOnly) {
@@ -241,10 +280,12 @@ const pasos = [
 		top: var(--stage-top);
 		height: calc(100vh - var(--stage-top));
 		width: 100%;
-		background: #050c15;
+		background: radial-gradient(120% 90% at 50% 38%, #173352 0%, #0c1a2b 55%, #050c15 100%);
 		overflow: hidden;
 	}
 	.mapa {
+		position: relative;
+		z-index: 1;
 		width: 100%;
 		height: 100%;
 		display: block;
@@ -260,6 +301,22 @@ const pasos = [
 		opacity: 0.28;
 		filter: saturate(0.5);
 	}
+	.map.hide {
+		opacity: 0;
+	}
+
+	/* Capa de fondos fotográficos (full-bleed) en pasos narrativos. */
+	.photo-bg { position: absolute; inset: 0; z-index: 0; }
+	.photo-bg .photo {
+		position: absolute; inset: 0; width: 100%; height: 100%;
+		object-fit: cover; opacity: 0; transition: opacity 900ms ease;
+	}
+	.photo-bg .photo.on { opacity: 1; }
+	.photo-scrim {
+		position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease;
+		background: linear-gradient(180deg, rgba(5,12,21,0.5) 0%, rgba(5,12,21,0.22) 42%, rgba(5,12,21,0.74) 100%);
+	}
+	.photo-scrim.on { opacity: 1; }
 
 	/* capas acumulativas */
 	.layer {
@@ -361,6 +418,13 @@ const pasos = [
 	.only.on .clave rect, .only.on .clave text {
 		opacity: 1;
 	}
+
+	.foto-creditos {
+		max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
+		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
+	}
+	.foto-creditos a { color: #7d97b6; text-decoration: none; }
+	.foto-creditos a:hover { text-decoration: underline; }
 
 	/* texto flotante (subtítulos, no diapositivas); alterna de lado por paso */
 	.scrolly-steps {
