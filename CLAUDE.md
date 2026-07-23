@@ -97,10 +97,11 @@ publicaron**, independientemente de que el autor sea investigador de CentroGeo. 
 regla aplica a cualquier tarea de generación de contenido en este proyecto, sin
 excepción:
 
-**Prohibido:**
+**Prohibido (por defecto, salvo la excepción de licencia abierta más abajo):**
 - Reproducir bloques de texto verbatim (citas largas, párrafos completos, abstracts
-  copiados tal cual).
-- Extraer o reutilizar imágenes, figuras, gráficas o tablas originales del PDF.
+  copiados tal cual). El texto se parafrasea **siempre**, sin importar la licencia.
+- Extraer o reutilizar imágenes, figuras, gráficas o tablas originales del PDF cuando
+  el paper tiene todos los derechos reservados.
 - Cualquier material que pueda constituir infracción de copyright de la editorial.
 
 **Permitido:**
@@ -110,8 +111,33 @@ excepción:
 - Citación formal (referencia bibliográfica completa, DOI) sin reproducir el
   contenido protegido.
 
+**Excepción: figuras de papers con licencia que sí permite reutilización.**
+Cuando el paper está publicado bajo una licencia Creative Commons que autoriza
+redistribución (CC BY, CC BY-SA, CC BY-NC, CC0), sus **figuras, gráficas, mapas, fotos
+y tablas originales sí se pueden reproducir**, respetando:
+- **Atribución completa** junto a la figura: autores, título, revista, año, DOI y la
+  licencia (ej. "CC BY 4.0").
+- **Revisión figura por figura**: la licencia cubre el artículo "salvo que se indique
+  lo contrario". Si el pie de una figura la acredita a un tercero o dice "reproducida
+  con permiso", esa figura NO queda bajo la licencia del artículo y sigue prohibida.
+- **Condiciones de la licencia**: -NC exige uso no comercial; -SA, compartir con la
+  misma licencia; una -ND prohibiría derivados (recortes o ediciones de la figura).
+- El texto se sigue parafraseando siempre; la excepción es solo para material visual.
+
+**"Acceso abierto" no es lo mismo que licencia de reutilización.** Un paper puede ser
+gratuito de leer y aun así prohibir el reuso de sus imágenes. Verificar siempre la
+licencia real (en el PDF o en la página del editor), no basta con "acceso abierto".
+Casos ya verificados en este proyecto:
+- *Geopauta* (paper de Utopías, DOI 10.22481/rg.v10.18288): **CC BY 4.0**. Sus figuras
+  se pueden usar con atribución.
+- *Research in Computing Science* (paper de sequías, IPN): acceso abierto de lectura,
+  pero el IPN **prohíbe expresamente reproducir sus contenidos e imágenes sin
+  autorización previa**. Sus figuras NO se pueden usar sin permiso.
+- Capítulo del libro del T-MEC (paper de China-EE.UU.): todos los derechos reservados.
+
 Cualquier subagente o script que genere contenido de divulgación debe verificar que
-cumple esta política antes de publicar o entregar el resultado.
+cumple esta política antes de publicar o entregar el resultado, incluyendo confirmar la
+licencia real del paper.
 
 ## Referencias existentes de estilo (precedente del equipo)
 

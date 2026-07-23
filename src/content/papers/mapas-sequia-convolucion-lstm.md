@@ -14,6 +14,8 @@ temasClave:
 ---
 
 Artículo de Manuel Medrano, Héctor Rodríguez, Rodrigo López-Farías, Juan Flores,
-Carlos Lara y Vicenç Puig, publicado en Research in Computing Science (2023). La
-cápsula derivada mantiene la política del proyecto: paráfrasis propia y gráficos
-originales, sin reproducir texto ni figuras del artículo. Solo metadatos aquí.
+Carlos Lara y Vicenç Puig, publicado en Research in Computing Science (2023). Es de
+acceso abierto de lectura, pero el IPN prohíbe expresamente reproducir sus contenidos e
+imágenes sin autorización previa: sus figuras NO se pueden usar (ver política en
+CLAUDE.md). Por eso la cápsula usa solo paráfrasis propia y gráficos SVG originales.
+Solo metadatos aquí.

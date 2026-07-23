@@ -16,11 +16,19 @@ como **plantilla de referencia** del componente.
 
 ## Reglas no negociables
 
-- **Derechos de autor**: asume copyright de la editorial salvo que el PDF diga acceso
-  abierto (CC BY, etc.); aun con CC, mantén el enfoque conservador. Prohibido texto
-  verbatim y reproducir figuras/tablas/imágenes del paper. Permitido: paráfrasis
-  propia, datos y hechos reformulados (los hechos no son copyrightables), gráficos SVG
-  100% originales, y cita formal (título, editorial, año, DOI).
+- **Derechos de autor**: asume copyright de la editorial (figuras prohibidas) salvo que
+  verifiques una licencia que autorice reutilización. El texto se parafrasea **siempre**.
+  Permitido en todo caso: paráfrasis propia, datos y hechos reformulados (los hechos no
+  son copyrightables), gráficos SVG 100% originales, y cita formal (título, editorial,
+  año, DOI).
+- **Figuras del paper, solo si la licencia lo permite**: si el paper es CC BY / CC BY-SA
+  / CC BY-NC / CC0, sus figuras, mapas y fotos originales **sí** se pueden usar, con
+  atribución completa junto a la figura y revisión figura por figura (un pie que acredite
+  a un tercero o diga "reproducida con permiso" queda fuera de la licencia). Ojo: "acceso
+  abierto" (gratis de leer) NO es lo mismo que licencia de reuso; verifica la licencia
+  real en el PDF o en la página del editor. Ver la política completa y los casos ya
+  verificados (Geopauta = CC BY; Research in Computing Science = reuso prohibido) en
+  [CLAUDE.md](../../../CLAUDE.md).
 - **Escritura**: español accesible para público general. **Nunca "QRO", siempre
   "Querétaro". Prohibido em-dashes (—)**; usa comas, puntos o reestructura.
 - **Los PDFs nunca se comitean al repo**: viven solo en `/tmp`. En el repo solo van
