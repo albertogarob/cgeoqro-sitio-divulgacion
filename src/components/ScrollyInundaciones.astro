@@ -38,7 +38,7 @@ const pasos = [
   { n: 9, pos: 'right', tipo: 'svg', texto: 'Aquí entra la Evolución Diferencial. Una población de caudales candidatos compite, se combina y muta generación tras generación, empujada siempre hacia el menor error, imitando a la selección natural.' },
   { n: 10, pos: 'left', tipo: 'figura', texto: 'En cerca de 300 evaluaciones el error se desploma y se estabiliza: la mejor solución y el promedio de la población se juntan. La búsqueda converge al caudal que mejor reproduce la inundación observada.' },
   { n: 11, pos: 'center', tipo: 'svg', texto: 'Para ese tramo del Río de la Sierra, el caudal pico resultó cercano a 762 metros cúbicos por segundo, sostenido varios días. Y de regalo, la simulación recupera la profundidad del agua, de 1.5 a 5 metros, que el satélite nunca vio.' },
-  { n: 12, pos: 'center', tipo: 'svg', texto: 'Así, un modelo físico y un algoritmo convierten una foto plana en un mapa con extensión y profundidad reales. Mejor materia prima para prevenir, alertar y responder. Ciencia geoespacial al servicio de la sociedad.' },
+  { n: 12, pos: 'center', tipo: 'foto', texto: 'Así, un modelo físico y un algoritmo convierten una foto plana en un mapa con extensión y profundidad reales. Mejor materia prima para prevenir, alertar y responder. Ciencia geoespacial al servicio de la sociedad.' },
 ];
 
 // Pasos con imagen a pantalla: foto de apertura (cover) o figura del artículo (a un lado).
@@ -48,6 +48,7 @@ const media = [
   { n: 4, cls: 'figura', lado: 'der', src: '/scrolly/inund-malla.png' },
   { n: 7, cls: 'figura', lado: 'izq', src: '/scrolly/inund-mancha.png' },
   { n: 10, cls: 'figura', lado: 'der', src: '/scrolly/inund-evolucion.png' },
+  { n: 12, cls: 'foto', lado: '', src: '/scrolly/inund-cierre.jpg' },
 ];
 
 // Blob que insinúa la mancha de inundación (paso 2) y las manchas de la función objetivo.
@@ -56,7 +57,8 @@ const objTarget = '450,250 545,240 610,295 590,385 500,420 435,398 412,322';
 
 const creditos = [
   { autor: 'Esqueda, Botello y Valdez (RIMNI, 2024)', licencia: 'CC BY-NC-SA', fuente: 'https://doi.org/10.23967/j.rimni.2024.08.002', que: 'figuras del artículo' },
-  { autor: 'Huitzil', licencia: 'CC BY 2.0', fuente: 'https://commons.wikimedia.org/wiki/File:2007_Tabasco_flood.jpg', que: 'foto de la inundación de 2007 en Villahermosa' },
+  { autor: 'Huitzil', licencia: 'CC BY 2.0', fuente: 'https://commons.wikimedia.org/wiki/File:2007_Tabasco_flood.jpg', que: 'foto de apertura, inundación de 2007 en Villahermosa' },
+  { autor: 'Alfonsobouchot', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Villahermosa_Vista_del_Grijalva.jpg', que: 'foto de cierre, río Grijalva en Villahermosa' },
 ];
 ---
 
@@ -137,15 +139,6 @@ const creditos = [
 				<text x="500" y="398" text-anchor="middle" class="mom-depth">y una profundidad de 1.5 a 5 m que el satélite no ve</text>
 			</g>
 
-			<!-- 12: cierre, del dato a la acción -->
-			<g class="only" data-only="12">
-				<circle class="ring" style="--i:0" cx="500" cy="250" r="70" fill="none" stroke="#e8843f" stroke-width="2" />
-				<circle class="ring" style="--i:1" cx="500" cy="250" r="120" fill="none" stroke="#e8843f" stroke-width="1.5" />
-				<circle class="ring" style="--i:2" cx="500" cy="250" r="170" fill="none" stroke="#e8843f" stroke-width="1" />
-				<g class="clave" style="--i:0"><rect x="150" y="470" width="200" height="58" rx="29" /><text x="250" y="506" text-anchor="middle">Prevención</text></g>
-				<g class="clave" style="--i:1"><rect x="400" y="470" width="200" height="58" rx="29" /><text x="500" y="506" text-anchor="middle">Alerta temprana</text></g>
-				<g class="clave" style="--i:2"><rect x="650" y="470" width="200" height="58" rx="29" /><text x="750" y="506" text-anchor="middle">Respuesta</text></g>
-			</g>
 		</svg>
 	</div>
 
@@ -290,13 +283,7 @@ const creditos = [
 	.pop { opacity: 0; transform: translateX(var(--x0)); transition: transform 1200ms cubic-bezier(0.45,0.05,0.2,1), opacity 400ms ease; transition-delay: calc(var(--i) * 45ms); }
 	.only.on .pop { opacity: 0.9; transform: translateX(0); }
 
-	/* cierre: anillos + chips */
-	.ring { opacity: 0; transition: opacity 700ms ease; transition-delay: calc(var(--i) * 200ms); animation: latir 3s ease-in-out infinite; }
-	.only.on .ring { opacity: 1; }
 	@keyframes latir { 0%,100% { opacity: 0.3; } 50% { opacity: 0.9; } }
-	.clave rect { fill: rgba(232,132,63,0.16); stroke: #e8843f; stroke-width: 1.5; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms); }
-	.clave text { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 20px; fill: #ffffff; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms + 120ms); }
-	.only.on .clave rect, .only.on .clave text { opacity: 1; }
 
 	.foto-creditos {
 		max-width: 52rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;

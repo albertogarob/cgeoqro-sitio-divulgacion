@@ -143,8 +143,13 @@ son un recurso de primer nivel. Referencia implementada: `ScrollyInundaciones.as
   escenario, con la caption glass en el lado opuesto (`data-pos` left/right, alternando).
   Así no se solapan y la figura se lee completa. Evita centrar la figura con caption
   encima (queda ilegible) o ponerla abajo con la caption al pie (se desfasa con el scroll).
-- **Combina** figuras del paper con momentos SVG originales (la brecha, un contador, el
-  cierre) y una foto CC de apertura, para variar el ritmo.
+- **Combina** figuras del paper con momentos SVG originales (la brecha, un contador, un
+  diagrama animado) para variar el ritmo, y **abre y cierra con una foto CC real**
+  (bookend). El **último paso siempre es una sección de conclusión sobre una foto real
+  full-bleed** (con scrim y caption centrada), no un SVG abstracto: da un final fuerte y
+  evita que la caption se encime con una animación de fondo (los chips/anillos centrados
+  chocaban con el texto). Si puedes, que la foto de cierre sea la contraparte esperanzadora
+  de la de apertura (ej. el mismo río en calma frente a la inundación).
 - **Atribución**: crédito CC BY-NC-SA de las figuras (autores, revista, año, DOI) en la
   línea `.foto-creditos`; recuerda que -NC obliga a uso no comercial.
 
