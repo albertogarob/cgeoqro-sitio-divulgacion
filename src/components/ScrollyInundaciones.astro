@@ -177,13 +177,11 @@ const creditos = [
 	.media { opacity: 0; transition: opacity 800ms ease; }
 	.media.on { opacity: 1; }
 	.media.foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-	/* Figuras del artículo: tarjeta blanca a un costado; la caption va al opuesto. */
+	/* Figuras del artículo: a un costado, sin marco; la caption va al opuesto. */
 	.media.figura {
 		position: absolute; top: 8%; height: 80%;
 		width: min(52vw, 600px);
-		object-fit: contain; background: #ffffff;
-		border-radius: 14px; padding: 16px;
-		box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+		object-fit: contain;
 	}
 	.media.figura.izq { left: 3%; }
 	.media.figura.der { right: 3%; }
