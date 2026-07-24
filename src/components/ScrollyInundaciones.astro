@@ -1,0 +1,246 @@
+---
+// Scrollytelling sobre la estimación del caudal máximo de ríos que causan inundaciones
+// (Esqueda, Botello y Valdez, RIMNI 2024, DOI 10.23967/j.rimni.2024.08.002, CC BY-NC-SA).
+// Texto parafraseado. Explota figuras ORIGINALES del artículo (esquema del método, malla,
+// mancha de inundación simulada, evolución del algoritmo), permitidas por la licencia
+// CC BY-NC-SA con atribución (revisadas figura por figura: las fotos satelitales del paper
+// son de terceros y quedan excluidas). Foto de apertura CC BY de Wikimedia, no del paper.
+// Ver política de derechos de autor en CLAUDE.md.
+import { withBase } from '../lib/url';
+
+const pasos = [
+  { n: 0, pos: 'center', tipo: 'foto', texto: 'Cada año las inundaciones causan enormes pérdidas humanas y materiales. En Tabasco, el desbordamiento del Río de la Sierra deja bajo el agua al sur de Villahermosa.' },
+  { n: 1, pos: 'right', tipo: 'svg', texto: 'Los satélites registran hasta dónde llegó el agua, pero no qué tan profunda fue ni qué caudal la provocó. Falta la información más útil para prevenir.' },
+  { n: 2, pos: 'right', tipo: 'figura', texto: 'La idea: combinar datos geoespaciales, una simulación del flujo del agua y un algoritmo evolutivo para reconstruir lo que el satélite no alcanza a ver.' },
+  { n: 3, pos: 'left', tipo: 'figura', texto: 'Primero se arma una malla en 3D del terreno, con su relieve y sus usos de suelo, por donde correrá el agua simulada.' },
+  { n: 4, pos: 'right', tipo: 'figura', texto: 'La simulación resuelve las ecuaciones del agua en movimiento y reproduce hasta dónde llega la inundación. Esa mancha se compara con la del satélite.' },
+  { n: 5, pos: 'left', tipo: 'figura', texto: 'Un algoritmo de Evolución Diferencial ajusta el caudal una y otra vez, acercándose al valor que mejor reproduce la inundación observada.' },
+  { n: 6, pos: 'center', tipo: 'svg', texto: 'Así se recupera el caudal máximo que causó la inundación: cerca de 762 metros cúbicos de agua por segundo entrando al cauce.' },
+  { n: 7, pos: 'center', tipo: 'svg', texto: 'Con la altura y la extensión reales del agua, se pueden hacer mejores planes de prevención y respuesta. Ciencia geoespacial al servicio de la sociedad.' },
+];
+
+// Pasos con imagen a pantalla: foto de apertura (cover) o figura del artículo (en tarjeta).
+const media = [
+  { n: 0, cls: 'foto', lado: '', src: '/scrolly/inund-villahermosa.jpg' },
+  { n: 2, cls: 'figura', lado: 'izq', src: '/scrolly/inund-metodo.png' },
+  { n: 3, cls: 'figura', lado: 'der', src: '/scrolly/inund-malla.png' },
+  { n: 4, cls: 'figura', lado: 'izq', src: '/scrolly/inund-mancha.png' },
+  { n: 5, cls: 'figura', lado: 'der', src: '/scrolly/inund-evolucion.png' },
+];
+
+// Blob irregular que insinúa la mancha de inundación registrada por el satélite (paso 1).
+const blob = '430,250 520,235 600,270 640,340 610,420 520,455 440,440 400,370 405,300';
+
+// Créditos: figuras del artículo (CC BY-NC-SA) + foto de apertura (CC BY).
+const creditos = [
+  { autor: 'Esqueda, Botello y Valdez (RIMNI, 2024)', licencia: 'CC BY-NC-SA', fuente: 'https://doi.org/10.23967/j.rimni.2024.08.002', que: 'figuras del artículo' },
+  { autor: 'Huitzil', licencia: 'CC BY 2.0', fuente: 'https://commons.wikimedia.org/wiki/File:2007_Tabasco_flood.jpg', que: 'foto de la inundación de 2007 en Villahermosa' },
+];
+---
+
+<section class="scrolly" data-step="0" data-mode="foto">
+	<div class="scrolly-stage">
+		<div class="media-bg" aria-hidden="true">
+			{media.map((m) => (
+				<img class={`media ${m.cls} ${m.lado}`} data-media={m.n} src={withBase(m.src)} alt="" loading="lazy" />
+			))}
+			<div class="media-scrim"></div>
+		</div>
+
+		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+			<!-- MOMENTO 1: el satélite ve la mancha, no la profundidad ni el caudal -->
+			<g class="only" data-only="1">
+				<rect x="260" y="130" width="480" height="440" rx="8" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-dasharray="6 8" />
+				{[0,1,2,3,4,5,6,7].map((i) => <line x1={260} y1={130 + i * 55} x2={740} y2={130 + i * 55} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
+				{[0,1,2,3,4,5,6,7,8].map((i) => <line x1={260 + i * 53} y1={130} x2={260 + i * 53} y2={570} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
+				<polygon points={blob} fill="rgba(232,132,63,0.30)" stroke="#e8843f" stroke-width="2.5" />
+				<text x="500" y="378" text-anchor="middle" class="mark-q">?</text>
+				<text x="500" y="612" text-anchor="middle" class="mom-sub">¿Qué tan profunda? ¿Qué caudal la causó?</text>
+			</g>
+
+			<!-- MOMENTO 6: caudal máximo recuperado -->
+			<g class="only" data-only="6">
+				<text x="500" y="330" text-anchor="middle" class="mom-big"><tspan class="count" data-to="762">0</tspan></text>
+				<text x="500" y="380" text-anchor="middle" class="mom-unit">metros cúbicos por segundo</text>
+				<text x="500" y="430" text-anchor="middle" class="mom-sub">caudal máximo estimado en el cauce</text>
+			</g>
+
+			<!-- MOMENTO 7: cierre, del dato a la acción -->
+			<g class="only" data-only="7">
+				<circle class="ring" style="--i:0" cx="500" cy="300" r="70" fill="none" stroke="#e8843f" stroke-width="2" />
+				<circle class="ring" style="--i:1" cx="500" cy="300" r="120" fill="none" stroke="#e8843f" stroke-width="1.5" />
+				<circle class="ring" style="--i:2" cx="500" cy="300" r="170" fill="none" stroke="#e8843f" stroke-width="1" />
+				<g class="clave" style="--i:0"><rect x="150" y="600" width="200" height="58" rx="29" /><text x="250" y="636" text-anchor="middle">Prevención</text></g>
+				<g class="clave" style="--i:1"><rect x="400" y="600" width="200" height="58" rx="29" /><text x="500" y="636" text-anchor="middle">Mitigación</text></g>
+				<g class="clave" style="--i:2"><rect x="650" y="600" width="200" height="58" rx="29" /><text x="750" y="636" text-anchor="middle">Respuesta</text></g>
+			</g>
+		</svg>
+	</div>
+
+	<div class="scrolly-steps">
+		{pasos.map((p) => (
+			<div class="step" data-step={p.n} data-pos={p.pos} data-tipo={p.tipo}>
+				<p class="caption">{p.texto}</p>
+			</div>
+		))}
+	</div>
+
+	<p class="foto-creditos">
+		Figuras originales del artículo (con licencia CC BY-NC-SA) y foto de apertura (CC BY):{' '}
+		{creditos.map((c, i) => (
+			<>
+				{i > 0 && ' · '}
+				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia}, {c.que})
+			</>
+		))}.
+	</p>
+</section>
+
+<script>
+	import scrollama from 'scrollama';
+
+	function initScrolly() {
+		const container = document.querySelector<HTMLElement>('.scrolly');
+		if (!container) return;
+		const header = document.querySelector<HTMLElement>('header');
+		const medios = Array.from(container.querySelectorAll<HTMLElement>('.media'));
+		const scrim = container.querySelector<HTMLElement>('.media-scrim');
+		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
+		const stepEls = Array.from(container.querySelectorAll<HTMLElement>('.step'));
+		const tipoDe: Record<number, string> = {};
+		stepEls.forEach((e) => { tipoDe[Number(e.dataset.step)] = e.dataset.tipo ?? 'svg'; });
+
+		function setStageTop() {
+			const h = header ? header.offsetHeight : 64;
+			container.style.setProperty('--stage-top', h + 'px');
+		}
+		setStageTop();
+		window.addEventListener('resize', setStageTop);
+
+		function animCount(el: Element, to: number) {
+			const dur = 1000; let start = 0;
+			function frame(t: number) {
+				if (!start) start = t;
+				const k = Math.min(1, (t - start) / dur);
+				el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
+				if (k < 1) requestAnimationFrame(frame);
+			}
+			requestAnimationFrame(frame);
+		}
+
+		function aplicar(step: number) {
+			const modo = tipoDe[step] ?? 'svg';
+			container.dataset.step = String(step);
+			container.dataset.mode = modo;
+			medios.forEach((m) => m.classList.toggle('on', Number(m.dataset.media) === step));
+			if (scrim) scrim.classList.toggle('on', modo === 'foto');
+			onlys.forEach((o) => o.classList.toggle('on', Number(o.dataset.only) === step));
+			const activo = onlys.find((o) => Number(o.dataset.only) === step);
+			if (activo) activo.querySelectorAll<HTMLElement>('.count').forEach((c) => animCount(c, Number(c.dataset.to ?? '0')));
+		}
+
+		aplicar(0);
+
+		const scroller = scrollama();
+		scroller
+			.setup({ step: '.scrolly .step', offset: 0.75 })
+			.onStepEnter((r: { element: HTMLElement }) => {
+				container.querySelectorAll('.step').forEach((el) => el.classList.remove('activo'));
+				r.element.classList.add('activo');
+				aplicar(Number(r.element.dataset.step ?? '0'));
+			});
+		window.addEventListener('resize', scroller.resize);
+	}
+
+	if (document.readyState !== 'loading') initScrolly();
+	else document.addEventListener('DOMContentLoaded', initScrolly);
+</script>
+
+<style>
+	.scrolly {
+		--stage-top: 64px;
+		position: relative;
+		width: 100%;
+	}
+	.scrolly-stage {
+		position: sticky;
+		top: var(--stage-top);
+		height: calc(100vh - var(--stage-top));
+		width: 100%;
+		background: radial-gradient(120% 90% at 50% 36%, #123047 0%, #0b1c2b 55%, #05101a 100%);
+		overflow: hidden;
+	}
+	.mapa { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
+
+	/* Capa de imágenes: foto de apertura (cover) o figura del artículo (tarjeta) */
+	.media-bg { position: absolute; inset: 0; z-index: 0; }
+	.media { opacity: 0; transition: opacity 800ms ease; }
+	.media.on { opacity: 1; }
+	.media.foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+	/* Figuras del artículo: tarjeta blanca a un costado; la caption va al opuesto. */
+	.media.figura {
+		position: absolute; top: 8%; height: 80%;
+		width: min(52vw, 600px);
+		object-fit: contain; background: #ffffff;
+		border-radius: 14px; padding: 16px;
+		box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+	}
+	.media.figura.izq { left: 3%; }
+	.media.figura.der { right: 3%; }
+	.media-scrim {
+		position: absolute; inset: 0; opacity: 0; transition: opacity 800ms ease;
+		background: linear-gradient(180deg, rgba(5,16,26,0.55) 0%, rgba(5,16,26,0.22) 40%, rgba(5,16,26,0.78) 100%);
+	}
+	.media-scrim.on { opacity: 1; }
+
+	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
+	.only.on { opacity: 1; }
+	.mom-big { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 120px; fill: #ffffff; }
+	.mom-unit { font-family: 'Archivo Expanded', sans-serif; font-weight: 600; font-size: 30px; fill: #e8843f; }
+	.mom-sub { font-family: 'Roboto Flex', sans-serif; font-size: 22px; fill: rgba(255,255,255,0.82); }
+	.mark-q { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 130px; fill: #e8843f; }
+
+	.count { font-variant-numeric: tabular-nums; }
+	.ring { opacity: 0; transform-origin: 500px 300px; transition: opacity 700ms ease; transition-delay: calc(var(--i) * 200ms); animation: latir 3s ease-in-out infinite; }
+	.only.on .ring { opacity: 1; }
+	@keyframes latir { 0%,100% { opacity: 0.3; } 50% { opacity: 0.9; } }
+	.clave rect { fill: rgba(232,132,63,0.16); stroke: #e8843f; stroke-width: 1.5; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms); }
+	.clave text { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 21px; fill: #ffffff; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms + 120ms); }
+	.only.on .clave rect, .only.on .clave text { opacity: 1; }
+
+	.foto-creditos {
+		max-width: 52rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
+		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
+	}
+	.foto-creditos a { color: #6f93b0; text-decoration: none; }
+	.foto-creditos a:hover { text-decoration: underline; }
+
+	/* Subtítulos flotantes glass */
+	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }
+	.step { min-height: 92vh; display: flex; align-items: center; justify-content: center; padding: 0 clamp(1rem, 6vw, 6rem); }
+	.step[data-pos='left'] { justify-content: flex-start; }
+	.step[data-pos='right'] { justify-content: flex-end; }
+	.step[data-pos='center'] { justify-content: center; }
+	.step:first-child { min-height: 85vh; }
+	.caption {
+		pointer-events: auto; max-width: 27rem; margin: 0; padding: 1.1rem 1.4rem;
+		font-size: clamp(1.15rem, 2.2vw, 1.6rem); line-height: 1.4; font-weight: 500; color: #ffffff;
+		background: rgba(8, 20, 32, 0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+		border-left: 3px solid #e8843f; border-radius: 4px; opacity: 0.35; transform: translateY(10px);
+		transition: opacity 350ms ease, transform 350ms ease;
+	}
+	.step.activo .caption { opacity: 1; transform: translateY(0); }
+	.step[data-pos='center'] .caption {
+		max-width: 40rem; text-align: center; border-left: none; border-top: 3px solid #e8843f;
+		border-radius: 6px; padding: 1.5rem 2rem; font-size: clamp(1.25rem, 2.5vw, 1.8rem); font-weight: 600; line-height: 1.3;
+	}
+
+	@media (max-width: 720px) {
+		.step, .step[data-pos='left'], .step[data-pos='right'] { justify-content: center; align-items: flex-end; padding: 0 1rem 6vh; }
+		.caption { max-width: none; }
+		/* En móvil la figura se va arriba a lo ancho y la caption al pie. */
+		.media.figura, .media.figura.izq, .media.figura.der { left: 3%; right: 3%; width: auto; top: 2%; height: 42%; }
+		.mom-big { font-size: 84px; }
+		.mark-q { font-size: 96px; }
+	}
+</style>

@@ -4,6 +4,7 @@ import { getCollection, getEntry, render } from 'astro:content';
 import { withBase } from '../../lib/url';
 import ScrollyUtopias from '../../components/ScrollyUtopias.astro';
 import ScrollySequias from '../../components/ScrollySequias.astro';
+import ScrollyInundaciones from '../../components/ScrollyInundaciones.astro';
 import CapsulaCard from '../../components/CapsulaCard.astro';
 
 export async function getStaticPaths() {
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 // Componentes de scrollytelling disponibles, indexados por la clave `scrolly`.
-const scrollyComponents: Record<string, any> = { utopias: ScrollyUtopias, sequias: ScrollySequias };
+const scrollyComponents: Record<string, any> = { utopias: ScrollyUtopias, sequias: ScrollySequias, inundaciones: ScrollyInundaciones };
 
 const { capsula } = Astro.props;
 const { Content } = await render(capsula);

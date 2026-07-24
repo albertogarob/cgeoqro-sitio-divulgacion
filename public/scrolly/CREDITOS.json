@@ -46,5 +46,45 @@
     "licencia": "Public domain",
     "autor": "Rollcloud",
     "fuente": "https://commons.wikimedia.org/wiki/File:Mty_Tianguis_01.jpg"
+  },
+  {
+    "archivo": "/scrolly/inund-metodo.png",
+    "rol": "figura: esquema del método",
+    "titulo": "Figura 1, Esqueda, Botello & Valdez (RIMNI, 2024)",
+    "licencia": "CC BY-NC-SA",
+    "autor": "Esqueda, Botello & Valdez",
+    "fuente": "https://doi.org/10.23967/j.rimni.2024.08.002"
+  },
+  {
+    "archivo": "/scrolly/inund-malla.png",
+    "rol": "figura: malla 3D del terreno",
+    "titulo": "Figura del artículo, Esqueda, Botello & Valdez (RIMNI, 2024)",
+    "licencia": "CC BY-NC-SA",
+    "autor": "Esqueda, Botello & Valdez",
+    "fuente": "https://doi.org/10.23967/j.rimni.2024.08.002"
+  },
+  {
+    "archivo": "/scrolly/inund-mancha.png",
+    "rol": "figura: mancha de inundacion simulada",
+    "titulo": "Figura del artículo, Esqueda, Botello & Valdez (RIMNI, 2024)",
+    "licencia": "CC BY-NC-SA",
+    "autor": "Esqueda, Botello & Valdez",
+    "fuente": "https://doi.org/10.23967/j.rimni.2024.08.002"
+  },
+  {
+    "archivo": "/scrolly/inund-evolucion.png",
+    "rol": "figura: evolucion del algoritmo",
+    "titulo": "Figura del artículo, Esqueda, Botello & Valdez (RIMNI, 2024)",
+    "licencia": "CC BY-NC-SA",
+    "autor": "Esqueda, Botello & Valdez",
+    "fuente": "https://doi.org/10.23967/j.rimni.2024.08.002"
+  },
+  {
+    "archivo": "/scrolly/inund-villahermosa.jpg",
+    "rol": "apertura: inundacion 2007 Villahermosa",
+    "titulo": "File:2007 Tabasco flood.jpg",
+    "licencia": "CC BY 2.0",
+    "autor": "Huitzil (Villahermosa)",
+    "fuente": "https://commons.wikimedia.org/wiki/File:2007_Tabasco_flood.jpg"
   }
 ]

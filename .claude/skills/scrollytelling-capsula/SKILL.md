@@ -128,6 +128,26 @@ pasos intermedios como ciencia pura (mapa, red, barras). Arco: realidad -> abstr
   **suprime los `.only` ligados al mapa** en pasos de foto (excepción: chips de cierre
   que se leen bien sobre la foto).
 
+### Figuras del propio artículo (cuando la licencia lo permite)
+
+Si el paper tiene licencia de reuso (ver auditoría), sus figuras originales de los autores
+son un recurso de primer nivel. Referencia implementada: `ScrollyInundaciones.astro`
+(paper de Ivvan Valdez, CC BY-NC-SA). Cómo integrarlas sin que compitan con el texto:
+
+- **Revisión figura por figura**: extrae con `pdfimages` e inspecciona el pie. Usa solo
+  las de "elaboración propia"; excluye fotos satelitales u otras acreditadas a terceros
+  (en ese paper, Google Earth y una referencia externa quedaron fuera).
+- **Preséntalas en tarjeta, no a sangre completa**: son diagramas/gráficas con fondo
+  claro y texto fino; recortarlas a `cover` las vuelve ilegibles. Ponlas en una tarjeta
+  blanca (`object-fit: contain`, `border-radius`, `box-shadow`) a **un costado** del
+  escenario, con la caption glass en el lado opuesto (`data-pos` left/right, alternando).
+  Así no se solapan y la figura se lee completa. Evita centrar la figura con caption
+  encima (queda ilegible) o ponerla abajo con la caption al pie (se desfasa con el scroll).
+- **Combina** figuras del paper con momentos SVG originales (la brecha, un contador, el
+  cierre) y una foto CC de apertura, para variar el ritmo.
+- **Atribución**: crédito CC BY-NC-SA de las figuras (autores, revista, año, DOI) en la
+  línea `.foto-creditos`; recuerda que -NC obliga a uso no comercial.
+
 Scrollama se inicializa así (dispara en `onStepEnter`, offset ~0.75):
 
 ```js
