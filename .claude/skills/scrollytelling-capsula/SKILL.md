@@ -10,9 +10,15 @@ CentroGeo Querétaro) en una cápsula interactiva de scrollytelling, respetando 
 política de derechos de autor y el sistema de diseño ya establecido en este proyecto.
 
 Lee siempre primero [CLAUDE.md](../../../CLAUDE.md): es la fuente de las reglas
-(derechos de autor, convenciones de escritura, identidad visual, despliegue). Usa
-[src/components/ScrollyUtopias.astro](../../../src/components/ScrollyUtopias.astro)
-como **plantilla de referencia** del componente.
+(derechos de autor, convenciones de escritura, identidad visual, despliegue).
+
+Plantillas de referencia según el caso:
+- `ScrollyUtopias.astro` / `ScrollySequias.astro`: patrón de **SVG persistente** (mapa,
+  cámara, capas acumulativas) con fotos CC de *bookend*.
+- `ScrollyInundaciones.astro`: patrón **denso y dinámico** con **figuras del propio paper**
+  (cuando la licencia lo permite), muchos momentos animados distintos, y **conclusión
+  sobre foto real**. Es la referencia más actual; sigue sus decisiones de longitud, layout
+  de figuras y cierre.
 
 ## Reglas no negociables
 
@@ -60,21 +66,35 @@ investigador. Conexión activa: `agarcia@centrogeo.edu.mx`.
    datos concretos citables (cifras, fechas, porcentajes), el arco (problema, hallazgo,
    implicación) y la licencia (busca "Creative Commons" / "acceso abierto").
 
-## Paso 2. Diseñar la narrativa (7-8 pasos)
+## Paso 2. Diseñar la narrativa (apunta a 12-14 pasos)
 
-Arco sugerido: **lugar/problema → contexto → hallazgo o programa → idea central →
-escala/impacto → reflexión**. Cada paso = un `texto` de subtítulo (paráfrasis breve) y,
-cuando aplique, un "momento de datos" visual.
+Arco sugerido: **problema/lugar → por qué importa → la brecha o pregunta → idea central →
+método paso a paso → resultado con cifras → conclusión**. Cada paso = un `texto` de
+subtítulo y, casi siempre, un "momento" visual (una figura del paper o un SVG animado).
 
-Convierte cifras del paper en momentos visuales variados (no repitas el mismo efecto):
+**Longitud y densidad (lección del recorrido de Ivvan)**: un recorrido de 7-8 pasos con
+frases sueltas se siente **corto, poco profundo y repetitivo**. Apunta a **12-14 pasos**,
+con captions de **2-3 frases** que de verdad expliquen el trabajo (no solo lo enuncien) y
+un **momento distinto por paso**. Ahonda en la mecánica: no solo "usaron un algoritmo",
+sino qué optimiza, cómo compara y qué mide.
 
-- **Contador animado** (ej. "8 millones de visitas") con `requestAnimationFrame`.
-- **Arreglo "1 de cada N"** (dots, algunos resaltados).
-- **Barra** que se llena (`width` con transición).
-- **Encendido escalonado** de nodos (`transition-delay: calc(var(--i) * 90ms)`).
-- **Trazos que se dibujan** (`stroke-dasharray`/`stroke-dashoffset`).
-- **Anillo/expansión** para el cierre.
-- **Movimiento de cámara** (zoom/paneo) sobre el SVG entre pasos.
+Convierte ideas y cifras en momentos visuales **variados** (no repitas la misma plantilla;
+cada tipo aparece idealmente una sola vez):
+
+- **Contador animado** (`requestAnimationFrame`), ej. un caudal o una cuenta de eventos.
+- **Barra de proporción** ("X de cada Y") que se llena (`width` con transición).
+- **Celdas que se llenan** con gradiente (ej. profundidad del agua), en oleada desde un
+  origen (`transition-delay: calc(var(--i) * Nms)`).
+- **Curva que se dibuja** (`stroke-dasharray`/`stroke-dashoffset`), ej. un hidrograma, con
+  un punto marcado (el pico o la incógnita).
+- **Dos formas que convergen**: una arranca desfasada (`transform` translate/scale) y se
+  ajusta sobre la otra (ej. mancha simulada vs observada = función objetivo).
+- **Población que se agrupa**: puntos dispersos que convergen a un punto (ej. un algoritmo
+  evolutivo), cada uno con su `--x0` inicial.
+- **Encendido escalonado** de nodos, **trazos que se dibujan**, **movimiento de cámara**
+  (zoom/paneo) sobre un SVG persistente.
+
+Reserva una **foto real para la apertura** y otra para la **conclusión** (ver bookend).
 
 ## Paso 3. Reglas de diseño del scrollytelling
 
@@ -137,12 +157,13 @@ son un recurso de primer nivel. Referencia implementada: `ScrollyInundaciones.as
 - **Revisión figura por figura**: extrae con `pdfimages` e inspecciona el pie. Usa solo
   las de "elaboración propia"; excluye fotos satelitales u otras acreditadas a terceros
   (en ese paper, Google Earth y una referencia externa quedaron fuera).
-- **Preséntalas en tarjeta, no a sangre completa**: son diagramas/gráficas con fondo
-  claro y texto fino; recortarlas a `cover` las vuelve ilegibles. Ponlas en una tarjeta
-  blanca (`object-fit: contain`, `border-radius`, `box-shadow`) a **un costado** del
-  escenario, con la caption glass en el lado opuesto (`data-pos` left/right, alternando).
-  Así no se solapan y la figura se lee completa. Evita centrar la figura con caption
-  encima (queda ilegible) o ponerla abajo con la caption al pie (se desfasa con el scroll).
+- **Preséntalas contenidas a un costado, SIN marco blanco**: son diagramas/gráficas con
+  texto fino; recortarlas a `cover` las vuelve ilegibles. Muéstralas con `object-fit:
+  contain` a **un costado** del escenario y la caption glass en el lado opuesto (`data-pos`
+  left/right, alternando). **Nada de tarjeta/fondo blanco ni borde alrededor** (el usuario
+  lo rechazó): la figura va directa sobre el fondo oscuro del escenario; el blanco que
+  traiga la figura es su propio fondo, no un marco añadido. Evita centrar la figura con la
+  caption encima (ilegible) o ponerla abajo con la caption al pie (se desfasa con el scroll).
 - **Combina** figuras del paper con momentos SVG originales (la brecha, un contador, un
   diagrama animado) para variar el ritmo, y **abre y cierra con una foto CC real**
   (bookend). El **último paso siempre es una sección de conclusión sobre una foto real
@@ -174,6 +195,20 @@ scrollama().setup({ step: '.scrolly .step', offset: 0.75 }).onStepEnter(r => apl
   Verifica siempre con captura, no a ojo del código.
 - **"EU" en papers suele ser "Estados Unidos", no la Unión Europea**: desambigua en la
   paráfrasis para no confundir al lector.
+- **Momento SVG centrado vs caption (solape)**: si un `only` centrado (contador,
+  estadística) usa `pos: center`, la caption centrada lo pisa. Solución: baja la caption
+  al tercio inferior en esos pasos con
+  `.scrolly[data-mode='svg'] .step[data-pos='center'] { align-items: flex-end; padding-bottom: 7vh; }`
+  y mantén el contenido SVG en la mitad superior (y < ~460 del viewBox 1000x700).
+- **Nunca cierres con un SVG de chips/anillos centrados**: chocan con la caption. El
+  último paso es una **foto real full-bleed** (`tipo: 'foto'`, scrim on, caption centrada).
+- **Dos tratamientos de imagen**: `foto` (apertura/impacto/cierre) = `object-fit: cover` a
+  sangre + scrim; `figura` del paper = `object-fit: contain` a un costado, sin marco. Una
+  sola capa `.media` con una clase por tipo, encendida cuando `data-media == step`.
+- **Desfase caption-visual al verificar**: el escenario es sticky y la caption va en la
+  capa que scrollea, así que entra un poco después que el visual. Al capturar con
+  Playwright, tras `scrollIntoViewIfNeeded` haz un `scrollBy` de ~30% del alto de ventana
+  para asentar el paso; si no, verás el visual con la caption a medio entrar.
 
 ## Paso 4. Integrar con las content collections
 
@@ -225,8 +260,21 @@ solapen con los gráficos centrados. Patrón:
 
 ```js
 const steps = await page.$$('.scrolly .step');
-for (const i of [0,1,5,7]) { await steps[i].scrollIntoViewIfNeeded(); await page.waitForTimeout(1200); await page.screenshot({ path:`/tmp/s${i}.png` }); }
+for (const i of [0,1,5,7,12]) {
+  await steps[i].scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, -Math.round(window.innerHeight * 0.3))); // asienta el paso
+  await page.waitForTimeout(1600);
+  await page.screenshot({ path: `/tmp/s${i}.png` });
+}
 ```
+
+**Gotchas del entorno** (te van a morder si no):
+
+- **No uses `pkill -f "astro preview"`** dentro de un comando compuesto: mata el proceso
+  del shell (exit 144) y aborta el resto de la línea. Deja el preview corriendo entre
+  builds, o mátalo por puerto en su propio comando aparte.
+- Si borras `/tmp/<algo>` que era el `cwd`, el shell queda con un `cwd` inválido: usa
+  `git -C <repo> ...` (y rutas absolutas) en vez de `cd` para los comandos siguientes.
 
 Limpia `/tmp` (incluidos PDFs y scratch de Playwright). Verifica que **ningún PDF** haya
 entrado al repo: `find . -name "*.pdf" -not -path "./node_modules/*"`.
