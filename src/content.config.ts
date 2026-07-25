@@ -49,6 +49,12 @@ const capsulas = defineCollection({
     paperFuente: reference('papers'),
     investigadores: z.array(reference('investigadores')),
     formatos: z.array(z.enum(['video', 'audio', 'infografia', 'texto'])),
+    // Imagen real de portada para la tarjeta (foto de stock CC o del material de la
+    // cápsula). Ruta bajo /public. Si falta, la tarjeta usa el thumbnail SVG.
+    imagenPortada: z.string().optional(),
+    // Crédito de la imagen de portada, si su licencia lo exige (ej. CC BY-SA). Se
+    // muestra discreto en la página de la cápsula.
+    imagenCredito: z.string().optional(),
     videoUrl: z.string().url().optional(),
     audioUrl: z.string().url().optional(),
     // Página canónica externa del recurso (ej. Google Sites de origen), distinta de

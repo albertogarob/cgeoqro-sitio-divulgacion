@@ -157,6 +157,10 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		</>
 	)}
 
+	{capsula.data.imagenCredito && (
+		<p class="portada-credito">{capsula.data.imagenCredito}</p>
+	)}
+
 	{investigadores.filter(Boolean).length > 0 && (
 		<section class="autor-bloque">
 			<h2>{investigadores.length > 1 ? 'Sobre los investigadores' : 'Sobre el investigador'}</h2>
@@ -187,6 +191,14 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 	)}
 
 	<style>
+		.portada-credito {
+			max-width: 46rem;
+			margin: 1.75rem auto 0;
+			padding: 0 1.5rem;
+			font-size: 0.75rem;
+			color: #999;
+			text-align: center;
+		}
 		.autor-bloque {
 			max-width: 46rem;
 			margin: 0 auto;

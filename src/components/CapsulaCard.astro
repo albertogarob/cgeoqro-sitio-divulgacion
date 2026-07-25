@@ -31,7 +31,11 @@ const formatoLabel = capsula.data.scrolly
 
 <a class="cap-card" href={withBase(`/capsulas/${capsula.id}/`)}>
 	<div class="cap-card-thumb">
-		<Thumb kind={kind} accent={serie?.data.colorAcento} variant={serie?.id} seed={capsula.id} />
+		{capsula.data.imagenPortada ? (
+			<img class="cap-card-img" src={withBase(capsula.data.imagenPortada)} alt="" loading="lazy" />
+		) : (
+			<Thumb kind={kind} accent={serie?.data.colorAcento} variant={serie?.id} seed={capsula.id} />
+		)}
 		<span class="cap-card-formato">{formatoLabel}</span>
 	</div>
 	<div class="cap-card-body">
@@ -76,6 +80,13 @@ const formatoLabel = capsula.data.scrolly
 		position: absolute;
 		inset: 0;
 	}
+	.cap-card-img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 	.cap-card-formato {
 		position: absolute;
 		left: 0.7rem;
@@ -105,9 +116,10 @@ const formatoLabel = capsula.data.scrolly
 	}
 	.cap-card-body p {
 		margin: 0;
-		font-size: 0.9rem;
+		font-size: 0.92rem;
+		line-height: 1.5;
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
+		-webkit-line-clamp: 5;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
