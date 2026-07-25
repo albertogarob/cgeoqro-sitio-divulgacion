@@ -139,7 +139,11 @@ pasos intermedios como ciencia pura (mapa, red, barras). Arco: realidad -> abstr
   a ~1600px de ancho, JPEG progresivo calidad ~82, y guarda en `public/scrolly/`.
 - **Atribución obligatoria** (CC BY / BY-SA la requieren): guarda un manifiesto
   `public/scrolly/CREDITOS.json` (archivo, título, licencia, autor, fuente) y muestra
-  una línea discreta de créditos al final del componente (`.foto-creditos`).
+  una línea discreta de créditos al final del componente (`.foto-creditos`). Además,
+  muestra el crédito y licencia de la **imagen activa en un chip en la esquina** del
+  escenario (`.stage-credito`): pon `data-credito` en cada foto/figura y en `aplicar`
+  copia el de la imagen activa al chip y enciéndelo. Solo la línea final no basta: la
+  atribución debe verse **sobre cada foto**, no solo al terminar el recorrido.
 - **Técnica (full-bleed real, sin letterbox)**: capa HTML `.photo-bg` (con `<img
   object-fit:cover>` + un `.photo-scrim` de gradiente para legibilidad) **detrás** del
   SVG; el SVG pierde su `<rect>` de fondo opaco y el degradado oscuro pasa al
