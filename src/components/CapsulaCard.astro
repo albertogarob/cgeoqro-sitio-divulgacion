@@ -20,6 +20,9 @@ function tipoCapsula(c: any): 'scrolly' | 'video' | 'infografia' | 'audio' | 'te
 }
 
 const serie = await getEntry(capsula.data.serie);
+const investigadores = (await Promise.all((capsula.data.investigadores ?? []).map((ref: any) => getEntry(ref)))).filter(Boolean);
+const autor = investigadores[0];
+const autoresExtra = investigadores.length - 1;
 const kind = tipoCapsula(capsula);
 const formatoLabel = capsula.data.scrolly
   ? 'Recorrido interactivo'
@@ -35,6 +38,19 @@ const formatoLabel = capsula.data.scrolly
 		{serie && <span class="cg-pill">{serie.data.nombre}</span>}
 		<h3>{capsula.data.titulo}</h3>
 		<p>{capsula.data.resumenCorto}</p>
+		{autor && (
+			<div class="cap-card-autor">
+				{autor.data.fotoUrl ? (
+					<img class="cap-card-avatar" src={withBase(autor.data.fotoUrl)} alt={autor.data.nombre} loading="lazy" />
+				) : (
+					<span class="cap-card-avatar cap-card-avatar-vacia" aria-hidden="true"></span>
+				)}
+				<span class="cap-card-autor-info">
+					<span class="cap-card-autor-nombre">{autor.data.nombre}{autoresExtra > 0 ? ` +${autoresExtra}` : ''}</span>
+					<span class="cap-card-autor-rol">CentroGeo Querétaro</span>
+				</span>
+			</div>
+		)}
 	</div>
 </a>
 
@@ -97,5 +113,43 @@ const formatoLabel = capsula.data.scrolly
 		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+	/* Franja de autoría: promociona al investigador y da un aire más profesional. */
+	.cap-card-autor {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-top: 0.4rem;
+		padding-top: 0.85rem;
+		border-top: 1px solid var(--cg-color-gris-300);
+	}
+	.cap-card-avatar {
+		flex: 0 0 38px;
+		width: 38px;
+		height: 38px;
+		border-radius: 50%;
+		object-fit: cover;
+		background: var(--cg-color-gris-300);
+	}
+	.cap-card-avatar-vacia {
+		background: linear-gradient(140deg, #1c2531, #0e131b);
+	}
+	.cap-card-autor-info {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.2;
+		min-width: 0;
+	}
+	.cap-card-autor-nombre {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--cg-color-gris-700) !important;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.cap-card-autor-rol {
+		font-size: 0.72rem;
+		color: var(--cg-color-gris-500);
 	}
 </style>
