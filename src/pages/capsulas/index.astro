@@ -1,72 +1,32 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection, getEntry } from 'astro:content';
-import { withBase } from '../../lib/url';
-import Thumb from '../../components/Thumb.astro';
+import { getCollection } from 'astro:content';
+import CapsulaCard from '../../components/CapsulaCard.astro';
 
-const capsulas = (await getCollection('capsulas')).sort(
-  (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
-);
-
-function tipoCapsula(c: any): 'scrolly' | 'video' | 'infografia' | 'audio' | 'texto' {
-  if (c.data.scrolly) return 'scrolly';
-  if (c.data.formatos.includes('video')) return 'video';
-  if (c.data.formatos.includes('infografia')) return 'infografia';
-  if (c.data.formatos.includes('audio')) return 'audio';
-  return 'texto';
-}
-
-const capsulasConSerie = await Promise.all(
-  capsulas.map(async (c) => ({ capsula: c, serie: await getEntry(c.data.serie) }))
-);
+const capsulas = (await getCollection('capsulas'))
+  .filter((c) => !c.id.startsWith('ejemplo'))
+  .sort((a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf());
 ---
 
 <Base title="Cápsulas de conocimiento">
 	<span class="cg-eyebrow">Divulgación</span>
 	<h1>Cápsulas de conocimiento</h1>
-	<p>Unidades breves de divulgación, una por hallazgo o tema, disponibles en varios formatos.</p>
+	<p class="intro">Unidades breves de divulgación, una por hallazgo o tema, disponibles en varios formatos.</p>
 
-	<ul class="capsulas-lista">
-		{capsulasConSerie.map(({ capsula, serie }) => (
-			<li>
-				<a class="cg-list-card" href={withBase(`/capsulas/${capsula.id}/`)}>
-					<Thumb
-						kind={tipoCapsula(capsula)}
-						accent={serie?.data.colorAcento}
-						label={capsula.data.titulo}
-						seed={capsula.id}
-					/>
-					<div class="cg-list-body">
-						<h3>{capsula.data.titulo}</h3>
-						<p class="meta">
-							{serie && <span class="cg-pill">{serie.data.nombre}</span>}
-							{' '}
-							<span class="cg-pill cg-pill-outline">
-								{capsula.data.scrolly ? 'Recorrido interactivo' : capsula.data.formatos.join(', ')}
-							</span>
-						</p>
-						<p>{capsula.data.resumenCorto}</p>
-					</div>
-				</a>
-			</li>
-		))}
-	</ul>
+	<div class="cap-grid">
+		{capsulas.map((c) => <CapsulaCard capsula={c} />)}
+	</div>
 
 	<style>
-		.capsulas-lista {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-		.meta {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.5rem;
-			margin: 0.5rem 0;
-		}
-		.cg-pill-outline {
-			background: var(--cg-color-gris-100);
+		.intro {
+			max-width: 46rem;
 			color: var(--cg-color-gris-500);
+		}
+		.cap-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+			gap: 1.5rem;
+			margin-top: 1.75rem;
 		}
 	</style>
 </Base>
