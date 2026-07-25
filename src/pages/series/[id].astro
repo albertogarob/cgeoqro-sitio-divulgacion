@@ -2,13 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { withBase } from '../../lib/url';
+import CapsulaCard from '../../components/CapsulaCard.astro';
 
 export async function getStaticPaths() {
   const series = await getCollection('series');
   const capsulas = await getCollection('capsulas');
   return series.map((serie) => ({
     params: { id: serie.id },
-    props: { serie, capsulas: capsulas.filter((c) => c.data.serie.id === serie.id) },
+    props: {
+      serie,
+      capsulas: capsulas
+        .filter((c) => c.data.serie.id === serie.id && !c.id.startsWith('ejemplo'))
+        .sort((a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()),
+    },
   }));
 }
 
@@ -19,27 +25,27 @@ const { Content } = await render(serie);
 <Base title={serie.data.nombre}>
 	<p><a href={withBase('/series/')}>← Todas las series</a></p>
 	<h1>{serie.data.nombre}</h1>
-	<p>{serie.data.descripcion}</p>
+	<p class="intro">{serie.data.descripcion}</p>
 	<article><Content /></article>
 
 	<h2>Cápsulas de esta serie</h2>
-	{capsulas.length === 0 && <p>Aún no hay cápsulas publicadas en esta serie.</p>}
-	<ul class="lista">
-		{capsulas.map((c) => (
-			<li>
-				<a href={withBase(`/capsulas/${c.id}/`)}>{c.data.titulo}</a>
-				<p>{c.data.resumenCorto}</p>
-			</li>
-		))}
-	</ul>
+	{capsulas.length === 0 ? (
+		<p>Aún no hay cápsulas publicadas en esta serie.</p>
+	) : (
+		<div class="cap-grid">
+			{capsulas.map((c) => <CapsulaCard capsula={c} />)}
+		</div>
+	)}
 
 	<style>
-		.lista {
-			list-style: none;
-			padding: 0;
+		.intro {
+			color: var(--cg-color-gris-500);
 		}
-		.lista li {
-			margin-bottom: 1.25rem;
+		.cap-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+			gap: 1.5rem;
+			margin-top: 1.25rem;
 		}
 	</style>
 </Base>
