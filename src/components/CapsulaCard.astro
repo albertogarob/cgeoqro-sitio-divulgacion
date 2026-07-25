@@ -45,10 +45,7 @@ const formatoLabel = capsula.data.scrolly
 				) : (
 					<span class="cap-card-avatar cap-card-avatar-vacia" aria-hidden="true"></span>
 				)}
-				<span class="cap-card-autor-info">
-					<span class="cap-card-autor-nombre">{autor.data.nombre}{autoresExtra > 0 ? ` +${autoresExtra}` : ''}</span>
-					<span class="cap-card-autor-rol">CentroGeo Querétaro</span>
-				</span>
+				<span class="cap-card-autor-nombre">{autor.data.tratamiento ? `${autor.data.tratamiento} ` : ''}{autor.data.nombre}{autoresExtra > 0 ? ` +${autoresExtra}` : ''}</span>
 			</div>
 		)}
 	</div>
@@ -124,9 +121,9 @@ const formatoLabel = capsula.data.scrolly
 		border-top: 1px solid var(--cg-color-gris-300);
 	}
 	.cap-card-avatar {
-		flex: 0 0 38px;
-		width: 38px;
-		height: 38px;
+		flex: 0 0 54px;
+		width: 54px;
+		height: 54px;
 		border-radius: 50%;
 		object-fit: cover;
 		background: var(--cg-color-gris-300);
@@ -134,22 +131,10 @@ const formatoLabel = capsula.data.scrolly
 	.cap-card-avatar-vacia {
 		background: linear-gradient(140deg, #1c2531, #0e131b);
 	}
-	.cap-card-autor-info {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.2;
-		min-width: 0;
-	}
 	.cap-card-autor-nombre {
-		font-size: 0.85rem;
+		font-size: 0.92rem;
 		font-weight: 700;
+		line-height: 1.25;
 		color: var(--cg-color-gris-700) !important;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.cap-card-autor-rol {
-		font-size: 0.72rem;
-		color: var(--cg-color-gris-500);
 	}
 </style>

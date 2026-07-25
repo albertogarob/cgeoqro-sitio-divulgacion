@@ -1,5 +1,6 @@
 ---
 nombre: "Sergio Ivvan Valdez Peña"
+tratamiento: "Dr."
 fotoUrl: "/investigadores/sergio-ivvan-valdez-pena.jpg"
 bioBreve: "Doctor en Ciencias de la Computación. Investigador por México en CentroGeo Querétaro; trabaja en optimización numérica, simulación y métodos numéricos, e inteligencia computacional aplicada a problemas geoespaciales y sociales."
 lineasInvestigacion:

@@ -1,5 +1,6 @@
 ---
 nombre: "Alberto García Robledo"
+tratamiento: "Dr."
 fotoUrl: "/investigadores/alberto-garcia-robledo.jpg"
 bioBreve: "Doctor en Ciencias de la Computación. Investiga ciencia de redes, cómputo de alto rendimiento y análisis de grandes volúmenes de datos geoespaciales en CentroGeo Querétaro."
 lineasInvestigacion:

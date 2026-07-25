@@ -9,6 +9,7 @@ const investigadores = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/investigadores' }),
   schema: z.object({
     nombre: z.string(),
+    tratamiento: z.string().optional(), // "Dr." / "Dra." para anteponer al nombre
     fotoUrl: z.string().optional(),
     bioBreve: z.string(),
     lineasInvestigacion: z.array(z.string()),

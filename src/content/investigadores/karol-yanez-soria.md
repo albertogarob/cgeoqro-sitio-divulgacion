@@ -1,5 +1,6 @@
 ---
 nombre: "Karol Yáñez Soria"
+tratamiento: "Dra."
 fotoUrl: "/investigadores/karol-yanez-soria.jpg"
 bioBreve: "Doctora en Planeación y Desarrollo. Trabaja en indicadores urbano-ambientales, resiliencia climática, género e inclusión social, y coproducción de conocimiento en CentroGeo Querétaro."
 lineasInvestigacion:

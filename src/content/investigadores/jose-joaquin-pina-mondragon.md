@@ -1,5 +1,6 @@
 ---
 nombre: "José Joaquín Piña Mondragón"
+tratamiento: "Dr."
 fotoUrl: "/investigadores/jose-joaquin-pina-mondragon.png"
 bioBreve: "Doctor en Derecho. Investiga gobernanza de la información, protección de datos personales, comercio internacional y propiedad intelectual en CentroGeo Querétaro."
 lineasInvestigacion:

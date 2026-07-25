@@ -1,5 +1,6 @@
 ---
 nombre: "Rodrigo López Farías"
+tratamiento: "Dr."
 fotoUrl: "/investigadores/rodrigo-lopez-farias.png"
 bioBreve: "Doctor en Ciencias de la Computación e Ingeniería. Trabaja en aprendizaje automático aplicado a series de tiempo y modelado espacio-temporal urbano en CentroGeo Querétaro."
 lineasInvestigacion:
