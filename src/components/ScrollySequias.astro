@@ -53,11 +53,13 @@ const creditosFotos = [
 <section class="scrolly" data-step="0">
 	<div class="scrolly-stage">
 		<div class="photo-bg" aria-hidden="true">
-			<img class="photo" data-photo="0" src={withBase('/scrolly/sequia-tierra-seca.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="1" src={withBase('/scrolly/sequia-embalse-seco.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="7" src={withBase('/scrolly/sequia-riego.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="0" data-credito="Foto: Hydrosami, tierra agrietada (CC BY-SA 4.0)" src={withBase('/scrolly/sequia-tierra-seca.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="1" data-credito="Foto: Basotxerri, embalse en sequía (CC BY-SA 4.0)" src={withBase('/scrolly/sequia-embalse-seco.jpg')} alt="" loading="lazy" />
+			<img class="photo" data-photo="7" data-credito="Foto: USDA, riego (dominio público)" src={withBase('/scrolly/sequia-riego.jpg')} alt="" loading="lazy" />
 			<div class="photo-scrim"></div>
 		</div>
+
+		<p class="stage-credito"></p>
 		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
 			<g class="map">
 				<g class="camera">
@@ -189,6 +191,7 @@ const creditosFotos = [
 		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
 		const photos = Array.from(container.querySelectorAll<HTMLImageElement>('.photo'));
 		const scrim = container.querySelector<HTMLElement>('.photo-scrim');
+		const creditoEl = container.querySelector<HTMLElement>('.stage-credito');
 		// Pasos con fondo fotográfico full-bleed (apertura, impacto y cierre). En ellos
 		// se oculta la visualización del mapa; el resto conserva el SVG científico.
 		const PASOS_FOTO = [0, 1, 7];
@@ -223,6 +226,12 @@ const creditosFotos = [
 			}
 			photos.forEach((p) => p.classList.toggle('on', Number(p.dataset.photo) === step));
 			if (scrim) scrim.classList.toggle('on', esFoto);
+			const fotoActiva = photos.find((p) => Number(p.dataset.photo) === step);
+			if (creditoEl) {
+				const cr = fotoActiva?.dataset.credito ?? '';
+				creditoEl.textContent = cr;
+				creditoEl.classList.toggle('on', Boolean(cr));
+			}
 			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
 			// En pasos de foto se ocultan los "momentos" ligados al mapa; se preserva solo
 			// el paso 7 (chips de beneficios), que se lee bien sobre la foto de cierre.
@@ -281,6 +290,18 @@ const creditosFotos = [
 		background: linear-gradient(180deg, rgba(7,7,7,0.5) 0%, rgba(7,7,7,0.22) 42%, rgba(7,7,7,0.74) 100%);
 	}
 	.photo-scrim.on { opacity: 1; }
+
+	/* Crédito/licencia de la foto activa, en la esquina del escenario. */
+	.stage-credito {
+		position: absolute; right: 0.65rem; bottom: 0.65rem; z-index: 4;
+		max-width: min(72vw, 30rem);
+		font-family: 'Roboto Flex', sans-serif; font-size: 0.72rem; line-height: 1.35;
+		color: rgba(255,255,255,0.82); background: rgba(6,14,22,0.62);
+		padding: 0.3rem 0.6rem; border-radius: 6px; text-align: right;
+		backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		opacity: 0; transition: opacity 400ms ease; pointer-events: none;
+	}
+	.stage-credito.on { opacity: 1; }
 
 	.layer { opacity: 0; transition: opacity 600ms ease; }
 	.layer.on { opacity: 1; }

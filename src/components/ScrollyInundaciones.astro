@@ -42,13 +42,14 @@ const pasos = [
 ];
 
 // Pasos con imagen a pantalla: foto de apertura (cover) o figura del artículo (a un lado).
+const CRED_FIGURA = 'Figura: Esqueda, Botello y Valdez, RIMNI 2024 (CC BY-NC-SA)';
 const media = [
-  { n: 0, cls: 'foto', lado: '', src: '/scrolly/inund-villahermosa.jpg' },
-  { n: 3, cls: 'figura', lado: 'izq', src: '/scrolly/inund-metodo.png' },
-  { n: 4, cls: 'figura', lado: 'der', src: '/scrolly/inund-malla.png' },
-  { n: 7, cls: 'figura', lado: 'izq', src: '/scrolly/inund-mancha.png' },
-  { n: 10, cls: 'figura', lado: 'der', src: '/scrolly/inund-evolucion.png' },
-  { n: 12, cls: 'foto', lado: '', src: '/scrolly/inund-cierre.jpg' },
+  { n: 0, cls: 'foto', lado: '', src: '/scrolly/inund-villahermosa.jpg', credito: 'Foto: Huitzil, inundación de 2007 en Villahermosa (CC BY 2.0)' },
+  { n: 3, cls: 'figura', lado: 'izq', src: '/scrolly/inund-metodo.png', credito: CRED_FIGURA },
+  { n: 4, cls: 'figura', lado: 'der', src: '/scrolly/inund-malla.png', credito: CRED_FIGURA },
+  { n: 7, cls: 'figura', lado: 'izq', src: '/scrolly/inund-mancha.png', credito: CRED_FIGURA },
+  { n: 10, cls: 'figura', lado: 'der', src: '/scrolly/inund-evolucion.png', credito: CRED_FIGURA },
+  { n: 12, cls: 'foto', lado: '', src: '/scrolly/inund-cierre.jpg', credito: 'Foto: Alfonsobouchot, río Grijalva en Villahermosa (CC BY-SA 4.0)' },
 ];
 
 // Blob que insinúa la mancha de inundación (paso 2) y las manchas de la función objetivo.
@@ -66,10 +67,12 @@ const creditos = [
 	<div class="scrolly-stage">
 		<div class="media-bg" aria-hidden="true">
 			{media.map((m) => (
-				<img class={`media ${m.cls} ${m.lado}`} data-media={m.n} src={withBase(m.src)} alt="" loading="lazy" />
+				<img class={`media ${m.cls} ${m.lado}`} data-media={m.n} data-credito={m.credito} src={withBase(m.src)} alt="" loading="lazy" />
 			))}
 			<div class="media-scrim"></div>
 		</div>
+
+		<p class="stage-credito"></p>
 
 		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
 			<!-- 1: qué tan frecuentes son las inundaciones -->
@@ -170,6 +173,7 @@ const creditos = [
 		const header = document.querySelector<HTMLElement>('header');
 		const medios = Array.from(container.querySelectorAll<HTMLElement>('.media'));
 		const scrim = container.querySelector<HTMLElement>('.media-scrim');
+		const creditoEl = container.querySelector<HTMLElement>('.stage-credito');
 		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
 		const stepEls = Array.from(container.querySelectorAll<HTMLElement>('.step'));
 		const tipoDe: Record<number, string> = {};
@@ -199,6 +203,12 @@ const creditos = [
 			container.dataset.mode = modo;
 			medios.forEach((m) => m.classList.toggle('on', Number(m.dataset.media) === step));
 			if (scrim) scrim.classList.toggle('on', modo === 'foto');
+			const mediaActiva = medios.find((m) => Number(m.dataset.media) === step);
+			if (creditoEl) {
+				const cr = mediaActiva?.dataset.credito ?? '';
+				creditoEl.textContent = cr;
+				creditoEl.classList.toggle('on', Boolean(cr));
+			}
 			onlys.forEach((o) => o.classList.toggle('on', Number(o.dataset.only) === step));
 			const activo = onlys.find((o) => Number(o.dataset.only) === step);
 			if (activo) activo.querySelectorAll<HTMLElement>('.count').forEach((c) => animCount(c, Number(c.dataset.to ?? '0')));
@@ -250,6 +260,29 @@ const creditos = [
 		background: linear-gradient(180deg, rgba(5,16,26,0.55) 0%, rgba(5,16,26,0.22) 40%, rgba(5,16,26,0.78) 100%);
 	}
 	.media-scrim.on { opacity: 1; }
+
+	/* Crédito/licencia de la foto o figura activa, en la esquina del escenario. */
+	.stage-credito {
+		position: absolute;
+		right: 0.65rem;
+		bottom: 0.65rem;
+		z-index: 4;
+		max-width: min(72vw, 30rem);
+		font-family: 'Roboto Flex', sans-serif;
+		font-size: 0.72rem;
+		line-height: 1.35;
+		color: rgba(255, 255, 255, 0.82);
+		background: rgba(6, 14, 22, 0.62);
+		padding: 0.3rem 0.6rem;
+		border-radius: 6px;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		text-align: right;
+		opacity: 0;
+		transition: opacity 400ms ease;
+		pointer-events: none;
+	}
+	.stage-credito.on { opacity: 1; }
 
 	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
 	.only.on { opacity: 1; }
