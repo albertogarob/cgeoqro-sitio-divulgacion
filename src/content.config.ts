@@ -38,6 +38,8 @@ const series = defineCollection({
     nombre: z.string(),
     descripcion: z.string(),
     colorAcento: z.string().optional(), // pendiente de identidad visual institucional
+    imagenPortada: z.string().optional(), // foto representativa de banner (ruta bajo /public)
+    imagenCredito: z.string().optional(), // crédito de la foto si la licencia lo exige
   }),
 });
 

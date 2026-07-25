@@ -5,30 +5,125 @@ import { withBase } from '../../lib/url';
 import Thumb from '../../components/Thumb.astro';
 
 const series = await getCollection('series');
+const capsulas = await getCollection('capsulas');
+const seriesConConteo = series.map((s) => ({
+  s,
+  total: capsulas.filter((c) => c.data.serie.id === s.id && !c.id.startsWith('ejemplo')).length,
+}));
 ---
 
 <Base title="Series">
 	<span class="cg-eyebrow">Divulgación</span>
 	<h1>Series temáticas</h1>
-	<p>Los ejes de investigación de CentroGeo Querétaro agrupados por tema.</p>
-	<ul class="lista">
-		{series.map((s) => (
+	<p class="intro">Los ejes de investigación de CentroGeo Querétaro agrupados por tema.</p>
+
+	<ul class="series-lista">
+		{seriesConConteo.map(({ s, total }) => (
 			<li>
-				<a class="cg-list-card" href={withBase(`/series/${s.id}/`)}>
-					<Thumb kind="serie" accent={s.data.colorAcento} variant={s.id} label={s.data.nombre} seed={s.id} />
-					<div class="cg-list-body">
-						<h3>{s.data.nombre}</h3>
+				<a
+					class="serie-banner"
+					href={withBase(`/series/${s.id}/`)}
+					style={`--acento: ${s.data.colorAcento ?? 'var(--cg-color-naranja-300)'}`}
+				>
+					<div class="serie-banner-img">
+						{s.data.imagenPortada ? (
+							<img src={withBase(s.data.imagenPortada)} alt="" loading="lazy" />
+						) : (
+							<Thumb kind="serie" accent={s.data.colorAcento} variant={s.id} label={s.data.nombre} seed={s.id} />
+						)}
+						<span class="serie-banner-nombre">{s.data.nombre}</span>
+					</div>
+					<div class="serie-banner-body">
 						<p>{s.data.descripcion}</p>
+						<span class="serie-conteo">
+							{total > 0 ? `${total} ${total === 1 ? 'cápsula' : 'cápsulas'}` : 'Próximamente'}
+						</span>
 					</div>
 				</a>
 			</li>
 		))}
 	</ul>
+
 	<style>
-		.lista {
+		.intro {
+			max-width: 46rem;
+			color: var(--cg-color-gris-500);
+		}
+		.series-lista {
 			list-style: none;
 			padding: 0;
+			margin: 1.75rem 0 0;
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+			gap: 1.5rem;
+		}
+		.serie-banner {
+			display: flex;
+			flex-direction: column;
+			border-radius: var(--cg-border-radius-m);
+			overflow: hidden;
+			background: var(--cg-color-blanco);
+			border: 1px solid var(--cg-color-gris-300);
+			text-decoration: none !important;
+			color: var(--cg-color-gris-500) !important;
+			transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+		}
+		.serie-banner:hover {
+			transform: translateY(-4px);
+			border-color: var(--acento);
+			box-shadow: 0 24px 44px -30px rgba(0, 0, 0, 0.45);
+		}
+		.serie-banner-img {
+			position: relative;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+		}
+		.serie-banner-img img,
+		.serie-banner-img :global(.cg-thumb) {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.serie-banner-img::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, rgba(8, 16, 26, 0.1) 30%, rgba(8, 16, 26, 0.82) 100%);
+		}
+		.serie-banner-nombre {
+			position: absolute;
+			left: 1.15rem;
+			right: 1.15rem;
+			bottom: 0.95rem;
+			z-index: 2;
+			font-family: 'Archivo Expanded', 'Roboto Flex', sans-serif;
+			font-weight: 700;
+			font-size: 1.5rem;
+			line-height: 1.15;
+			color: #fff;
+			text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+			border-left: 4px solid var(--acento);
+			padding-left: 0.7rem;
+		}
+		.serie-banner-body {
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+			padding: 1.15rem 1.35rem 1.4rem;
+			flex-grow: 1;
+		}
+		.serie-banner-body p {
 			margin: 0;
+			font-size: 0.92rem;
+			line-height: 1.5;
+		}
+		.serie-conteo {
+			margin-top: auto;
+			font-size: 0.82rem;
+			font-weight: 700;
+			color: var(--acento);
 		}
 	</style>
 </Base>

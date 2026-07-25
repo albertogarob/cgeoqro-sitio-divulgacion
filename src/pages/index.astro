@@ -300,7 +300,11 @@ const arcos = [
 					href={withBase(`/series/${serie.id}/`)}
 					style={`--acento: ${serie.data.colorAcento ?? 'var(--cg-color-naranja-300)'}`}
 				>
-					<Thumb kind="serie" accent={serie.data.colorAcento} variant={serie.id} label={serie.data.nombre} seed={serie.id} />
+					{serie.data.imagenPortada ? (
+						<img class="serie-card-img" src={withBase(serie.data.imagenPortada)} alt="" loading="lazy" />
+					) : (
+						<Thumb kind="serie" accent={serie.data.colorAcento} variant={serie.id} label={serie.data.nombre} seed={serie.id} />
+					)}
 					<h3>{serie.data.nombre}</h3>
 					<p>{serie.data.descripcion}</p>
 					<span class="serie-conteo">
@@ -707,6 +711,12 @@ const arcos = [
 		.serie-card :global(.cg-thumb) {
 			height: 104px;
 			width: 100%;
+		}
+		.serie-card-img {
+			height: 150px;
+			width: 100%;
+			object-fit: cover;
+			display: block;
 		}
 		.serie-card h3 {
 			margin: 1.25rem 1.5rem 0.5rem;
