@@ -1,13 +1,18 @@
 ---
-// Scrollytelling original sobre la estimación de mapas de sequía con redes
+// Escena del recorrido sobre la estimación de mapas de sequía con redes
 // Convolución-LSTM (Medrano, Rodríguez, López-Farías et al., Research in Computing
 // Science 152(9), 2023). Texto parafraseado; gráficos SVG propios, sin reproducir
 // figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
 //
+// El texto y las fotos de los pasos viven en src/content/recorridos/sequias.yaml
+// (lo que corrigen los autores). Aquí solo está la escena visual y su coreografía.
+//
 // Fondos fotográficos de apertura/impacto/cierre: fotos con licencia libre (CC BY-SA /
 // dominio público) descargadas de Wikimedia Commons, NO figuras del paper. Créditos y
 // licencia en public/scrolly/CREDITOS.json.
-import { withBase } from '../lib/url';
+import { getEntry } from 'astro:content';
+import ScrollyShell from './ScrollyShell.astro';
+import { indiceVisual } from '../lib/recorrido';
 
 const cols = 9;
 const rows = 5;
@@ -28,19 +33,36 @@ const legenda = [
   { c: '#cf4b2a', l: 'D3 extrema' },
   { c: '#8f2114', l: 'D4 excepcional' },
 ];
-// Miniaturas de la serie de tiempo (3 pasadas + 1 predicción).
-const tira = [220, 400, 580, 760];
+// Miniaturas de la serie de tiempo (3 pasadas + 1 predicción), a la derecha del
+// escenario porque en ese paso el subtítulo va a la izquierda.
+const tira = [520, 640, 760, 880];
 
-const pasos = [
-  { n: 0, pos: 'center', texto: 'La sequía es un desastre lento: un periodo seco prolongado que deja sin agua a personas y ecosistemas.' },
-  { n: 1, pos: 'right', texto: 'No es una sola cosa. Golpea a la agricultura, al agua potable y a las comunidades rurales, muchas veces antes de que se note.' },
-  { n: 2, pos: 'right', texto: 'Para verla, los científicos hacen mapas de sequía con datos de satélites y sensores, en cinco niveles de severidad.' },
-  { n: 3, pos: 'right', texto: 'La pregunta clave: con los mapas pasados, ¿se puede estimar el próximo? Eso exige leer a la vez el espacio y el tiempo.' },
-  { n: 4, pos: 'left', texto: 'La idea: tratar los mapas como una serie de imágenes y usar una red neuronal Convolución-LSTM, que aprende el espacio y su evolución.' },
-  { n: 5, pos: 'left', texto: 'Alimentada con los mapas del monitor de sequías de Estados Unidos en orden cronológico, la red estima cómo se verá el siguiente.' },
-  { n: 6, pos: 'left', texto: 'El resultado supera al método ingenuo: menos error en la estimación. El costo: mucho cómputo y memoria.' },
-  { n: 7, pos: 'center', texto: 'Anticipar la sequía permite cuidar el agua, proteger los cultivos y decidir a tiempo. Ciencia geoespacial al servicio de la sociedad.' },
+// Momento "datos": una rayita por semana entre 2000 y 2022.
+const semanas = Array.from({ length: 110 }, (_, i) => ({ x: 545 + i * 3.7, i }));
+
+// Momento "preparacion": la tira de color que se vuelve escala de grises.
+const muestras = ['#f6e27a', '#f0b34e', '#e8843f', '#cf4b2a', '#8f2114'].map((c, i) => ({
+  color: c,
+  gris: ['#d8d8d8', '#b0b0b0', '#888888', '#5a5a5a', '#303030'][i],
+  x: 560 + i * 62,
+  i,
+}));
+
+// Momento "ventana": seis mapas apilados en profundidad y el séptimo por dibujar.
+const pila = Array.from({ length: 6 }, (_, i) => ({ x: 80 + i * 26, y: 330 - i * 26, i }));
+
+// Momento "reparto": en qué se usa cada mapa del conjunto.
+const montones = [
+  { l: 'entrenar', n: 658, c: '#e8843f' },
+  { l: 'ajustar', n: 165, c: '#f0b34e' },
+  { l: 'examen', n: 354, c: 'rgba(255,255,255,0.5)' },
 ];
+
+const recorrido = await getEntry('recorridos', 'sequias');
+if (!recorrido) throw new Error('Falta el recorrido src/content/recorridos/sequias.yaml');
+const pasos = recorrido.data.pasos;
+// Cada escena se engancha a su paso por nombre, no por número.
+const v = (clave: string) => indiceVisual(pasos, clave);
 
 // Atribución de las fotos de fondo (licencia libre, no figuras del paper).
 const creditosFotos = [
@@ -48,260 +70,232 @@ const creditosFotos = [
   { autor: 'Basotxerri', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Yesa_-_Embalse_-_Sequ%C3%ADa_01.jpg' },
   { autor: 'USDA', licencia: 'dominio público', fuente: 'https://commons.wikimedia.org/wiki/File:Irrigation_and_Water_(20150827-NRCS-LSC-0363).jpg' },
 ];
+const nota = 'Fotografías de fondo (licencia libre, no son figuras del artículo), vía Wikimedia Commons:';
 ---
 
-<section class="scrolly" data-step="0">
-	<div class="scrolly-stage">
-		<div class="photo-bg" aria-hidden="true">
-			<img class="photo" data-photo="0" data-credito="Foto: Hydrosami, tierra agrietada (CC BY-SA 4.0)" src={withBase('/scrolly/sequia-tierra-seca.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="1" data-credito="Foto: Basotxerri, embalse en sequía (CC BY-SA 4.0)" src={withBase('/scrolly/sequia-embalse-seco.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="7" data-credito="Foto: USDA, riego (dominio público)" src={withBase('/scrolly/sequia-riego.jpg')} alt="" loading="lazy" />
-			<div class="photo-scrim"></div>
-		</div>
-
-		<p class="stage-credito"></p>
-		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-			<g class="map">
-				<g class="camera">
-					<!-- Contorno del mapa (rejilla) -->
-					<g class="layer" data-from="0">
-						{celdas.map((c) => (
-							<rect x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
-								fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
-						))}
-					</g>
-					<!-- Mapa de sequía coloreado por severidad -->
-					<g class="layer color-cells" data-from="2">
-						{celdas.map((c, i) => (
-							<rect class="scell" style={`--i:${i}`} x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
-								fill={c.color} opacity="0.92" />
-						))}
-					</g>
-				</g>
-			</g>
-
-			<!-- MOMENTO 1: focos de impacto (celdas más severas laten) -->
-			<g class="only" data-only="1">
-				{celdas.filter((c) => c.sev >= 3).map((c) => (
-					<rect class="foco" x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
-						fill="none" stroke="#cf4b2a" stroke-width="3" />
-				))}
-			</g>
-
-			<!-- MOMENTO 2: leyenda de categorías -->
-			<g class="only" data-only="2">
-				<text x="110" y="580" class="mom-sub">Cinco niveles de severidad</text>
-				{legenda.map((g, i) => (
-					<g style={`--i:${i}`} class="leg">
-						<rect x={110 + i * 168} y="600" width="24" height="24" rx="5" fill={g.c} />
-						<text x={142 + i * 168} y="618" class="leg-txt">{g.l}</text>
-					</g>
-				))}
-			</g>
-
-			<!-- MOMENTO 3: serie de tiempo de imágenes -->
-			<g class="only" data-only="3">
-				{tira.map((x, i) => (
-					<g class="frame" style={`--i:${i}`}>
-						<rect x={x} y="250" width="130" height="100" rx="8"
-							fill={i === 3 ? 'rgba(255,255,255,0.06)' : '#2a1a0f'}
-							stroke={i === 3 ? '#e8843f' : 'rgba(255,255,255,0.25)'}
-							stroke-width={i === 3 ? '2' : '1'}
-							stroke-dasharray={i === 3 ? '5 5' : '0'} />
-						{i < 3 && <><rect x={x + 14} y={264} width="45" height="30" rx="3" fill="#e8843f" opacity="0.8" /><rect x={x + 66} y={264} width="45" height="30" rx="3" fill="#f0b34e" opacity="0.7" /><rect x={x + 14} y={302} width="45" height="30" rx="3" fill="#cf4b2a" opacity="0.7" /><rect x={x + 66} y={302} width="45" height="30" rx="3" fill="#8f2114" opacity="0.7" /></>}
-						{i === 3 && <text x={x + 65} y={312} text-anchor="middle" class="qmark">?</text>}
-					</g>
-				))}
-				{[0, 1, 2].map((i) => (
-					<text x={tira[i] + 155} y="308" text-anchor="middle" class="arrow">→</text>
-				))}
-				<text x="285" y="230" class="mom-sub">ayer</text>
-				<text x="825" y="230" class="mom-sub" text-anchor="end">mañana</text>
-			</g>
-
-			<!-- MOMENTO 4: red Convolución-LSTM -->
-			<g class="only" data-only="4">
-				<!-- espacio: kernel que recorre una rejilla -->
-				<g>
-					{[0, 1, 2].map((r) => [0, 1, 2].map((c) => (
-						<rect x={230 + c * 46} y={280 + r * 46} width="40" height="40" rx="4" fill="rgba(232,132,63,0.18)" stroke="#e8843f" stroke-width="1" />
-					)))}
-					<rect class="kernel" x="230" y="280" width="86" height="86" rx="6" fill="none" stroke="#ffffff" stroke-width="3" />
-					<text x="298" y="255" text-anchor="middle" class="mom-sub">Espacio (convolución)</text>
-				</g>
-				<text x="470" y="345" class="arrow">→</text>
-				<!-- tiempo: cadena LSTM -->
-				<g>
-					{[0, 1, 2].map((i) => (
-						<rect class="lstm" style={`--i:${i}`} x={540 + i * 120} y="300" width="90" height="60" rx="10" fill="rgba(232,132,63,0.16)" stroke="#e8843f" stroke-width="1.5" />
+<ScrollyShell
+	pasos={pasos}
+	atenuar={['pregunta', 'datos', 'preparacion', 'ventana', 'idea', 'entrenamiento', 'reparto', 'resultado', 'costo']}
+	fondo="radial-gradient(120% 90% at 50% 36%, #20140a 0%, #12100c 55%, #070707 100%)"
+	fondoCaption="rgba(20, 12, 6, 0.74)"
+	velo="7, 7, 7"
+	fondoCreditos="#12100c"
+	colorEnlace="#a06a4a"
+	creditos={creditosFotos}
+	notaCreditos={nota}
+>
+	<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+		<g class="map">
+			<g class="camera">
+				<!-- Contorno del mapa (rejilla) -->
+				<g class="layer" data-from={v('apertura')}>
+					{celdas.map((c) => (
+						<rect x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+							fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
 					))}
-					{[0, 1].map((i) => <text x={640 + i * 120} y="335" class="arrow">→</text>)}
-					<text x="675" y="255" text-anchor="middle" class="mom-sub">Tiempo (memoria LSTM)</text>
+				</g>
+				<!-- Mapa de sequía coloreado por severidad -->
+				<g class="layer color-cells" data-from={v('mapa')}>
+					{celdas.map((c, i) => (
+						<rect class="scell" style={`--i:${i}`} x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+							fill={c.color} opacity="0.92" />
+					))}
 				</g>
 			</g>
+		</g>
 
-			<!-- MOMENTO 6: comparación de error -->
-			<g class="only" data-only="6">
-				<text x="500" y="230" text-anchor="middle" class="mom-big">Menos error</text>
-				<text x="250" y="330" class="bar-label">Método ingenuo</text>
-				<rect x="250" y="345" height="34" rx="6" fill="rgba(255,255,255,0.35)" class="bar bar-naive" />
-				<text x="250" y="430" class="bar-label">Convolución-LSTM</text>
-				<rect x="250" y="445" height="34" rx="6" fill="#e8843f" class="bar bar-model" />
+		<!-- MOMENTO: las zonas más severas, marcadas semana a semana por expertos -->
+		<g class="only" data-only={v('severidad')}>
+			{celdas.filter((c) => c.sev >= 3).map((c) => (
+				<rect class="foco" x={c.x - 32} y={c.y - 32} width="64" height="64" rx="6"
+					fill="none" stroke="#cf4b2a" stroke-width="3" />
+			))}
+			<text x="300" y="648" text-anchor="middle" class="mom-sub">sequía extrema y excepcional</text>
+		</g>
+
+		<!-- MOMENTO: leyenda de categorías -->
+		<g class="only en-izquierda" data-only={v('mapa')}>
+			<text x="110" y="546" class="mom-sub">Cinco niveles de severidad</text>
+			{legenda.map((g, i) => (
+				<g style={`--i:${i}`} class="leg">
+					<rect x={110 + (i % 3) * 150} y={578 + Math.floor(i / 3) * 44} width="24" height="24" rx="5" fill={g.c} />
+					<text x={142 + (i % 3) * 150} y={596 + Math.floor(i / 3) * 44} class="leg-txt">{g.l}</text>
+				</g>
+			))}
+		</g>
+
+		<!-- MOMENTO: serie de tiempo de imágenes -->
+		<g class="only" data-only={v('pregunta')}>
+			{tira.map((x, i) => (
+				<g class="frame" style={`--i:${i}`}>
+					<rect x={x} y="250" width="130" height="100" rx="8"
+						fill={i === 3 ? 'rgba(255,255,255,0.06)' : '#2a1a0f'}
+						stroke={i === 3 ? '#e8843f' : 'rgba(255,255,255,0.25)'}
+						stroke-width={i === 3 ? '2' : '1'}
+						stroke-dasharray={i === 3 ? '5 5' : '0'} />
+					{i < 3 && <><rect x={x + 14} y={264} width="45" height="30" rx="3" fill="#e8843f" opacity="0.8" /><rect x={x + 66} y={264} width="45" height="30" rx="3" fill="#f0b34e" opacity="0.7" /><rect x={x + 14} y={302} width="45" height="30" rx="3" fill="#cf4b2a" opacity="0.7" /><rect x={x + 66} y={302} width="45" height="30" rx="3" fill="#8f2114" opacity="0.7" /></>}
+					{i === 3 && <text x={x + 65} y={312} text-anchor="middle" class="qmark">?</text>}
+				</g>
+			))}
+			{[0, 1, 2].map((i) => (
+				<text x={tira[i] + 155} y="308" text-anchor="middle" class="arrow">→</text>
+			))}
+			<text x="285" y="230" class="mom-sub">ayer</text>
+			<text x="825" y="230" class="mom-sub" text-anchor="end">mañana</text>
+		</g>
+
+		<!-- MOMENTO: red Convolución-LSTM -->
+		<g class="only en-izquierda" data-only={v('idea')}>
+			<!-- espacio: kernel que recorre una rejilla -->
+			<g>
+				{[0, 1, 2].map((r) => [0, 1, 2].map((c) => (
+					<rect x={70 + c * 46} y={280 + r * 46} width="40" height="40" rx="4" fill="rgba(232,132,63,0.18)" stroke="#e8843f" stroke-width="1" />
+				)))}
+				<rect class="kernel" x="70" y="280" width="86" height="86" rx="6" fill="none" stroke="#ffffff" stroke-width="3" />
+				<text x="138" y="255" text-anchor="middle" class="mom-sub">Espacio (convolución)</text>
 			</g>
-
-			<!-- MOMENTO 7: beneficios -->
-			<g class="only" data-only="7">
-				<g class="clave" style="--i:0"><rect x="150" y="600" width="200" height="58" rx="29" /><text x="250" y="636" text-anchor="middle">Anticipar</text></g>
-				<g class="clave" style="--i:1"><rect x="400" y="600" width="200" height="58" rx="29" /><text x="500" y="636" text-anchor="middle">Cuidar el agua</text></g>
-				<g class="clave" style="--i:2"><rect x="650" y="600" width="200" height="58" rx="29" /><text x="750" y="636" text-anchor="middle">Proteger cultivos</text></g>
+			<text x="240" y="345" class="arrow">→</text>
+			<!-- tiempo: cadena LSTM -->
+			<g>
+				{[0, 1, 2].map((i) => (
+					<rect class="lstm" style={`--i:${i}`} x={300 + i * 110} y="300" width="84" height="60" rx="10" fill="rgba(232,132,63,0.16)" stroke="#e8843f" stroke-width="1.5" />
+				))}
+				{[0, 1].map((i) => <text x={394 + i * 110} y="335" class="arrow">→</text>)}
+				<text x="425" y="255" text-anchor="middle" class="mom-sub">Tiempo (memoria LSTM)</text>
 			</g>
-		</svg>
-	</div>
+		</g>
 
-	<div class="scrolly-steps">
-		{pasos.map((p) => (
-			<div class="step" data-step={p.n} data-pos={p.pos}>
-				<p class="caption">{p.texto}</p>
-			</div>
-		))}
-	</div>
+		<!-- MOMENTO: de dónde salen los datos -->
+		<g class="only en-derecha" data-only={v('datos')}>
+			<text x="740" y="250" text-anchor="middle" class="mom-big"><tspan class="count" data-to="1183">0</tspan></text>
+			<text x="740" y="290" text-anchor="middle" class="mom-sub">mapas, uno por semana</text>
+			{semanas.map((w) => (
+				<rect class="semana" style={`--i:${w.i}`} x={w.x} y="340" width="2.4" height="54" rx="1" fill="#e8843f" />
+			))}
+			<text x="545" y="430" class="eje-lbl">enero de 2000</text>
+			<text x="960" y="430" text-anchor="end" class="eje-lbl">agosto de 2022</text>
+		</g>
 
-	<p class="foto-creditos">
-		Fotografías de fondo (licencia libre, no son figuras del artículo):{' '}
-		{creditosFotos.map((c, i) => (
-			<>
-				{i > 0 && ' · '}
-				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia})
-			</>
-		))}
-		{' '}vía Wikimedia Commons.
-	</p>
-</section>
+		<!-- MOMENTO: preparar las imágenes (recorte y escala de grises) -->
+		<g class="only en-derecha" data-only={v('preparacion')}>
+			<rect x="560" y="170" width="400" height="188" rx="6" fill="none"
+				stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-dasharray="6 7" />
+			<text x="760" y="160" text-anchor="middle" class="eje-lbl">mapa completo</text>
+			<rect class="recorte" x="560" y="216" width="400" height="96" rx="4"
+				fill="rgba(232,132,63,0.16)" stroke="#e8843f" stroke-width="2" />
+			<text x="760" y="278" text-anchor="middle" class="mom-sub">territorio continental</text>
+			{muestras.map((m) => (
+				<>
+					<rect x={m.x} y="400" width="48" height="48" rx="6" fill={m.color} />
+					<rect class="gris" style={`--i:${m.i}`} x={m.x} y="470" width="48" height="48" rx="6" fill={m.gris} />
+				</>
+			))}
+			<text x="740" y="558" text-anchor="middle" class="mom-sub">del color a la escala de grises</text>
+		</g>
 
-<script>
-	import scrollama from 'scrollama';
+		<!-- MOMENTO: la ventana de tiempo que se le da a la red -->
+		<g class="only en-izquierda" data-only={v('ventana')}>
+			{pila.map((m) => (
+				<g class="lamina" style={`--i:${m.i}`}>
+					<rect x={m.x} y={m.y} width="150" height="104" rx="8" fill="#2a1a0f" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+					<rect x={m.x + 12} y={m.y + 14} width="60" height="34" rx="3" fill="#e8843f" opacity="0.75" />
+					<rect x={m.x + 78} y={m.y + 14} width="60" height="34" rx="3" fill="#f0b34e" opacity="0.65" />
+					<rect x={m.x + 12} y={m.y + 56} width="60" height="34" rx="3" fill="#cf4b2a" opacity="0.65" />
+					<rect x={m.x + 78} y={m.y + 56} width="60" height="34" rx="3" fill="#8f2114" opacity="0.65" />
+				</g>
+			))}
+			<text x="140" y="500" class="mom-sub">6 semanas apiladas</text>
+			<text x="378" y="262" class="arrow">→</text>
+			<g class="siguiente">
+				<rect x="420" y="200" width="150" height="104" rx="8" fill="rgba(255,255,255,0.06)"
+					stroke="#e8843f" stroke-width="2" stroke-dasharray="6 6" />
+				<text x="495" y="268" text-anchor="middle" class="qmark">?</text>
+			</g>
+			<text x="495" y="330" text-anchor="middle" class="mom-sub">la séptima</text>
+		</g>
 
-	function initScrolly() {
-		const container = document.querySelector<HTMLElement>('.scrolly');
-		if (!container) return;
-		const header = document.querySelector<HTMLElement>('header');
-		const camera = container.querySelector<SVGGElement>('.camera');
-		const map = container.querySelector<SVGGElement>('.map');
-		const layers = Array.from(container.querySelectorAll<SVGGElement>('.layer'));
-		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
-		const photos = Array.from(container.querySelectorAll<HTMLImageElement>('.photo'));
-		const scrim = container.querySelector<HTMLElement>('.photo-scrim');
-		const creditoEl = container.querySelector<HTMLElement>('.stage-credito');
-		// Pasos con fondo fotográfico full-bleed (apertura, impacto y cierre). En ellos
-		// se oculta la visualización del mapa; el resto conserva el SVG científico.
-		const PASOS_FOTO = [0, 1, 7];
+		<!-- MOMENTO: el ciclo de entrenamiento -->
+		<g class="only en-izquierda" data-only={v('entrenamiento')}>
+			<g class="ciclo" style="--i:0">
+				<rect x="60" y="250" width="130" height="92" rx="8" fill="rgba(232,132,63,0.18)" stroke="#e8843f" stroke-width="2" />
+				<text x="125" y="380" text-anchor="middle" class="eje-lbl">lo que estima</text>
+			</g>
+			<text x="215" y="305" class="arrow">→</text>
+			<g class="ciclo" style="--i:1">
+				<rect x="255" y="250" width="130" height="92" rx="8" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" stroke-width="2" />
+				<text x="320" y="380" text-anchor="middle" class="eje-lbl">lo que pasó</text>
+			</g>
+			<g class="ciclo" style="--i:2">
+				<path d="M400 296 h 60" stroke="#cf4b2a" stroke-width="2.5" fill="none" />
+				<text x="500" y="303" text-anchor="middle" class="error-lbl">error</text>
+				<path class="retorno" d="M520 330 C 520 470, 130 470, 125 360" fill="none"
+					stroke="#cf4b2a" stroke-width="2.5" stroke-dasharray="7 7" />
+				<text x="320" y="500" text-anchor="middle" class="mom-sub">y se corrige, miles de veces</text>
+			</g>
+		</g>
 
-		function setStageTop() {
-			const h = header ? header.offsetHeight : 64;
-			container.style.setProperty('--stage-top', h + 'px');
-		}
-		setStageTop();
-		window.addEventListener('resize', setStageTop);
+		<!-- MOMENTO: cómo se reparten los mapas -->
+		<g class="only en-derecha" data-only={v('reparto')}>
+			<text x="540" y="250" class="mom-sub">1,177 muestras, en tres montones</text>
+			{montones.map((m, i) => {
+				const previos = montones.slice(0, i).reduce((a, b) => a + b.n, 0);
+				const total = 1177;
+				const x = 540 + (previos / total) * 420;
+				const w = (m.n / total) * 420;
+				return (
+					<g class="monton" style={`--i:${i}`}>
+						<rect x={x} y="290" width={w} height="44" rx="6" fill={m.c} />
+						<text x={x + w / 2} y="378" text-anchor="middle" class="monton-num">{m.n}</text>
+						<text x={x + w / 2} y="404" text-anchor="middle" class="eje-lbl">{m.l}</text>
+					</g>
+				);
+			})}
+			<text x="540" y="480" class="mom-sub">el examen son muestras que nunca vio</text>
+		</g>
 
-		const camaras: Record<number, string> = {
-			0: 'translate(0,0) scale(1)',
-			1: 'translate(0,0) scale(1)',
-			2: 'translate(0,0) scale(1)',
-			3: 'translate(0,0) scale(1)',
-			4: 'translate(0,0) scale(1)',
-			5: 'translate(0,0) scale(1)',
-			6: 'translate(0,0) scale(1)',
-			7: 'translate(0,0) scale(1)',
-		};
+		<!-- MOMENTO: comparación de error contra el método ingenuo -->
+		<g class="only en-derecha" data-only={v('resultado')}>
+			<text x="540" y="230" class="mom-big">Menos error</text>
+			<text x="540" y="330" class="bar-label">Método ingenuo</text>
+			<rect x="540" y="345" height="34" rx="6" fill="rgba(255,255,255,0.35)" class="bar bar-naive" />
+			<text x="906" y="371" class="bar-cifra">0.020</text>
+			<text x="540" y="430" class="bar-label">Convolución-LSTM</text>
+			<rect x="540" y="445" height="34" rx="6" fill="#e8843f" class="bar bar-model" />
+			<text x="906" y="471" class="bar-cifra">0.018</text>
+			<text x="540" y="540" class="mom-sub">error cuadrático medio, escala de grises</text>
+		</g>
 
-		function aplicar(step: number) {
-			container.dataset.step = String(step);
-			if (camera) camera.setAttribute('transform', camaras[step] ?? camaras[0]);
-			const esFoto = PASOS_FOTO.includes(step);
-			// El mapa se atenúa en diagramas externos (serie, red, barras) y se oculta por
-			// completo en los pasos con fondo fotográfico.
-			if (map) {
-				map.classList.toggle('dim', step === 3 || step === 4 || step === 6);
-				map.classList.toggle('hide', esFoto);
-			}
-			photos.forEach((p) => p.classList.toggle('on', Number(p.dataset.photo) === step));
-			if (scrim) scrim.classList.toggle('on', esFoto);
-			const fotoActiva = photos.find((p) => Number(p.dataset.photo) === step);
-			if (creditoEl) {
-				const cr = fotoActiva?.dataset.credito ?? '';
-				creditoEl.textContent = cr;
-				creditoEl.classList.toggle('on', Boolean(cr));
-			}
-			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
-			// En pasos de foto se ocultan los "momentos" ligados al mapa; se preserva solo
-			// el paso 7 (chips de beneficios), que se lee bien sobre la foto de cierre.
-			onlys.forEach((o) => {
-				const n = Number(o.dataset.only);
-				o.classList.toggle('on', n === step && (!esFoto || n === 7));
-			});
-		}
+		<!-- MOMENTO: lo que cuesta entrenar la red -->
+		<g class="only en-derecha" data-only={v('costo')}>
+			{[0, 1].map((i) => (
+				<g class="gpu" style={`--i:${i}`}>
+					<rect x={560 + i * 210} y="230" width="180" height="92" rx="10"
+						fill="rgba(255,255,255,0.06)" stroke="#e8843f" stroke-width="2" />
+					{[0, 1].map((k) => (
+						<circle class="ventilador" cx={610 + i * 210 + k * 80} cy="276" r="26" fill="none" stroke="#e8843f" stroke-width="2.5" />
+					))}
+				</g>
+			))}
+			<text x="760" y="368" text-anchor="middle" class="mom-sub">2 tarjetas gráficas, al límite</text>
+			<text x="760" y="440" text-anchor="middle" class="mom-big-sm">32 GB</text>
+			<text x="760" y="478" text-anchor="middle" class="mom-sub">de memoria en el equipo usado</text>
+		</g>
 
-		aplicar(0);
-
-		const scroller = scrollama();
-		scroller
-			.setup({ step: '.scrolly .step', offset: 0.75 })
-			.onStepEnter((r: { element: HTMLElement }) => {
-				container.querySelectorAll('.step').forEach((el) => el.classList.remove('activo'));
-				r.element.classList.add('activo');
-				aplicar(Number(r.element.dataset.step ?? '0'));
-			});
-		window.addEventListener('resize', scroller.resize);
-	}
-
-	if (document.readyState !== 'loading') initScrolly();
-	else document.addEventListener('DOMContentLoaded', initScrolly);
-</script>
+		<!-- MOMENTO final: beneficios, legibles sobre la foto de cierre -->
+		<g class="only" data-only={v('cierre')} data-sobre-foto="si">
+			<g class="clave" style="--i:0"><rect x="150" y="600" width="200" height="58" rx="29" /><text x="250" y="636" text-anchor="middle">Anticipar</text></g>
+			<g class="clave" style="--i:1"><rect x="400" y="600" width="200" height="58" rx="29" /><text x="500" y="636" text-anchor="middle">Cuidar el agua</text></g>
+			<g class="clave" style="--i:2"><rect x="650" y="600" width="200" height="58" rx="29" /><text x="750" y="636" text-anchor="middle">Proteger cultivos</text></g>
+		</g>
+	</svg>
+</ScrollyShell>
 
 <style>
-	.scrolly {
-		--stage-top: 64px;
-		position: relative;
-		width: 100%;
-	}
-	.scrolly-stage {
-		position: sticky;
-		top: var(--stage-top);
-		height: calc(100vh - var(--stage-top));
-		width: 100%;
-		background: radial-gradient(120% 90% at 50% 36%, #20140a 0%, #12100c 55%, #070707 100%);
-		overflow: hidden;
-	}
 	.mapa { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
 	.camera { transform-origin: 0 0; transition: transform 1000ms cubic-bezier(0.45, 0.05, 0.2, 1); }
 	.map { transition: opacity 500ms ease, filter 500ms ease; }
 	.map.dim { opacity: 0.25; filter: saturate(0.6); }
 	.map.hide { opacity: 0; }
-
-	/* Capa de fondos fotográficos (full-bleed) en pasos narrativos. */
-	.photo-bg { position: absolute; inset: 0; z-index: 0; }
-	.photo-bg .photo {
-		position: absolute; inset: 0; width: 100%; height: 100%;
-		object-fit: cover; opacity: 0; transition: opacity 900ms ease;
-	}
-	.photo-bg .photo.on { opacity: 1; }
-	.photo-scrim {
-		position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease;
-		background: linear-gradient(180deg, rgba(7,7,7,0.5) 0%, rgba(7,7,7,0.22) 42%, rgba(7,7,7,0.74) 100%);
-	}
-	.photo-scrim.on { opacity: 1; }
-
-	/* Crédito/licencia de la foto activa, en la esquina del escenario. */
-	.stage-credito {
-		position: absolute; right: 0.65rem; bottom: 0.65rem; z-index: 4;
-		max-width: min(72vw, 30rem);
-		font-family: 'Roboto Flex', sans-serif; font-size: 0.72rem; line-height: 1.35;
-		color: rgba(255,255,255,0.82); background: rgba(6,14,22,0.62);
-		padding: 0.3rem 0.6rem; border-radius: 6px; text-align: right;
-		backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-		opacity: 0; transition: opacity 400ms ease; pointer-events: none;
-	}
-	.stage-credito.on { opacity: 1; }
 
 	.layer { opacity: 0; transition: opacity 600ms ease; }
 	.layer.on { opacity: 1; }
@@ -317,12 +311,14 @@ const creditosFotos = [
 	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
 	.only.on { opacity: 1; }
 
-	.foco { animation: latir 1.8s ease-in-out infinite; }
-	@keyframes latir { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+	.foco { animation: latir-foco 1.8s ease-in-out infinite; }
+	/* Nombre propio: los @keyframes no se aíslan por componente y un "latir" genérico
+	   chocaba con el de otro recorrido en la hoja de estilos compartida. */
+	@keyframes latir-foco { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
 
 	.leg { opacity: 0; transition: opacity 400ms ease; transition-delay: calc(var(--i) * 120ms); }
 	.only.on .leg { opacity: 1; }
-	.leg-txt { font-family: 'Roboto Flex', sans-serif; font-size: 17px; fill: rgba(255,255,255,0.85); }
+	.leg-txt { font-family: 'Roboto Flex', sans-serif; font-size: 19px; fill: rgba(255,255,255,0.85); }
 
 	.frame { opacity: 0; transform: translateY(12px); transition: opacity 450ms ease, transform 450ms ease; transition-delay: calc(var(--i) * 160ms); }
 	.only.on .frame { opacity: 1; transform: translateY(0); }
@@ -340,47 +336,100 @@ const creditosFotos = [
 	.only.on .lstm { opacity: 1; }
 
 	.bar { width: 0; transition: width 1000ms cubic-bezier(0.4,0,0.2,1) 200ms; }
-	.only.on .bar-naive { width: 460px; }
-	.only.on .bar-model { width: 180px; }
-	.bar-label { font-family: 'Roboto Flex', sans-serif; font-size: 19px; fill: rgba(255,255,255,0.85); }
+	/* Proporcionales de verdad: 0.020 y 0.018. Una barra a escala libre convertía una
+	   mejora del diez por ciento en una reducción a la mitad. */
+	.only.on .bar-naive { width: 340px; }
+	.only.on .bar-model { width: 306px; }
+	.bar-label { font-family: 'Roboto Flex', sans-serif; font-size: 21px; fill: rgba(255,255,255,0.85); }
 
 	.mom-big { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 60px; fill: #ffffff; }
 	.mom-sub { font-family: 'Roboto Flex', sans-serif; font-size: 20px; fill: rgba(255,255,255,0.8); }
+	.count { font-variant-numeric: tabular-nums; }
 
 	.clave rect { fill: rgba(232,132,63,0.16); stroke: #e8843f; stroke-width: 1.5; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms); }
 	.clave text { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 20px; fill: #ffffff; opacity: 0; transition: opacity 500ms ease; transition-delay: calc(var(--i) * 180ms + 120ms); }
 	.only.on .clave rect, .only.on .clave text { opacity: 1; }
 
-	.foto-creditos {
-		max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
-		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
+	/* --- Momento "datos": una rayita por semana --- */
+	.semana {
+		opacity: 0;
+		transition: opacity 260ms ease;
+		transition-delay: calc(var(--i) * 12ms);
 	}
-	.foto-creditos a { color: #a06a4a; text-decoration: none; }
-	.foto-creditos a:hover { text-decoration: underline; }
+	.only.on .semana { opacity: 0.85; }
+	.eje-lbl { font-family: 'Roboto Flex', sans-serif; font-size: 20px; fill: rgba(255,255,255,0.7); }
 
-	/* subtítulos flotantes, agrupados por lado, con centros estratégicos */
-	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }
-	.step { min-height: 92vh; display: flex; align-items: center; justify-content: center; padding: 0 clamp(1rem, 6vw, 6rem); }
-	.step[data-pos='left'] { justify-content: flex-start; }
-	.step[data-pos='right'] { justify-content: flex-end; }
-	.step[data-pos='center'] { justify-content: center; }
-	.step:first-child { min-height: 85vh; }
-	.caption {
-		pointer-events: auto; max-width: 27rem; margin: 0; padding: 1.1rem 1.4rem;
-		font-size: clamp(1.15rem, 2.2vw, 1.6rem); line-height: 1.4; font-weight: 500; color: #ffffff;
-		background: rgba(20, 12, 6, 0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-		border-left: 3px solid #e8843f; border-radius: 4px; opacity: 0.35; transform: translateY(10px);
-		transition: opacity 350ms ease, transform 350ms ease;
+	/* --- Momento "preparacion": el recorte y el paso a grises --- */
+	.recorte {
+		transform: scaleY(1.9);
+		transform-origin: 760px 264px;
+		transform-box: view-box;
+		transition: transform 1100ms cubic-bezier(0.45, 0.05, 0.2, 1) 300ms;
 	}
-	.step.activo .caption { opacity: 1; transform: translateY(0); }
-	.step[data-pos='center'] .caption {
-		max-width: 40rem; text-align: center; border-left: none; border-top: 3px solid #e8843f;
-		border-radius: 6px; padding: 1.6rem 2rem; font-size: clamp(1.35rem, 2.8vw, 2rem); font-weight: 600; line-height: 1.3;
+	.only.on .recorte { transform: scaleY(1); }
+	.gris {
+		opacity: 0;
+		transition: opacity 500ms ease;
+		transition-delay: calc(900ms + var(--i) * 110ms);
 	}
+	.only.on .gris { opacity: 1; }
 
+	/* --- Momento "ventana": los seis mapas apilados --- */
+	.lamina {
+		opacity: 0;
+		transition: opacity 420ms ease;
+		transition-delay: calc(var(--i) * 130ms);
+	}
+	.only.on .lamina { opacity: 1; }
+	.siguiente { opacity: 0; transition: opacity 500ms ease 1000ms; }
+	.only.on .siguiente { opacity: 1; }
+
+	/* --- Momento "entrenamiento": estimar, comparar, corregir --- */
+	.ciclo {
+		opacity: 0;
+		transition: opacity 450ms ease;
+		transition-delay: calc(var(--i) * 350ms);
+	}
+	.only.on .ciclo { opacity: 1; }
+	.error-lbl { font-family: 'Roboto Flex', sans-serif; font-weight: 600; font-size: 20px; fill: #cf4b2a; }
+	.retorno { stroke-dasharray: 7 7; stroke-dashoffset: 0; animation: fluir 1.4s linear infinite; }
+	@keyframes fluir { to { stroke-dashoffset: -28; } }
+
+	/* --- Momento "reparto": los tres montones de mapas --- */
+	.monton {
+		opacity: 0;
+		transform: translateY(10px);
+		transition: opacity 450ms ease, transform 450ms ease;
+		transition-delay: calc(var(--i) * 200ms);
+	}
+	.only.on .monton { opacity: 1; transform: none; }
+	.monton-num { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 30px; fill: #ffffff; }
+
+	/* --- Momento "costo": el hardware que exigió --- */
+	.gpu {
+		opacity: 0;
+		transition: opacity 500ms ease;
+		transition-delay: calc(var(--i) * 250ms);
+	}
+	.only.on .gpu { opacity: 1; }
+	.only.on .ventilador { animation: girar 3.2s linear infinite; transform-origin: center; transform-box: fill-box; }
+	@keyframes girar { to { transform: rotate(360deg); } }
+	.mom-big-sm { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 44px; fill: #ffffff; }
+	.bar-cifra { font-family: 'Archivo Expanded', sans-serif; font-weight: 700; font-size: 24px; fill: #ffffff; }
+
+	/* Ver la nota equivalente en ScrollyUtopias.astro: en móvil las etiquetas sueltas
+	   crecen; las que viven dentro de una caja se quedan como están. */
 	@media (max-width: 720px) {
-		.step, .step[data-pos='left'], .step[data-pos='right'] { justify-content: center; padding: 0 1rem; }
-		.caption { max-width: none; }
+		/* El momento se recentra y crece: en vertical el subtítulo va abajo y deja
+		   libre el medio de la pantalla. */
+		.only.en-derecha { transform: scale(1.18) translateX(-250px); transform-origin: 500px 350px; transform-box: view-box; }
+		.only.en-izquierda { transform: scale(1.18) translateX(200px); transform-origin: 500px 350px; transform-box: view-box; }
 		.mom-big { font-size: 46px; }
+		.mom-sub { font-size: 27px; }
+		.eje-lbl { font-size: 26px; }
+		.monton-num { font-size: 38px; }
+		.bar-label { font-size: 27px; }
+		.bar-cifra { font-size: 30px; }
+		.error-lbl { font-size: 26px; }
 	}
 </style>
