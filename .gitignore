@@ -28,3 +28,6 @@ lancedb/
 
 # fichas de recorrido exportadas para revisión de autores (van a Drive, no al repo)
 fichas/
+
+# artefactos del navegador de pruebas (capturas y volcados de página)
+.playwright-mcp/
