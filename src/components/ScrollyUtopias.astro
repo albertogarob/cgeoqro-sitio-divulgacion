@@ -1,12 +1,17 @@
 ---
-// Scrollytelling original sobre el Programa Utopías en Iztapalapa (paper de Karol
+// Escena del recorrido sobre el Programa Utopías en Iztapalapa (paper de Karol
 // Yáñez Soria et al., Geopauta 2026, CC BY). Texto parafraseado; gráfico SVG propio,
 // sin reproducir figuras del artículo. Ver política de derechos de autor en CLAUDE.md.
+//
+// El texto y las fotos de los pasos viven en src/content/recorridos/utopias.yaml
+// (lo que corrigen los autores). Aquí solo está la escena visual y su coreografía.
 //
 // Fondos fotográficos de apertura/autoconstrucción/cierre: fotos ilustrativas con
 // licencia libre (CC BY-SA / dominio público, vía Wikimedia Commons), NO figuras del
 // paper ni fotos del propio programa. Créditos y licencia en public/scrolly/CREDITOS.json.
-import { withBase } from '../lib/url';
+import { getEntry } from 'astro:content';
+import ScrollyShell from './ScrollyShell.astro';
+import { indiceVisual } from '../lib/recorrido';
 
 const celdas = [
   { x: 460, y: 180 }, { x: 540, y: 180 },
@@ -35,18 +40,44 @@ for (let r = 0; r < 4; r++) {
   }
 }
 
-// Posiciones agrupadas para no marear (tandas de 2-3 por lado) y con texto central
-// en los momentos estratégicos: la apertura (paso 0) y el cierre (paso 7).
-const pasos = [
-  { n: 0, pos: 'center', texto: 'Durante décadas, Iztapalapa fue vista como el "patio trasero" de la Ciudad de México.' },
-  { n: 1, pos: 'right', texto: 'Es la alcaldía más poblada de las dieciséis. Casi uno de cada cinco habitantes de la capital vive aquí.' },
-  { n: 2, pos: 'right', texto: 'Más de la mitad de su población habita en zonas con desarrollo social bajo o muy bajo. El trabajo de cuidar recae, sobre todo, en las mujeres.' },
-  { n: 3, pos: 'right', texto: 'Buena parte de estos barrios se construyó a mano: levantados y organizados por sus propios vecinos, con o sin apoyo del Estado.' },
-  { n: 4, pos: 'left', texto: 'Entre 2019 y 2024 surgieron centros comunitarios en los trece distritos: las Utopías.' },
-  { n: 5, pos: 'left', texto: 'No solo ofrecen servicios: tejen una red de cuidado colectivo. Unen el derecho a la ciudad con el urbanismo feminista.' },
-  { n: 6, pos: 'left', texto: 'Lo que nació en la periferia hoy se expande a toda la ciudad, con reconocimiento internacional.' },
-  { n: 7, pos: 'center', texto: '¿Hacia el derecho a las ciudades cuidadoras? Una innovación local que se vuelve política pública.' },
-];
+// Momento "metodo": cinco pines de visita de campo y diecinueve burbujas de entrevista.
+const pines = Array.from({ length: 5 }, (_, i) => ({ x: 580 + i * 80, y: 185, i }));
+const burbujas = Array.from({ length: 19 }, (_, i) => ({
+  x: 575 + (i % 5) * 80,
+  y: 330 + Math.floor(i / 5) * 58,
+  i,
+}));
+
+// Momento "dentro": las seis familias de equipamiento de una Utopía.
+const salas = [
+  { l: 'Deporte', f: 'cancha' }, { l: 'Cultura', f: 'escenario' }, { l: 'Huertos', f: 'planta' },
+  { l: 'Agua', f: 'onda' }, { l: 'Cuidados', f: 'anillos' }, { l: 'Juego', f: 'bloques' },
+].map((sala, i) => ({ ...sala, x: 560 + (i % 3) * 145, y: 210 + Math.floor(i / 3) * 155, i }));
+
+// Momento "casas": las casas sociales, con las Siemprevivas destacada.
+const casas = [
+  { l: 'Día', x: 80, y: 240 }, { l: 'Diversidad', x: 230, y: 240 }, { l: 'Rehabilitar', x: 380, y: 240 },
+  { l: 'Colibrí', x: 155, y: 410 }, { l: 'Siemprevivas', x: 305, y: 410, hi: true },
+].map((c, i) => ({ ...c, i }));
+
+// Momento "desafios": los tres pendientes que señalan las autoras.
+const pendientes = [
+  { l: 'Mantenimiento', x: 620 }, { l: 'Enlaces', x: 760 }, { l: 'Coordinación', x: 900 },
+].map((d, i) => ({ ...d, i }));
+
+const recorrido = await getEntry('recorridos', 'utopias');
+if (!recorrido) throw new Error('Falta el recorrido src/content/recorridos/utopias.yaml');
+const pasos = recorrido.data.pasos;
+// Cada escena se engancha a su paso por nombre, no por número: así, insertar un paso
+// nuevo en el recorrido no desincroniza los gráficos.
+const v = (clave: string) => indiceVisual(pasos, clave);
+
+// Encuadre de la cámara en los pasos que lo cambian; el resto se queda en el plano general.
+const camaras = {
+  autoconstruccion: 'translate(-330,-190) scale(1.62)',
+  expansion: 'translate(140,98) scale(0.72)',
+  cierre: 'translate(110,77) scale(0.78)',
+};
 
 // Atribución de las fotos de fondo (licencia libre, ilustrativas, no del paper).
 const creditosFotos = [
@@ -54,299 +85,234 @@ const creditosFotos = [
   { autor: 'Gzzz', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Ecatepec_de_Morelos_(3).jpg' },
   { autor: 'Rollcloud', licencia: 'dominio público', fuente: 'https://commons.wikimedia.org/wiki/File:Mty_Tianguis_01.jpg' },
 ];
+const nota = 'Fotografías de fondo (ilustrativas, licencia libre, no son del artículo ni del programa), vía Wikimedia Commons:';
 ---
 
-<section class="scrolly" data-step="0">
-	<div class="scrolly-stage">
-		<div class="photo-bg" aria-hidden="true">
-			<img class="photo" data-photo="0" data-credito="Foto: Gzzz, Ecatepec (CC BY-SA 4.0)" src={withBase('/scrolly/utopias-periferia.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="3" data-credito="Foto: Gzzz, Ecatepec (CC BY-SA 4.0)" src={withBase('/scrolly/utopias-autoconstruccion.jpg')} alt="" loading="lazy" />
-			<img class="photo" data-photo="7" data-credito="Foto: Rollcloud, tianguis (dominio público)" src={withBase('/scrolly/utopias-comunidad.jpg')} alt="" loading="lazy" />
-			<div class="photo-scrim"></div>
-		</div>
+<ScrollyShell
+	pasos={pasos}
+	camaras={camaras}
+	atenuar={['densidad', 'marginacion', 'metodo', 'dentro', 'casas', 'cuidados', 'inversion', 'desafios']}
+	fondo="radial-gradient(120% 90% at 50% 38%, #173352 0%, #0c1a2b 55%, #050c15 100%)"
+	fondoCaption="rgba(8, 18, 32, 0.72)"
+	velo="5, 12, 21"
+	fondoCreditos="#0c1a2b"
+	colorEnlace="#7d97b6"
+	creditos={creditosFotos}
+	notaCreditos={nota}
+>
+	<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+		<defs>
+			<filter id="scGlow" x="-80%" y="-80%" width="260%" height="260%">
+				<feGaussianBlur stdDeviation="6" result="b" />
+				<feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+			</filter>
+		</defs>
 
-		<p class="stage-credito"></p>
-		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-			<defs>
-				<filter id="scGlow" x="-80%" y="-80%" width="260%" height="260%">
-					<feGaussianBlur stdDeviation="6" result="b" />
-					<feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-				</filter>
-			</defs>
-
-			<!-- ELEMENTO PERSISTENTE: el mapa, movido por la "cámara" -->
-			<g class="map">
-				<g class="camera">
-					<!-- Expansión a la ciudad -->
-					<g class="layer" data-from="6">
-						<ellipse cx="500" cy="340" rx="430" ry="330" fill="none"
-							stroke="rgba(232,132,63,0.45)" stroke-width="2" stroke-dasharray="7 10" />
-						{exteriores.map((e) => <circle cx={e.x} cy={e.y} r="8" fill="#e8843f" opacity="0.6" />)}
-					</g>
-					<!-- Celdas (13 distritos) -->
-					<g class="layer" data-from="0">
-						{celdas.map((c) => (
-							<rect class="celda" x={c.x - 33} y={c.y - 33} width="66" height="66" rx="10"
-								fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
-						))}
-					</g>
-					<!-- Retícula "hecha a mano" (se dibuja) -->
-					<g class="layer draw-grid" data-from="3" stroke="rgba(255,255,255,0.3)" stroke-width="1.2">
-						{celdas.map((c) => (
-							<>
-								<line class="dl" x1={c.x - 33} y1={c.y} x2={c.x + 33} y2={c.y} />
-								<line class="dl" x1={c.x} y1={c.y - 33} x2={c.x} y2={c.y + 33} />
-							</>
-						))}
-					</g>
-					<!-- Red de cuidados (se dibuja) -->
-					<g class="layer draw-net" data-from="5" stroke="#e8843f" stroke-width="2.5" fill="none">
-						{enlaces.map(([a, b]) => {
-							const [x1, y1] = a.split(',');
-							const [x2, y2] = b.split(',');
-							return <line class="dl" x1={x1} y1={y1} x2={x2} y2={y2} />;
-						})}
-					</g>
-					<!-- Utopías (nodos, encendido escalonado) -->
-					<g class="layer nodos" data-from="4" filter="url(#scGlow)">
-						{nodos.map((nd, i) => (
-							<circle class="nodo" style={`--i:${i}`} cx={nd.x} cy={nd.y} r="10" fill="#e8843f" />
-						))}
-					</g>
+		<!-- ELEMENTO PERSISTENTE: el mapa, movido por la "cámara" -->
+		<g class="map">
+			<g class="camera">
+				<!-- Expansión a la ciudad -->
+				<g class="layer" data-from={v('expansion')}>
+					<ellipse cx="500" cy="340" rx="430" ry="330" fill="none"
+						stroke="rgba(232,132,63,0.45)" stroke-width="2" stroke-dasharray="7 10" />
+					{exteriores.map((e) => <circle cx={e.x} cy={e.y} r="8" fill="#e8843f" opacity="0.6" />)}
+				</g>
+				<!-- Celdas (13 distritos) -->
+				<g class="layer" data-from={v('apertura')}>
+					{celdas.map((c) => (
+						<rect class="celda" x={c.x - 33} y={c.y - 33} width="66" height="66" rx="10"
+							fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+					))}
+				</g>
+				<!-- Retícula "hecha a mano" (se dibuja) -->
+				<g class="layer draw-grid" data-from={v('autoconstruccion')} stroke="rgba(255,255,255,0.3)" stroke-width="1.2">
+					{celdas.map((c) => (
+						<>
+							<line class="dl" x1={c.x - 33} y1={c.y} x2={c.x + 33} y2={c.y} />
+							<line class="dl" x1={c.x} y1={c.y - 33} x2={c.x} y2={c.y + 33} />
+						</>
+					))}
+				</g>
+				<!-- Red de cuidados (se dibuja) -->
+				<g class="layer draw-net" data-from={v('red')} stroke="#e8843f" stroke-width="2.5" fill="none">
+					{enlaces.map(([a, b]) => {
+						const [x1, y1] = a.split(',');
+						const [x2, y2] = b.split(',');
+						return <line class="dl" x1={x1} y1={y1} x2={x2} y2={y2} />;
+					})}
+				</g>
+				<!-- Utopías (nodos, encendido escalonado) -->
+				<g class="layer nodos" data-from={v('utopias')} filter="url(#scGlow)">
+					{nodos.map((nd, i) => (
+						<circle class="nodo" style={`--i:${i}`} cx={nd.x} cy={nd.y} r="10" fill="#e8843f" />
+					))}
 				</g>
 			</g>
+		</g>
 
-			<!-- MOMENTO 1: 1 de cada 5 (arreglo de personas) -->
-			<g class="only" data-only="1">
-				{personas.map((p) => (
-					<circle class:list={['persona', { hi: p.on }]} cx={p.x} cy={p.y} r="15"
-						fill={p.on ? '#e8843f' : 'rgba(255,255,255,0.16)'} />
-				))}
-				<text class="mom-big" x="500" y="600" text-anchor="middle">1 de cada 5</text>
-				<text class="mom-sub" x="500" y="635" text-anchor="middle">habitantes de la Ciudad de México</text>
+		<!-- MOMENTO: 1 de cada 5 (arreglo de personas) -->
+		<g class="only" data-only={v('densidad')}>
+			{personas.map((p) => (
+				<circle class:list={['persona', { hi: p.on }]} cx={p.x} cy={p.y} r="15"
+					fill={p.on ? '#e8843f' : 'rgba(255,255,255,0.16)'} />
+			))}
+			<text class="mom-big" x="330" y="600" text-anchor="middle">1 de cada 5</text>
+			<text class="mom-sub" x="330" y="635" text-anchor="middle">habitantes de la Ciudad de México</text>
+		</g>
+
+		<!-- MOMENTO: barra de marginación -->
+		<g class="only" data-only={v('marginacion')}>
+			<rect x="270" y="300" width="460" height="46" rx="23" fill="rgba(255,255,255,0.12)" />
+			<rect class="barra-fill" x="270" y="300" height="46" rx="23" fill="#c45620" />
+			<text class="mom-big" x="500" y="250" text-anchor="middle">+50%</text>
+			<text class="mom-sub" x="500" y="400" text-anchor="middle">vive en zonas de desarrollo social bajo o muy bajo</text>
+		</g>
+
+		<!-- MOMENTO: visitas -->
+		<g class="only" data-only={v('utopias')}>
+			<text class="mom-big" x="740" y="590" text-anchor="middle"><tspan class="count" data-to="8">0</tspan> millones</text>
+			<text class="mom-sub" x="740" y="628" text-anchor="middle">de visitas entre 2022 y 2024</text>
+		</g>
+
+		<!-- MOMENTO: estadísticas de expansión a la ciudad -->
+		<g class="only" data-only={v('expansion')}>
+			<text class="mom-big" x="300" y="120" text-anchor="middle"><tspan class="count" data-to="20">0</tspan></text>
+			<text class="mom-sub" x="300" y="152" text-anchor="middle">países han venido a conocerlas</text>
+			<text class="mom-big" x="710" y="120" text-anchor="middle"><tspan class="count" data-to="100">0</tspan></text>
+			<text class="mom-sub" x="710" y="152" text-anchor="middle">nuevas Utopías proyectadas a 2030</text>
+		</g>
+
+		<!-- MOMENTO: cómo se investigó (visitas y entrevistas) -->
+		<g class="only en-derecha" data-only={v('metodo')}>
+			{pines.map((p) => (
+				<g class="pin" style={`--i:${p.i}`}>
+					<path d={`M${p.x} ${p.y + 30} C ${p.x - 22} ${p.y - 2}, ${p.x - 18} ${p.y - 30}, ${p.x} ${p.y - 30} C ${p.x + 18} ${p.y - 30}, ${p.x + 22} ${p.y - 2}, ${p.x} ${p.y + 30} Z`}
+						fill="#e8843f" opacity="0.9" />
+					<circle cx={p.x} cy={p.y - 12} r="7" fill="#0c1a2b" />
+				</g>
+			))}
+			<text x="740" y="278" text-anchor="middle" class="mom-sub">5 visitas de campo</text>
+			{burbujas.map((b) => (
+				<g class="burbuja" style={`--i:${b.i}`}>
+					<rect x={b.x - 28} y={b.y - 18} width="56" height="36" rx="12"
+						fill="rgba(232,132,63,0.2)" stroke="#e8843f" stroke-width="1.5" />
+					<path d={`M${b.x - 10} ${b.y + 18} L${b.x - 2} ${b.y + 28} L${b.x + 2} ${b.y + 18} Z`} fill="#e8843f" opacity="0.6" />
+				</g>
+			))}
+			<text x="740" y="580" text-anchor="middle" class="mom-sub">19 entrevistas, 2023 a 2025</text>
+		</g>
+
+		<!-- MOMENTO: qué hay dentro de una Utopía -->
+		<g class="only en-derecha" data-only={v('dentro')}>
+			{salas.map((s) => (
+				<g class="sala" style={`--i:${s.i}`}>
+					<rect x={s.x - 65} y={s.y - 60} width="130" height="130" rx="16"
+						fill="rgba(255,255,255,0.05)" stroke="rgba(232,132,63,0.55)" stroke-width="1.5" />
+					{s.f === 'cancha' && <><circle cx={s.x} cy={s.y - 12} r="24" fill="none" stroke="#e8843f" stroke-width="3" /><line x1={s.x - 24} y1={s.y - 12} x2={s.x + 24} y2={s.y - 12} stroke="#e8843f" stroke-width="3" /></>}
+					{s.f === 'escenario' && <><polygon points={`${s.x},${s.y - 38} ${s.x + 26},${s.y + 8} ${s.x - 26},${s.y + 8}`} fill="none" stroke="#e8843f" stroke-width="3" /><line x1={s.x - 30} y1={s.y + 8} x2={s.x + 30} y2={s.y + 8} stroke="#e8843f" stroke-width="3" /></>}
+					{s.f === 'planta' && <><path d={`M${s.x} ${s.y + 10} L${s.x} ${s.y - 30}`} stroke="#e8843f" stroke-width="3" /><path d={`M${s.x} ${s.y - 14} C ${s.x - 30} ${s.y - 20}, ${s.x - 26} ${s.y - 44}, ${s.x} ${s.y - 38}`} fill="none" stroke="#e8843f" stroke-width="3" /><path d={`M${s.x} ${s.y - 6} C ${s.x + 30} ${s.y - 12}, ${s.x + 26} ${s.y - 36}, ${s.x} ${s.y - 30}`} fill="none" stroke="#e8843f" stroke-width="3" /></>}
+					{s.f === 'onda' && [0, 1, 2].map((k) => (
+						<path d={`M${s.x - 30} ${s.y - 26 + k * 18} q 15 -12 30 0 q 15 12 30 0`} fill="none" stroke="#e8843f" stroke-width="3" />
+					))}
+					{s.f === 'anillos' && [14, 24, 34].map((r) => (
+						<circle cx={s.x} cy={s.y - 12} r={r} fill="none" stroke="#e8843f" stroke-width="2.5" opacity={1 - r / 60} />
+					))}
+					{s.f === 'bloques' && [0, 1].map((r) => [0, 1].map((c) => (
+						<rect x={s.x - 26 + c * 28} y={s.y - 34 + r * 28} width="22" height="22" rx="5" fill="none" stroke="#e8843f" stroke-width="2.5" />
+					)))}
+					<text x={s.x} y={s.y + 52} text-anchor="middle" class="sala-txt">{s.l}</text>
+				</g>
+			))}
+		</g>
+
+		<!-- MOMENTO: las casas sociales -->
+		<g class="only en-izquierda" data-only={v('casas')}>
+			{casas.map((c) => (
+				<g class:list={['casita', { hi: c.hi }]} style={`--i:${c.i}`}>
+					<polygon points={`${c.x},${c.y - 46} ${c.x + 68},${c.y - 6} ${c.x - 68},${c.y - 6}`} />
+					<rect x={c.x - 58} y={c.y - 6} width="116" height="72" rx="8" />
+					<text x={c.x} y={c.y + 38} text-anchor="middle" class="casita-txt">{c.l}</text>
+				</g>
+			))}
+			<text x="300" y="560" text-anchor="middle" class="mom-sub">Espacios de cuidado dentro de cada Utopía</text>
+		</g>
+
+		<!-- MOMENTO: el cuidado cotidiano -->
+		<g class="only en-izquierda" data-only={v('cuidados')}>
+			<g class="icono" style="--i:0">
+				<rect x="90" y="220" width="104" height="112" rx="12" fill="none" stroke="#e8843f" stroke-width="3" />
+				<circle cx="142" cy="282" r="30" fill="none" stroke="#e8843f" stroke-width="3" />
+				<circle cx="112" cy="242" r="5" fill="#e8843f" />
+				<text x="142" y="368" text-anchor="middle" class="sala-txt">Lavar</text>
 			</g>
-
-			<!-- MOMENTO 2: barra de marginación -->
-			<g class="only" data-only="2">
-				<rect x="270" y="300" width="460" height="46" rx="23" fill="rgba(255,255,255,0.12)" />
-				<rect class="barra-fill" x="270" y="300" height="46" rx="23" fill="#c45620" />
-				<text class="mom-big" x="500" y="250" text-anchor="middle">+50%</text>
-				<text class="mom-sub" x="500" y="400" text-anchor="middle">vive en zonas de desarrollo social bajo o muy bajo</text>
+			<g class="icono" style="--i:1">
+				<rect x="240" y="252" width="112" height="76" rx="10" fill="none" stroke="#e8843f" stroke-width="3" />
+				<line x1="228" y1="276" x2="240" y2="276" stroke="#e8843f" stroke-width="3" />
+				<line x1="352" y1="276" x2="364" y2="276" stroke="#e8843f" stroke-width="3" />
+				<path d="M268 238 q 10 -18 20 0 M308 238 q 10 -18 20 0" fill="none" stroke="#e8843f" stroke-width="3" />
+				<text x="296" y="368" text-anchor="middle" class="sala-txt">Comer</text>
 			</g>
-
-			<!-- MOMENTO visitas (paso 4) -->
-			<g class="only" data-only="4">
-				<text class="mom-big" x="500" y="590" text-anchor="middle"><tspan class="count" data-to="8">0</tspan> millones</text>
-				<text class="mom-sub" x="500" y="628" text-anchor="middle">de visitas entre 2022 y 2024</text>
+			<g class="icono" style="--i:2">
+				<path d="M400 332 v -52 q 50 -44 100 0 v 52" fill="none" stroke="#e8843f" stroke-width="3" />
+				<line x1="388" y1="332" x2="512" y2="332" stroke="#e8843f" stroke-width="3" />
+				<circle cx="450" cy="268" r="9" fill="#e8843f" />
+				<text x="450" y="368" text-anchor="middle" class="sala-txt">Cuidar</text>
 			</g>
-
-			<!-- MOMENTO stats ciudad (paso 6) -->
-			<g class="only" data-only="6">
-				<text class="mom-big" x="300" y="120" text-anchor="middle"><tspan class="count" data-to="20">0</tspan></text>
-				<text class="mom-sub" x="300" y="152" text-anchor="middle">países han venido a conocerlas</text>
-				<text class="mom-big" x="710" y="120" text-anchor="middle"><tspan class="count" data-to="100">0</tspan></text>
-				<text class="mom-sub" x="710" y="152" text-anchor="middle">nuevos proyectos en la ciudad</text>
+			<g class="reloj">
+				<circle cx="140" cy="470" r="38" fill="none" stroke="#e8843f" stroke-width="3" />
+				<path d="M140 470 v -22 M140 470 h 16" stroke="#e8843f" stroke-width="3" stroke-linecap="round" />
+				<path class="giro" d="M186 450 a 46 46 0 1 1 -14 -16" fill="none" stroke="#e8843f"
+					stroke-width="2.5" stroke-dasharray="5 7" />
 			</g>
+			<text x="200" y="478" class="mom-sub">tiempo que regresa a quien cuida</text>
+		</g>
 
-			<!-- MOMENTO final (paso 7): tres claves -->
-			<g class="only" data-only="7">
-				<g class="clave" style="--i:0"><rect x="120" y="600" width="230" height="60" rx="30" /><text x="235" y="637" text-anchor="middle">Liderazgo feminista</text></g>
-				<g class="clave" style="--i:1"><rect x="385" y="600" width="230" height="60" rx="30" /><text x="500" y="637" text-anchor="middle">Cuidado colectivo</text></g>
-				<g class="clave" style="--i:2"><rect x="650" y="600" width="230" height="60" rx="30" /><text x="765" y="637" text-anchor="middle">Política pública</text></g>
-			</g>
-		</svg>
-	</div>
+		<!-- MOMENTO: la diferencia de escala en la inversión -->
+		<g class="only en-derecha" data-only={v('inversion')}>
+			<text x="560" y="250" class="bar-label">Programa barrial previo, por proyecto</text>
+			<rect x="560" y="266" width="400" height="30" rx="8" fill="rgba(255,255,255,0.1)" />
+			<rect class="inv-fill inv-antes" x="560" y="266" height="30" rx="8" fill="rgba(255,255,255,0.45)" />
+			<text x="560" y="330" class="inv-cifra">80 mil dólares</text>
+			<text x="560" y="410" class="bar-label">Cada Utopía, en construcción</text>
+			<rect x="560" y="426" width="400" height="30" rx="8" fill="rgba(255,255,255,0.1)" />
+			<rect class="inv-fill inv-utopia" x="560" y="426" height="30" rx="8" fill="#e8843f" />
+			<text x="560" y="490" class="inv-cifra">5 millones de dólares</text>
+		</g>
 
-	<div class="scrolly-steps">
-		{pasos.map((p) => (
-			<div class="step" data-step={p.n} data-pos={p.pos}>
-				<p class="caption">{p.texto}</p>
-			</div>
-		))}
-	</div>
+		<!-- MOMENTO: los pendientes que señalan las autoras -->
+		<g class="only en-derecha" data-only={v('desafios')}>
+			{pendientes.map((d) => (
+				<g class="pendiente" style={`--i:${d.i}`}>
+					<circle cx={d.x} cy="290" r="52" fill="none" stroke="#e8843f" stroke-width="2.5" stroke-dasharray="6 8" />
+					<text x={d.x} y="312" text-anchor="middle" class="interrogante">?</text>
+					<text x={d.x} y="392" text-anchor="middle" class="pendiente-txt">{d.l}</text>
+				</g>
+			))}
+			<text x="760" y="470" text-anchor="middle" class="mom-sub">lo que falta por resolver</text>
+		</g>
 
-	<p class="foto-creditos">
-		Fotografías de fondo (ilustrativas, licencia libre, no son del artículo ni del programa):{' '}
-		{creditosFotos.map((c, i) => (
-			<>
-				{i > 0 && ' · '}
-				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia})
-			</>
-		))}
-		{' '}vía Wikimedia Commons.
-	</p>
-</section>
-
-<script>
-	import scrollama from 'scrollama';
-
-	function initScrolly() {
-		const container = document.querySelector<HTMLElement>('.scrolly');
-		if (!container) return;
-		const stage = container.querySelector<HTMLElement>('.scrolly-stage');
-		const header = document.querySelector<HTMLElement>('header');
-		const camera = container.querySelector<SVGGElement>('.camera');
-		const map = container.querySelector<SVGGElement>('.map');
-		const layers = Array.from(container.querySelectorAll<SVGGElement>('.layer'));
-		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
-		const photos = Array.from(container.querySelectorAll<HTMLImageElement>('.photo'));
-		const scrim = container.querySelector<HTMLElement>('.photo-scrim');
-		const creditoEl = container.querySelector<HTMLElement>('.stage-credito');
-		// Pasos con fondo fotográfico full-bleed (apertura, autoconstrucción y cierre).
-		const PASOS_FOTO = [0, 3, 7];
-
-		// Encaje del escenario justo debajo del navbar (evita que lo tape).
-		function setStageTop() {
-			const h = header ? header.offsetHeight : 64;
-			container.style.setProperty('--stage-top', h + 'px');
-		}
-		setStageTop();
-		window.addEventListener('resize', setStageTop);
-
-		// Cámara: encuadre por paso (paneo/zoom).
-		const camaras: Record<number, string> = {
-			0: 'translate(0,0) scale(1)',
-			1: 'translate(0,0) scale(1)',
-			2: 'translate(0,0) scale(1)',
-			3: 'translate(-330,-190) scale(1.62)',
-			4: 'translate(0,0) scale(1)',
-			5: 'translate(0,0) scale(1)',
-			6: 'translate(140,98) scale(0.72)',
-			7: 'translate(110,77) scale(0.78)',
-		};
-
-		function animCount(el: Element, to: number) {
-			const dur = 900;
-			let start = 0;
-			function frame(t: number) {
-				if (!start) start = t;
-				const k = Math.min(1, (t - start) / dur);
-				const val = Math.round(to * (1 - Math.pow(1 - k, 3)));
-				el.textContent = String(val);
-				if (k < 1) requestAnimationFrame(frame);
-			}
-			requestAnimationFrame(frame);
-		}
-
-		function aplicar(step: number) {
-			container.dataset.step = String(step);
-			if (camera) camera.setAttribute('transform', camaras[step] ?? camaras[0]);
-			const esFoto = PASOS_FOTO.includes(step);
-			// El mapa se atenúa en momentos con overlay y se oculta en pasos con foto.
-			if (map) {
-				map.classList.toggle('dim', step === 1 || step === 2);
-				map.classList.toggle('hide', esFoto);
-			}
-			photos.forEach((p) => p.classList.toggle('on', Number(p.dataset.photo) === step));
-			if (scrim) scrim.classList.toggle('on', esFoto);
-			const fotoActiva = photos.find((p) => Number(p.dataset.photo) === step);
-			if (creditoEl) {
-				const cr = fotoActiva?.dataset.credito ?? '';
-				creditoEl.textContent = cr;
-				creditoEl.classList.toggle('on', Boolean(cr));
-			}
-			layers.forEach((l) => l.classList.toggle('on', step >= Number(l.dataset.from ?? '0')));
-			// En pasos de foto se ocultan los "momentos" ligados al mapa; se preserva el
-			// paso 7 (chips de claves), que se lee bien sobre la foto de cierre.
-			onlys.forEach((o) => {
-				const n = Number(o.dataset.only);
-				o.classList.toggle('on', n === step && (!esFoto || n === 7));
-			});
-			// Contadores del paso activo.
-			const activeOnly = onlys.find((o) => Number(o.dataset.only) === step);
-			if (activeOnly) {
-				activeOnly.querySelectorAll<HTMLElement>('.count').forEach((c) => {
-					animCount(c, Number(c.dataset.to ?? '0'));
-				});
-			}
-		}
-
-		aplicar(0);
-
-		const scroller = scrollama();
-		scroller
-			.setup({ step: '.scrolly .step', offset: 0.75 })
-			.onStepEnter((r: { element: HTMLElement }) => {
-				container.querySelectorAll('.step').forEach((el) => el.classList.remove('activo'));
-				r.element.classList.add('activo');
-				aplicar(Number(r.element.dataset.step ?? '0'));
-			});
-		window.addEventListener('resize', scroller.resize);
-	}
-
-	if (document.readyState !== 'loading') initScrolly();
-	else document.addEventListener('DOMContentLoaded', initScrolly);
-</script>
+		<!-- MOMENTO final: tres claves, legibles sobre la foto de cierre -->
+		<g class="only" data-only={v('cierre')} data-sobre-foto="si">
+			<g class="clave" style="--i:0"><rect x="120" y="600" width="230" height="60" rx="30" /><text x="235" y="637" text-anchor="middle">Liderazgo feminista</text></g>
+			<g class="clave" style="--i:1"><rect x="385" y="600" width="230" height="60" rx="30" /><text x="500" y="637" text-anchor="middle">Cuidado colectivo</text></g>
+			<g class="clave" style="--i:2"><rect x="650" y="600" width="230" height="60" rx="30" /><text x="765" y="637" text-anchor="middle">Política pública</text></g>
+		</g>
+	</svg>
+</ScrollyShell>
 
 <style>
-	.scrolly {
-		--stage-top: 64px;
-		position: relative;
-		width: 100%;
-	}
-	.scrolly-stage {
-		position: sticky;
-		top: var(--stage-top);
-		height: calc(100vh - var(--stage-top));
-		width: 100%;
-		background: radial-gradient(120% 90% at 50% 38%, #173352 0%, #0c1a2b 55%, #050c15 100%);
-		overflow: hidden;
-	}
-	.mapa {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		height: 100%;
-		display: block;
-	}
+	.mapa { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
 	.camera {
 		transform-origin: 0 0;
 		transition: transform 1000ms cubic-bezier(0.45, 0.05, 0.2, 1);
 	}
-	.map {
-		transition: opacity 500ms ease, filter 500ms ease;
-	}
-	.map.dim {
-		opacity: 0.28;
-		filter: saturate(0.5);
-	}
-	.map.hide {
-		opacity: 0;
-	}
-
-	/* Capa de fondos fotográficos (full-bleed) en pasos narrativos. */
-	.photo-bg { position: absolute; inset: 0; z-index: 0; }
-	.photo-bg .photo {
-		position: absolute; inset: 0; width: 100%; height: 100%;
-		object-fit: cover; opacity: 0; transition: opacity 900ms ease;
-	}
-	.photo-bg .photo.on { opacity: 1; }
-	.photo-scrim {
-		position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease;
-		background: linear-gradient(180deg, rgba(5,12,21,0.5) 0%, rgba(5,12,21,0.22) 42%, rgba(5,12,21,0.74) 100%);
-	}
-	.photo-scrim.on { opacity: 1; }
-
-	/* Crédito/licencia de la foto activa, en la esquina del escenario. */
-	.stage-credito {
-		position: absolute; right: 0.65rem; bottom: 0.65rem; z-index: 4;
-		max-width: min(72vw, 30rem);
-		font-family: 'Roboto Flex', sans-serif; font-size: 0.72rem; line-height: 1.35;
-		color: rgba(255,255,255,0.82); background: rgba(6,14,22,0.62);
-		padding: 0.3rem 0.6rem; border-radius: 6px; text-align: right;
-		backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-		opacity: 0; transition: opacity 400ms ease; pointer-events: none;
-	}
-	.stage-credito.on { opacity: 1; }
+	.map { transition: opacity 500ms ease, filter 500ms ease; }
+	.map.dim { opacity: 0.28; filter: saturate(0.5); }
+	.map.hide { opacity: 0; }
 
 	/* capas acumulativas */
-	.layer {
-		opacity: 0;
-		transition: opacity 600ms ease;
-	}
-	.layer.on {
-		opacity: 1;
-	}
+	.layer { opacity: 0; transition: opacity 600ms ease; }
+	.layer.on { opacity: 1; }
 
 	/* nodos: encendido escalonado + pulso */
 	.nodos .nodo {
@@ -374,20 +340,12 @@ const creditosFotos = [
 		stroke-dashoffset: 80;
 		transition: stroke-dashoffset 700ms ease;
 	}
-	.draw-grid.on .dl, .draw-net.on .dl {
-		stroke-dashoffset: 0;
-	}
+	.draw-grid.on .dl, .draw-net.on .dl { stroke-dashoffset: 0; }
 	.draw-net .dl { transition-duration: 900ms; }
 
 	/* momentos (overlays de un solo paso) */
-	.only {
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 500ms ease;
-	}
-	.only.on {
-		opacity: 1;
-	}
+	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
+	.only.on { opacity: 1; }
 	.mom-big {
 		font-family: 'Archivo Expanded', sans-serif;
 		font-weight: 700;
@@ -399,26 +357,20 @@ const creditosFotos = [
 		font-size: 22px;
 		fill: rgba(255, 255, 255, 0.8);
 	}
+	.count { font-variant-numeric: tabular-nums; }
 	.persona {
 		transition: fill 300ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 		transform-origin: center;
 		transform-box: fill-box;
 	}
-	.only.on .persona.hi {
-		animation: saltar 500ms ease both;
-	}
+	.only.on .persona.hi { animation: saltar 500ms ease both; }
 	@keyframes saltar {
 		0% { transform: scale(0.4); }
 		60% { transform: scale(1.25); }
 		100% { transform: scale(1); }
 	}
-	.barra-fill {
-		width: 0;
-		transition: width 1100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms;
-	}
-	.only.on .barra-fill {
-		width: 250px;
-	}
+	.barra-fill { width: 0; transition: width 1100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms; }
+	.only.on .barra-fill { width: 250px; }
 	.clave rect {
 		fill: rgba(232, 132, 63, 0.16);
 		stroke: #e8843f;
@@ -436,78 +388,116 @@ const creditosFotos = [
 		transition: opacity 500ms ease;
 		transition-delay: calc(var(--i) * 180ms + 120ms);
 	}
-	.only.on .clave rect, .only.on .clave text {
-		opacity: 1;
-	}
+	.only.on .clave rect, .only.on .clave text { opacity: 1; }
 
-	.foto-creditos {
-		max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
-		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
+	/* --- Momento "metodo": pines de visita y burbujas de entrevista --- */
+	.pin, .burbuja {
+		opacity: 0;
+		transform: translateY(-14px);
+		transition: opacity 400ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
-	.foto-creditos a { color: #7d97b6; text-decoration: none; }
-	.foto-creditos a:hover { text-decoration: underline; }
+	.pin { transition-delay: calc(var(--i) * 110ms); }
+	.burbuja { transition-delay: calc(700ms + var(--i) * 55ms); transform: scale(0.6); transform-origin: center; transform-box: fill-box; }
+	.only.on .pin, .only.on .burbuja { opacity: 1; transform: none; }
 
-	/* texto flotante (subtítulos, no diapositivas); alterna de lado por paso */
-	.scrolly-steps {
-		position: relative;
-		z-index: 3;
-		pointer-events: none;
+	/* --- Momento "dentro": las familias de equipamiento --- */
+	.sala {
+		opacity: 0;
+		transition: opacity 450ms ease;
+		transition-delay: calc(var(--i) * 130ms);
 	}
-	.step {
-		min-height: 92vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 clamp(1rem, 6vw, 6rem);
-	}
-	.step[data-pos='left'] { justify-content: flex-start; }
-	.step[data-pos='right'] { justify-content: flex-end; }
-	.step[data-pos='center'] { justify-content: center; }
-	.step:first-child { min-height: 85vh; }
-	.caption { max-width: 27rem; }
-
-	/* Momentos estratégicos: texto central, más grande y con acento superior. */
-	.step[data-pos='center'] .caption {
-		max-width: 40rem;
-		text-align: center;
-		border-left: none;
-		border-top: 3px solid #e8843f;
-		border-radius: 6px;
-		padding: 1.6rem 2rem;
-		font-size: clamp(1.35rem, 2.8vw, 2rem);
+	.only.on .sala { opacity: 1; }
+	.sala-txt {
+		font-family: 'Roboto Flex', sans-serif;
+		font-size: 21px;
 		font-weight: 600;
-		line-height: 1.3;
-	}
-	.caption {
-		pointer-events: auto;
-		margin: 0;
-		padding: 1.1rem 1.4rem;
-		font-size: clamp(1.15rem, 2.2vw, 1.6rem);
-		line-height: 1.4;
-		font-weight: 500;
-		color: #ffffff;
-		background: rgba(8, 18, 32, 0.72);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		border-left: 3px solid #e8843f;
-		border-radius: 4px;
-		opacity: 0.35;
-		transform: translateY(10px);
-		transition: opacity 350ms ease, transform 350ms ease;
-	}
-	.step.activo .caption {
-		opacity: 1;
-		transform: translateY(0);
+		fill: rgba(255, 255, 255, 0.92);
 	}
 
+	/* --- Momento "casas": las casas sociales --- */
+	.casita {
+		opacity: 0;
+		transform: translateY(16px);
+		transition: opacity 450ms ease, transform 450ms ease;
+		transition-delay: calc(var(--i) * 140ms);
+	}
+	.only.on .casita { opacity: 1; transform: none; }
+	.casita polygon, .casita rect {
+		fill: rgba(255, 255, 255, 0.06);
+		stroke: rgba(255, 255, 255, 0.5);
+		stroke-width: 2;
+	}
+	.casita.hi polygon, .casita.hi rect {
+		fill: rgba(232, 132, 63, 0.22);
+		stroke: #e8843f;
+	}
+	.casita-txt {
+		font-family: 'Roboto Flex', sans-serif;
+		font-size: 17px;
+		font-weight: 600;
+		fill: #ffffff;
+	}
+
+	/* --- Momento "cuidados": lavar, comer, cuidar, y las horas que vuelven --- */
+	.icono {
+		opacity: 0;
+		transition: opacity 450ms ease;
+		transition-delay: calc(var(--i) * 160ms);
+	}
+	.only.on .icono { opacity: 1; }
+	.reloj { opacity: 0; transition: opacity 500ms ease 600ms; }
+	.only.on .reloj { opacity: 1; }
+	.only.on .giro { animation: girar-reloj 6s linear infinite; transform-origin: 140px 470px; transform-box: view-box; }
+	@keyframes girar-reloj { to { transform: rotate(360deg); } }
+
+	/* --- Momento "inversion": dos barras muy desiguales --- */
+	.inv-fill { width: 0; transition: width 1100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms; }
+	.only.on .inv-antes { width: 8px; }
+	.only.on .inv-utopia { width: 400px; }
+	.inv-cifra {
+		font-family: 'Archivo Expanded', sans-serif;
+		font-weight: 700;
+		font-size: 28px;
+		fill: #ffffff;
+	}
+	.bar-label {
+		font-family: 'Roboto Flex', sans-serif;
+		font-size: 20px;
+		fill: rgba(255, 255, 255, 0.75);
+	}
+
+	/* --- Momento "desafios": tres preguntas abiertas --- */
+	.pendiente {
+		opacity: 0;
+		transition: opacity 500ms ease;
+		transition-delay: calc(var(--i) * 200ms);
+	}
+	.only.on .pendiente { opacity: 1; }
+	.interrogante {
+		font-family: 'Archivo Expanded', sans-serif;
+		font-weight: 700;
+		font-size: 56px;
+		fill: #e8843f;
+	}
+	.pendiente-txt {
+		font-family: 'Roboto Flex', sans-serif;
+		font-size: 19px;
+		font-weight: 600;
+		fill: rgba(255, 255, 255, 0.9);
+	}
+
+	/* En pantalla estrecha el SVG se escala por ancho: las etiquetas sueltas necesitan
+	   más cuerpo para seguir leyéndose. Las que van dentro de una caja no se tocan,
+	   porque se saldrían de ella. */
 	@media (max-width: 720px) {
-		.step,
-		.step[data-pos='left'],
-		.step[data-pos='right'] {
-			justify-content: center;
-			padding: 0 1rem;
-		}
-		.caption { max-width: none; }
+		/* El momento se recentra y crece: en vertical el subtítulo va abajo y deja
+		   libre el medio de la pantalla. */
+		.only.en-derecha { transform: scale(1.18) translateX(-250px); transform-origin: 500px 350px; transform-box: view-box; }
+		.only.en-izquierda { transform: scale(1.18) translateX(200px); transform-origin: 500px 350px; transform-box: view-box; }
 		.mom-big { font-size: 52px; }
+		.mom-sub { font-size: 28px; }
+		.pendiente-txt { font-size: 24px; }
+		.bar-label { font-size: 25px; }
+		.inv-cifra { font-size: 34px; }
 	}
 </style>
