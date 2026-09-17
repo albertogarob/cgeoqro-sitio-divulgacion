@@ -59,18 +59,16 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 
 			<section class="cap-final">
 				<div class="cap-wrap">
-					<p class="cap-final-kicker">Fin del recorrido</p>
-					<h2>¿Y ahora?</h2>
+					<h2 class="cap-final-kicker">Fin del recorrido</h2>
 					<div class="cap-final-acciones">
 						<button type="button" class="volver-recorrido">↑ Volver al inicio del recorrido</button>
-						<a href="#tras-el-recorrido">Referencia y créditos</a>
 						{serie && <a href={withBase(`/series/${serie.id}/`)}>Más de {serie.data.nombre}</a>}
 						<a href={withBase('/capsulas/')}>Todas las cápsulas</a>
 					</div>
 				</div>
 			</section>
 
-			<div class="cap-wrap cap-outro" id="tras-el-recorrido">
+			<div class="cap-wrap cap-outro">
 				<article><Content /></article>
 				<section class="referencia">
 					<h2>Referencia</h2>
@@ -286,17 +284,17 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			background: linear-gradient(180deg, #0c1a2b 0%, #101f30 100%);
 			padding: 2.75rem 0 3rem;
 		}
+		/* Es un h2 por accesibilidad, pero se ve como el antetítulo que era: hay que
+		   repetir familia, interlineado y espaciado para ganarle al estilo global. */
 		.cap-final-kicker {
-			margin: 0 0 0.35rem 0;
+			margin: 0 0 1.1rem 0;
+			font-family: 'Roboto Flex', sans-serif;
 			font-size: 0.8rem;
 			font-weight: 600;
+			line-height: 1.3;
 			letter-spacing: 0.08em;
 			text-transform: uppercase;
 			color: #e8843f;
-		}
-		.cap-final h2 {
-			margin: 0 0 1.25rem 0;
-			color: #ffffff !important;
 		}
 		.cap-final-acciones {
 			display: flex;
@@ -342,8 +340,6 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		.cap-outro {
 			padding-top: 2.5rem;
 			padding-bottom: 3rem;
-			/* El navbar es fijo: sin esto, saltar al ancla deja el título debajo. */
-			scroll-margin-top: 5rem;
 		}
 		.scroll-hint {
 			color: var(--cg-color-naranja-300);
