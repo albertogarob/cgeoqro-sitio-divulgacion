@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # local vector index cache (mcp local-rag tool artifact, not project source)
 lancedb/
+
+# fichas de recorrido exportadas para revisión de autores (van a Drive, no al repo)
+fichas/

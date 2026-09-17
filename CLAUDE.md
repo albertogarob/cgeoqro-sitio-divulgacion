@@ -304,6 +304,37 @@ divulgación, respetando la política de derechos de autor:
   entre sí por temas o investigadores relacionados, facilitando descubrimiento
   serendípico de contenido relacionado.
 
+## Recorridos de scrollytelling y su edición por los autores
+
+Un recorrido está partido en dos piezas, a propósito:
+
+- **El relato** (`src/content/recorridos/<id>.yaml`): un paso por bloque, con su texto,
+  su imagen y el crédito de la imagen. Es contenido, no código.
+- **La escena** (`src/components/Scrolly<Tema>.astro`): solo el SVG y su coreografía,
+  envuelto en el armazón común `ScrollyShell.astro` (escenario, subtítulos, barra de
+  avance, botón de volver al inicio, créditos).
+
+Cada paso lleva una clave `visual` que amarra el texto con su gráfico. **Las escenas se
+enganchan por esa clave, nunca por número de paso**: así se puede insertar un paso sin
+descolocar las animaciones, y el build falla con un mensaje claro si se borra un paso
+que la escena necesita.
+
+Los investigadores **corrigen** sus recorridos desde una hoja de cálculo en Drive (la
+"ficha de recorrido"): cambian texto, imagen y crédito; no añaden ni reordenan pasos,
+porque cada paso nuevo necesita además su escena. El ida y vuelta está automatizado:
+
+```bash
+npm run ficha:exportar -- <recorrido>
+npm run ficha:importar -- <recorrido> fichas/<recorrido>-ficha.csv   # revisión en seco
+npm run ficha:importar -- <recorrido> fichas/<recorrido>-ficha.csv --aplicar
+```
+
+El importador rechaza la ficha entera (no aplica nada a medias) si alguien tocó las
+columnas bloqueadas, si cambió el número de pasos, si un texto trae raya larga, dice
+"QRO" o no cabe en pantalla, o si hay una imagen sin crédito o que no está en el repo.
+Detalle completo en [docs/ficha-recorrido.md](docs/ficha-recorrido.md); el circuito con
+Drive está en el skill `ficha-recorrido`.
+
 ## Próximos pasos / roadmap abierto
 
 - [x] Revisar los dos recursos de Ivvan y documentar hallazgos concretos (2026-07-21,
@@ -318,6 +349,13 @@ divulgación, respetando la política de derechos de autor:
 - [x] Aplicar la identidad visual real (colores/tipografía de CentroGeo) al layout
       (2026-07-21, `src/layouts/Base.astro`: logo, paleta `--cg-color-*`, Roboto
       Flex + Archivo Expanded como sustituto gratuito de "ingra-wide").
+- [x] Sacar el texto de los recorridos del código a contenido editable y abrir la vía
+      de corrección por los autores vía ficha en Drive (2026-09-15, colección
+      `recorridos` + `ScrollyShell.astro` + `scripts/ficha-recorrido.mjs`).
+- [ ] Ampliar el recorrido de Utopías, que se queda a la mitad del relato del artículo
+      (petición de Ivvan). Cierra con pregunta abierta, por decisión del usuario.
+- [ ] Explicar el "cómo" en el recorrido de sequías: hoy el método ocupa un solo paso
+      (petición de Ivvan).
 - [~] Cargar contenido real: ya hay un investigador/paper/cápsula reales (José
       Joaquín Piña Mondragón), pero el resto sigue siendo contenido de ejemplo en
       `src/content/`.

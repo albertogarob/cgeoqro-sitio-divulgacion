@@ -102,6 +102,37 @@ const entrevistas = defineCollection({
 })
 ```
 
+### `recorridos`
+
+Los pasos de un scrollytelling: el texto que se lee en pantalla y la imagen que lo
+acompaña. Están fuera del componente Astro justamente para que los autores puedan
+corregirlos desde una hoja de cálculo en Drive sin tocar código (ver
+[ficha-recorrido.md](ficha-recorrido.md)).
+
+```ts
+const recorridos = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/recorridos' }),
+  schema: z.object({
+    capsula: reference('capsulas'),
+    titulo: z.string(),
+    pasos: z.array(z.object({
+      visual: z.string(),                       // amarra el paso con su escena SVG
+      pos: z.enum(['left', 'right', 'center']),
+      tipo: z.enum(['foto', 'figura', 'svg']),
+      imagen: z.string().optional(),
+      imagenLado: z.enum(['izq', 'der']).optional(),
+      credito: z.string().optional(),           // obligatorio si hay imagen
+      texto: z.string(),
+    })).min(1),
+  }),
+})
+```
+
+`visual` es la pieza clave: el componente engancha cada animación por ese nombre
+(`data-only={v('mancha')}`), no por número de paso, así que insertar o mover un paso no
+descoloca los gráficos. El esquema rechaza en build claves repetidas, pasos de tipo
+`svg` con imagen, pasos de foto o figura sin ella, e imágenes sin crédito.
+
 ## Relaciones (grafo de contenido)
 
 ```
@@ -110,6 +141,7 @@ papers          1---N capsulas   (paperFuente)
 series          1---N capsulas
 investigadores  N---N capsulas   (autores/voces de la cápsula, vía reference array)
 investigadores  1---N entrevistas
+capsulas        1---1 recorridos  (pasos del scrollytelling)
 ```
 
 ## Notas de implementación

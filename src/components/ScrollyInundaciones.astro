@@ -1,12 +1,17 @@
 ---
-// Scrollytelling sobre la estimación del caudal máximo de ríos que causan inundaciones
-// (Esqueda, Botello y Valdez, RIMNI 2024, DOI 10.23967/j.rimni.2024.08.002, CC BY-NC-SA).
-// Texto parafraseado. Explota figuras ORIGINALES del artículo (esquema del método, malla,
-// mancha de inundación simulada, evolución del algoritmo), permitidas por la licencia
-// CC BY-NC-SA con atribución (revisadas figura por figura: las imágenes de satélite
-// Sentinel-1 y Google Earth del paper son de terceros y quedan excluidas). Foto de
-// apertura CC BY de Wikimedia, no del paper. Ver política de copyright en CLAUDE.md.
-import { withBase } from '../lib/url';
+// Escena del recorrido sobre la estimación del caudal máximo de ríos que causan
+// inundaciones (Esqueda, Botello y Valdez, RIMNI 2024, DOI 10.23967/j.rimni.2024.08.002,
+// CC BY-NC-SA). Texto parafraseado. Explota figuras ORIGINALES del artículo (esquema del
+// método, malla, mancha de inundación simulada, evolución del algoritmo), permitidas por
+// la licencia CC BY-NC-SA con atribución (revisadas figura por figura: las imágenes de
+// satélite Sentinel-1 y Google Earth del paper son de terceros y quedan excluidas). Foto
+// de apertura CC BY de Wikimedia, no del paper. Ver política de copyright en CLAUDE.md.
+//
+// El texto y las imágenes de los pasos viven en src/content/recorridos/inundaciones.yaml
+// (lo que corrigen los autores). Aquí solo está la escena visual y su coreografía.
+import { getEntry } from 'astro:content';
+import ScrollyShell from './ScrollyShell.astro';
+import { indiceVisual } from '../lib/recorrido';
 
 // Celdas de "agua" para el momento de aguas someras: se llenan desde el cauce (diagonal)
 // hacia afuera, con azul más oscuro donde el agua es más profunda.
@@ -25,264 +30,108 @@ for (let r = 0; r < aRows; r++) {
 // Población de caudales candidatos (Evolución Diferencial): parten dispersos y convergen.
 const poblacion = Array.from({ length: 13 }, (_, k) => ({ x0: -300 + k * 50 + (k % 3) * 14, i: k }));
 
-const pasos = [
-  { n: 0, pos: 'center', tipo: 'foto', texto: 'Las inundaciones están entre los desastres más frecuentes y costosos del planeta. Tabasco lo sabe: cuando el Río de la Sierra se desborda, el agua se adueña del sur de Villahermosa.' },
-  { n: 1, pos: 'center', tipo: 'svg', texto: 'No son un desastre más entre muchos. En el conteo de un año, de 387 desastres naturales registrados, 176 fueron inundaciones: casi la mitad.' },
-  { n: 2, pos: 'right', tipo: 'svg', texto: 'Cuando el agua baja, los satélites dejan un retrato: la mancha de hasta dónde llegó. Pero esa silueta plana esconde lo que de verdad sirve para planear: qué tan profunda fue el agua, y qué caudal la empujó por el cauce.' },
-  { n: 3, pos: 'right', tipo: 'figura', texto: 'La propuesta va en reversa, de la huella visible a la causa invisible, uniendo tres piezas: información geoespacial del terreno, una simulación física del agua en movimiento, y un algoritmo evolutivo que afina la respuesta por prueba y error dirigido.' },
-  { n: 4, pos: 'left', tipo: 'figura', texto: 'Todo ocurre sobre una malla en 3D del terreno, tejida con su altimetría y sus usos de suelo. Para el tramo estudiado del cauce son 21,890 pequeños triángulos de 5 metros de lado, cada uno una celda de cálculo.' },
-  { n: 5, pos: 'left', tipo: 'svg', texto: 'Sobre esa malla, el motor de simulación Iber resuelve las ecuaciones de aguas someras, una forma en 2D de las leyes del movimiento de fluidos. Celda por celda y paso a paso en el tiempo, calcula hacia dónde corre el agua y qué altura alcanza.' },
-  { n: 6, pos: 'right', tipo: 'svg', texto: 'El ingrediente que falta es el caudal. Por la entrada del cauce se impone una curva de flujo que crece hasta un pico y luego cede. Ese pico, el gasto máximo, es la incógnita que hay que despejar.' },
-  { n: 7, pos: 'right', tipo: 'figura', texto: 'Con un caudal de prueba, la simulación dibuja su propia mancha de inundación. El satélite Sentinel-1 aporta la real, en blanco y negro: 1 si la celda quedó bajo el agua, 0 si quedó en seco.' },
-  { n: 8, pos: 'left', tipo: 'svg', texto: 'Una función objetivo cuenta las celdas en las que ambas manchas no coinciden. Si calzan a la perfección vale cero; mientras más difieren, más alto el error. Ese número es la brújula de la búsqueda.' },
-  { n: 9, pos: 'right', tipo: 'svg', texto: 'Aquí entra la Evolución Diferencial. Una población de caudales candidatos compite, se combina y muta generación tras generación, empujada siempre hacia el menor error, imitando a la selección natural.' },
-  { n: 10, pos: 'left', tipo: 'figura', texto: 'En cerca de 300 evaluaciones el error se desploma y se estabiliza: la mejor solución y el promedio de la población se juntan. La búsqueda converge al caudal que mejor reproduce la inundación observada.' },
-  { n: 11, pos: 'center', tipo: 'svg', texto: 'Para ese tramo del Río de la Sierra, el caudal pico resultó cercano a 762 metros cúbicos por segundo, sostenido varios días. Y de regalo, la simulación recupera la profundidad del agua, de 1.5 a 5 metros, que el satélite nunca vio.' },
-  { n: 12, pos: 'center', tipo: 'foto', texto: 'Así, un modelo físico y un algoritmo convierten una foto plana en un mapa con extensión y profundidad reales. Mejor materia prima para prevenir, alertar y responder. Ciencia geoespacial al servicio de la sociedad.' },
-];
-
-// Pasos con imagen a pantalla: foto de apertura (cover) o figura del artículo (a un lado).
-const CRED_FIGURA = 'Figura: Esqueda, Botello y Valdez, RIMNI 2024 (CC BY-NC-SA)';
-const media = [
-  { n: 0, cls: 'foto', lado: '', src: '/scrolly/inund-villahermosa.jpg', credito: 'Foto: Huitzil, inundación de 2007 en Villahermosa (CC BY 2.0)' },
-  { n: 3, cls: 'figura', lado: 'izq', src: '/scrolly/inund-metodo.png', credito: CRED_FIGURA },
-  { n: 4, cls: 'figura', lado: 'der', src: '/scrolly/inund-malla.png', credito: CRED_FIGURA },
-  { n: 7, cls: 'figura', lado: 'izq', src: '/scrolly/inund-mancha.png', credito: CRED_FIGURA },
-  { n: 10, cls: 'figura', lado: 'der', src: '/scrolly/inund-evolucion.png', credito: CRED_FIGURA },
-  { n: 12, cls: 'foto', lado: '', src: '/scrolly/inund-cierre.jpg', credito: 'Foto: Alfonsobouchot, río Grijalva en Villahermosa (CC BY-SA 4.0)' },
-];
-
-// Blob que insinúa la mancha de inundación (paso 2) y las manchas de la función objetivo.
+// Blob que insinúa la mancha de inundación y las manchas de la función objetivo.
 const blob = '430,250 520,235 600,270 640,340 610,420 520,455 440,440 400,370 405,300';
 const objTarget = '450,250 545,240 610,295 590,385 500,420 435,398 412,322';
+
+const recorrido = await getEntry('recorridos', 'inundaciones');
+if (!recorrido) throw new Error('Falta el recorrido src/content/recorridos/inundaciones.yaml');
+const pasos = recorrido.data.pasos;
+// Cada escena se engancha a su paso por nombre, no por número.
+const v = (clave: string) => indiceVisual(pasos, clave);
 
 const creditos = [
   { autor: 'Esqueda, Botello y Valdez (RIMNI, 2024)', licencia: 'CC BY-NC-SA', fuente: 'https://doi.org/10.23967/j.rimni.2024.08.002', que: 'figuras del artículo' },
   { autor: 'Huitzil', licencia: 'CC BY 2.0', fuente: 'https://commons.wikimedia.org/wiki/File:2007_Tabasco_flood.jpg', que: 'foto de apertura, inundación de 2007 en Villahermosa' },
   { autor: 'Alfonsobouchot', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Villahermosa_Vista_del_Grijalva.jpg', que: 'foto de cierre, río Grijalva en Villahermosa' },
 ];
+const nota = 'Figuras originales del artículo (con licencia CC BY-NC-SA) y fotos de apertura y cierre (CC):';
 ---
 
-<section class="scrolly" data-step="0" data-mode="foto">
-	<div class="scrolly-stage">
-		<div class="media-bg" aria-hidden="true">
-			{media.map((m) => (
-				<img class={`media ${m.cls} ${m.lado}`} data-media={m.n} data-credito={m.credito} src={withBase(m.src)} alt="" loading="lazy" />
+<ScrollyShell
+	pasos={pasos}
+	fondo="radial-gradient(120% 90% at 50% 36%, #123047 0%, #0b1c2b 55%, #05101a 100%)"
+	fondoCaption="rgba(8, 20, 32, 0.78)"
+	velo="5, 16, 26"
+	fondoCreditos="#0b1c2b"
+	colorEnlace="#6f93b0"
+	offset={0.72}
+	creditos={creditos}
+	notaCreditos={nota}
+>
+	<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+		<!-- 1: qué tan frecuentes son las inundaciones -->
+		<g class="only" data-only={v('frecuencia')}>
+			<text x="500" y="250" text-anchor="middle" class="mom-big"><tspan class="count" data-to="176">0</tspan></text>
+			<text x="500" y="295" text-anchor="middle" class="mom-unit">inundaciones</text>
+			<rect x="290" y="340" width="420" height="24" rx="12" fill="rgba(255,255,255,0.12)" />
+			<rect class="stat-fill" x="290" y="340" height="24" rx="12" fill="#e8843f" />
+			<text x="500" y="400" text-anchor="middle" class="mom-sub">de 387 desastres naturales registrados en un año</text>
+		</g>
+
+		<!-- 2: el satélite ve la mancha, no la profundidad ni el caudal -->
+		<g class="only" data-only={v('mancha')}>
+			<rect x="260" y="130" width="480" height="440" rx="8" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-dasharray="6 8" />
+			{[0,1,2,3,4,5,6,7].map((i) => <line x1={260} y1={130 + i * 55} x2={740} y2={130 + i * 55} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
+			{[0,1,2,3,4,5,6,7,8].map((i) => <line x1={260 + i * 53} y1={130} x2={260 + i * 53} y2={570} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
+			<polygon points={blob} fill="rgba(232,132,63,0.30)" stroke="#e8843f" stroke-width="2.5" />
+			<text x="500" y="378" text-anchor="middle" class="mark-q">?</text>
+			<text x="500" y="612" text-anchor="middle" class="mom-sub">¿Qué tan profunda? ¿Qué caudal la causó?</text>
+		</g>
+
+		<!-- 5: aguas someras, celdas que se llenan de agua con profundidad -->
+		<g class="only" data-only={v('aguas-someras')}>
+			{agua.map((cel) => (
+				<rect class="cell" style={`--i:${cel.i}`} x={cel.x} y={cel.y} width="42" height="42" rx="4" fill={cel.color} stroke="rgba(255,255,255,0.05)" stroke-width="1" />
 			))}
-			<div class="media-scrim"></div>
-		</div>
+			<text x="500" y="185" text-anchor="middle" class="mom-sub">Iber calcula el agua celda por celda</text>
+		</g>
 
-		<p class="stage-credito"></p>
+		<!-- 6: el hidrograma que se dibuja, con el pico como incógnita -->
+		<g class="only" data-only={v('hidrograma')}>
+			<line x1="250" y1="470" x2="770" y2="470" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+			<line x1="250" y1="240" x2="250" y2="470" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+			<path class="hydro" d="M250 465 C 360 465 405 300 490 278 S 650 430 770 440" fill="none" stroke="#e8843f" stroke-width="3.5" />
+			<circle class="peak" cx="490" cy="278" r="9" fill="#ffffff" />
+			<text x="490" y="255" text-anchor="middle" class="mom-sub">gasto máximo = ?</text>
+			<text x="770" y="495" text-anchor="end" class="axis-lbl">tiempo</text>
+			<text x="235" y="250" text-anchor="end" class="axis-lbl">caudal</text>
+		</g>
 
-		<svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-			<!-- 1: qué tan frecuentes son las inundaciones -->
-			<g class="only" data-only="1">
-				<text x="500" y="250" text-anchor="middle" class="mom-big"><tspan class="count" data-to="176">0</tspan></text>
-				<text x="500" y="295" text-anchor="middle" class="mom-unit">inundaciones</text>
-				<rect x="290" y="340" width="420" height="24" rx="12" fill="rgba(255,255,255,0.12)" />
-				<rect class="stat-fill" x="290" y="340" height="24" rx="12" fill="#e8843f" />
-				<text x="500" y="400" text-anchor="middle" class="mom-sub">de 387 desastres naturales registrados en un año</text>
-			</g>
+		<!-- 8: función objetivo, la mancha simulada se acerca a la observada -->
+		<g class="only" data-only={v('funcion-objetivo')}>
+			<polygon points={objTarget} fill="rgba(130,185,255,0.18)" stroke="#8fbaff" stroke-width="2.5" stroke-dasharray="6 6" />
+			<polygon class="obj-sim" points={objTarget} fill="rgba(232,132,63,0.26)" stroke="#e8843f" stroke-width="2.5" />
+			<text x="500" y="210" text-anchor="middle" class="mom-sub">error = celdas que no coinciden</text>
+			<text x="690" y="300" class="axis-lbl">observada</text>
+			<text x="300" y="440" text-anchor="end" class="axis-lbl">simulada</text>
+		</g>
 
-			<!-- 2: el satélite ve la mancha, no la profundidad ni el caudal -->
-			<g class="only" data-only="2">
-				<rect x="260" y="130" width="480" height="440" rx="8" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-dasharray="6 8" />
-				{[0,1,2,3,4,5,6,7].map((i) => <line x1={260} y1={130 + i * 55} x2={740} y2={130 + i * 55} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
-				{[0,1,2,3,4,5,6,7,8].map((i) => <line x1={260 + i * 53} y1={130} x2={260 + i * 53} y2={570} stroke="rgba(255,255,255,0.06)" stroke-width="1" />)}
-				<polygon points={blob} fill="rgba(232,132,63,0.30)" stroke="#e8843f" stroke-width="2.5" />
-				<text x="500" y="378" text-anchor="middle" class="mark-q">?</text>
-				<text x="500" y="612" text-anchor="middle" class="mom-sub">¿Qué tan profunda? ¿Qué caudal la causó?</text>
-			</g>
+		<!-- 9: Evolución Diferencial, la población converge -->
+		<g class="only" data-only={v('evolucion')}>
+			<line x1="200" y1="360" x2="800" y2="360" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+			{poblacion.map((d) => (
+				<circle class="pop" style={`--x0:${d.x0}px; --i:${d.i}`} cx="500" cy="360" r="8" fill="#e8843f" />
+			))}
+			<circle cx="500" cy="360" r="14" fill="none" stroke="#ffffff" stroke-width="2" />
+			<text x="200" y="330" class="axis-lbl">menor caudal</text>
+			<text x="800" y="330" text-anchor="end" class="axis-lbl">mayor caudal</text>
+			<text x="500" y="415" text-anchor="middle" class="mom-sub">generación tras generación, hacia el menor error</text>
+		</g>
 
-			<!-- 5: aguas someras, celdas que se llenan de agua con profundidad -->
-			<g class="only" data-only="5">
-				{agua.map((cel) => (
-					<rect class="cell" style={`--i:${cel.i}`} x={cel.x} y={cel.y} width="42" height="42" rx="4" fill={cel.color} stroke="rgba(255,255,255,0.05)" stroke-width="1" />
-				))}
-				<text x="500" y="185" text-anchor="middle" class="mom-sub">Iber calcula el agua celda por celda</text>
-			</g>
+		<!-- 11: caudal recuperado + profundidad -->
+		<g class="only" data-only={v('caudal')}>
+			<text x="500" y="258" text-anchor="middle" class="mom-big"><tspan class="count" data-to="762">0</tspan></text>
+			<text x="500" y="305" text-anchor="middle" class="mom-unit">metros cúbicos por segundo</text>
+			<text x="500" y="350" text-anchor="middle" class="mom-sub">caudal máximo estimado en el cauce</text>
+			<text x="500" y="398" text-anchor="middle" class="mom-depth">y una profundidad de 1.5 a 5 m que el satélite no ve</text>
+		</g>
 
-			<!-- 6: el hidrograma que se dibuja, con el pico como incógnita -->
-			<g class="only" data-only="6">
-				<line x1="250" y1="470" x2="770" y2="470" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
-				<line x1="250" y1="240" x2="250" y2="470" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
-				<path class="hydro" d="M250 465 C 360 465 405 300 490 278 S 650 430 770 440" fill="none" stroke="#e8843f" stroke-width="3.5" />
-				<circle class="peak" cx="490" cy="278" r="9" fill="#ffffff" />
-				<text x="490" y="255" text-anchor="middle" class="mom-sub">gasto máximo = ?</text>
-				<text x="770" y="495" text-anchor="end" class="axis-lbl">tiempo</text>
-				<text x="235" y="250" text-anchor="end" class="axis-lbl">caudal</text>
-			</g>
-
-			<!-- 8: función objetivo, la mancha simulada se acerca a la observada -->
-			<g class="only" data-only="8">
-				<polygon points={objTarget} fill="rgba(130,185,255,0.18)" stroke="#8fbaff" stroke-width="2.5" stroke-dasharray="6 6" />
-				<polygon class="obj-sim" points={objTarget} fill="rgba(232,132,63,0.26)" stroke="#e8843f" stroke-width="2.5" />
-				<text x="500" y="210" text-anchor="middle" class="mom-sub">error = celdas que no coinciden</text>
-				<text x="690" y="300" class="axis-lbl">observada</text>
-				<text x="300" y="440" text-anchor="end" class="axis-lbl">simulada</text>
-			</g>
-
-			<!-- 9: Evolución Diferencial, la población converge -->
-			<g class="only" data-only="9">
-				<line x1="200" y1="360" x2="800" y2="360" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
-				{poblacion.map((d) => (
-					<circle class="pop" style={`--x0:${d.x0}px; --i:${d.i}`} cx="500" cy="360" r="8" fill="#e8843f" />
-				))}
-				<circle cx="500" cy="360" r="14" fill="none" stroke="#ffffff" stroke-width="2" />
-				<text x="200" y="330" class="axis-lbl">menor caudal</text>
-				<text x="800" y="330" text-anchor="end" class="axis-lbl">mayor caudal</text>
-				<text x="500" y="415" text-anchor="middle" class="mom-sub">generación tras generación, hacia el menor error</text>
-			</g>
-
-			<!-- 11: caudal recuperado + profundidad -->
-			<g class="only" data-only="11">
-				<text x="500" y="258" text-anchor="middle" class="mom-big"><tspan class="count" data-to="762">0</tspan></text>
-				<text x="500" y="305" text-anchor="middle" class="mom-unit">metros cúbicos por segundo</text>
-				<text x="500" y="350" text-anchor="middle" class="mom-sub">caudal máximo estimado en el cauce</text>
-				<text x="500" y="398" text-anchor="middle" class="mom-depth">y una profundidad de 1.5 a 5 m que el satélite no ve</text>
-			</g>
-
-		</svg>
-	</div>
-
-	<div class="scrolly-steps">
-		{pasos.map((p) => (
-			<div class="step" data-step={p.n} data-pos={p.pos} data-tipo={p.tipo}>
-				<p class="caption">{p.texto}</p>
-			</div>
-		))}
-	</div>
-
-	<p class="foto-creditos">
-		Figuras originales del artículo (con licencia CC BY-NC-SA) y foto de apertura (CC BY):{' '}
-		{creditos.map((c, i) => (
-			<>
-				{i > 0 && ' · '}
-				<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia}, {c.que})
-			</>
-		))}.
-	</p>
-</section>
-
-<script>
-	import scrollama from 'scrollama';
-
-	function initScrolly() {
-		const container = document.querySelector<HTMLElement>('.scrolly');
-		if (!container) return;
-		const header = document.querySelector<HTMLElement>('header');
-		const medios = Array.from(container.querySelectorAll<HTMLElement>('.media'));
-		const scrim = container.querySelector<HTMLElement>('.media-scrim');
-		const creditoEl = container.querySelector<HTMLElement>('.stage-credito');
-		const onlys = Array.from(container.querySelectorAll<SVGGElement>('.only'));
-		const stepEls = Array.from(container.querySelectorAll<HTMLElement>('.step'));
-		const tipoDe: Record<number, string> = {};
-		stepEls.forEach((e) => { tipoDe[Number(e.dataset.step)] = e.dataset.tipo ?? 'svg'; });
-
-		function setStageTop() {
-			const h = header ? header.offsetHeight : 64;
-			container.style.setProperty('--stage-top', h + 'px');
-		}
-		setStageTop();
-		window.addEventListener('resize', setStageTop);
-
-		function animCount(el: Element, to: number) {
-			const dur = 1100; let start = 0;
-			function frame(t: number) {
-				if (!start) start = t;
-				const k = Math.min(1, (t - start) / dur);
-				el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
-				if (k < 1) requestAnimationFrame(frame);
-			}
-			requestAnimationFrame(frame);
-		}
-
-		function aplicar(step: number) {
-			const modo = tipoDe[step] ?? 'svg';
-			container.dataset.step = String(step);
-			container.dataset.mode = modo;
-			medios.forEach((m) => m.classList.toggle('on', Number(m.dataset.media) === step));
-			if (scrim) scrim.classList.toggle('on', modo === 'foto');
-			const mediaActiva = medios.find((m) => Number(m.dataset.media) === step);
-			if (creditoEl) {
-				const cr = mediaActiva?.dataset.credito ?? '';
-				creditoEl.textContent = cr;
-				creditoEl.classList.toggle('on', Boolean(cr));
-			}
-			onlys.forEach((o) => o.classList.toggle('on', Number(o.dataset.only) === step));
-			const activo = onlys.find((o) => Number(o.dataset.only) === step);
-			if (activo) activo.querySelectorAll<HTMLElement>('.count').forEach((c) => animCount(c, Number(c.dataset.to ?? '0')));
-		}
-
-		aplicar(0);
-
-		const scroller = scrollama();
-		scroller
-			.setup({ step: '.scrolly .step', offset: 0.72 })
-			.onStepEnter((r: { element: HTMLElement }) => {
-				container.querySelectorAll('.step').forEach((el) => el.classList.remove('activo'));
-				r.element.classList.add('activo');
-				aplicar(Number(r.element.dataset.step ?? '0'));
-			});
-		window.addEventListener('resize', scroller.resize);
-	}
-
-	if (document.readyState !== 'loading') initScrolly();
-	else document.addEventListener('DOMContentLoaded', initScrolly);
-</script>
+	</svg>
+</ScrollyShell>
 
 <style>
-	.scrolly {
-		--stage-top: 64px;
-		position: relative;
-		width: 100%;
-	}
-	.scrolly-stage {
-		position: sticky;
-		top: var(--stage-top);
-		height: calc(100vh - var(--stage-top));
-		width: 100%;
-		background: radial-gradient(120% 90% at 50% 36%, #123047 0%, #0b1c2b 55%, #05101a 100%);
-		overflow: hidden;
-	}
 	.mapa { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
-
-	/* Capa de imágenes: foto de apertura (cover) o figura del artículo (a un lado, sin marco) */
-	.media-bg { position: absolute; inset: 0; z-index: 0; }
-	.media { opacity: 0; transition: opacity 800ms ease; }
-	.media.on { opacity: 1; }
-	.media.foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-	.media.figura { position: absolute; top: 8%; height: 80%; width: min(52vw, 600px); object-fit: contain; }
-	.media.figura.izq { left: 3%; }
-	.media.figura.der { right: 3%; }
-	.media-scrim {
-		position: absolute; inset: 0; opacity: 0; transition: opacity 800ms ease;
-		background: linear-gradient(180deg, rgba(5,16,26,0.55) 0%, rgba(5,16,26,0.22) 40%, rgba(5,16,26,0.78) 100%);
-	}
-	.media-scrim.on { opacity: 1; }
-
-	/* Crédito/licencia de la foto o figura activa, en la esquina del escenario. */
-	.stage-credito {
-		position: absolute;
-		right: 0.65rem;
-		bottom: 0.65rem;
-		z-index: 4;
-		max-width: min(72vw, 30rem);
-		font-family: 'Roboto Flex', sans-serif;
-		font-size: 0.72rem;
-		line-height: 1.35;
-		color: rgba(255, 255, 255, 0.82);
-		background: rgba(6, 14, 22, 0.62);
-		padding: 0.3rem 0.6rem;
-		border-radius: 6px;
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-		text-align: right;
-		opacity: 0;
-		transition: opacity 400ms ease;
-		pointer-events: none;
-	}
-	.stage-credito.on { opacity: 1; }
 
 	.only { opacity: 0; pointer-events: none; transition: opacity 500ms ease; }
 	.only.on { opacity: 1; }
@@ -306,7 +155,7 @@ const creditos = [
 	.hydro { stroke-dasharray: 760; stroke-dashoffset: 760; transition: stroke-dashoffset 1400ms ease 150ms; }
 	.only.on .hydro { stroke-dashoffset: 0; }
 	.peak { opacity: 0; transform: scale(0.3); transform-origin: 490px 278px; transition: opacity 400ms ease 1300ms, transform 500ms cubic-bezier(0.34,1.56,0.64,1) 1300ms; }
-	.only.on .peak { opacity: 1; transform: scale(1); animation: latir 2s ease-in-out 1800ms infinite; }
+	.only.on .peak { opacity: 1; transform: scale(1); animation: latir-pico 2s ease-in-out 1800ms infinite; }
 
 	/* momento 8: la mancha simulada arranca desfasada y se ajusta a la observada */
 	.obj-sim { transform: translate(58px, 34px) scale(1.1); transform-origin: 500px 335px; transition: transform 1300ms cubic-bezier(0.45,0.05,0.2,1) 200ms; }
@@ -316,42 +165,10 @@ const creditos = [
 	.pop { opacity: 0; transform: translateX(var(--x0)); transition: transform 1200ms cubic-bezier(0.45,0.05,0.2,1), opacity 400ms ease; transition-delay: calc(var(--i) * 45ms); }
 	.only.on .pop { opacity: 0.9; transform: translateX(0); }
 
-	@keyframes latir { 0%,100% { opacity: 0.3; } 50% { opacity: 0.9; } }
-
-	.foto-creditos {
-		max-width: 52rem; margin: 0 auto; padding: 1.5rem 1.5rem 0;
-		font-size: 0.78rem; line-height: 1.5; color: #8a8a8a; text-align: center;
-	}
-	.foto-creditos a { color: #6f93b0; text-decoration: none; }
-	.foto-creditos a:hover { text-decoration: underline; }
-
-	/* Subtítulos flotantes glass, con más cuerpo de texto por pantalla */
-	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }
-	.step { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 0 clamp(1rem, 6vw, 6rem); }
-	.step[data-pos='left'] { justify-content: flex-start; }
-	.step[data-pos='right'] { justify-content: flex-end; }
-	.step[data-pos='center'] { justify-content: center; }
-	.step:first-child { min-height: 88vh; }
-	.caption {
-		pointer-events: auto; max-width: 30rem; margin: 0; padding: 1.25rem 1.5rem;
-		font-size: clamp(1.15rem, 1.7vw, 1.5rem); line-height: 1.5; font-weight: 500; color: #ffffff;
-		background: rgba(8, 20, 32, 0.78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-		border-left: 3px solid #e8843f; border-radius: 4px; opacity: 0.32; transform: translateY(10px);
-		transition: opacity 350ms ease, transform 350ms ease;
-	}
-	.step.activo .caption { opacity: 1; transform: translateY(0); }
-	.step[data-pos='center'] .caption {
-		max-width: 42rem; text-align: center; border-left: none; border-top: 3px solid #e8843f;
-		border-radius: 6px; padding: 1.5rem 2rem; font-size: clamp(1.2rem, 2vw, 1.65rem); font-weight: 600; line-height: 1.4;
-	}
-	/* En pasos SVG centrados (estadística, contador, cierre) la caption baja al tercio
-	   inferior para no pisar el contenido central del escenario. */
-	.scrolly[data-mode='svg'] .step[data-pos='center'] { align-items: flex-end; padding-bottom: 7vh; }
+	/* Nombre propio: ver la nota equivalente en ScrollySequias.astro. */
+	@keyframes latir-pico { 0%,100% { opacity: 0.3; } 50% { opacity: 0.9; } }
 
 	@media (max-width: 720px) {
-		.step, .step[data-pos='left'], .step[data-pos='right'] { justify-content: center; align-items: flex-end; padding: 0 1rem 6vh; }
-		.caption { max-width: none; }
-		.media.figura, .media.figura.izq, .media.figura.der { left: 3%; right: 3%; width: auto; top: 2%; height: 40%; }
 		.mom-big { font-size: 84px; }
 		.mark-q { font-size: 96px; }
 	}

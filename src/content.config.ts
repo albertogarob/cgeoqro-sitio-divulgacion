@@ -93,4 +93,49 @@ const entrevistas = defineCollection({
   }),
 });
 
-export const collections = { investigadores, papers, series, capsulas, entrevistas };
+// Recorridos de scrollytelling: los pasos del relato (texto + imagen), fuera del
+// componente Astro para que los autores puedan corregirlos desde la ficha en Drive.
+// Ver docs/ficha-recorrido.md. La clave `visual` de cada paso amarra el paso con su
+// escena SVG dentro del componente: no se renombra ni se reordena a la ligera.
+const recorridos = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/recorridos' }),
+  schema: z.object({
+    capsula: reference('capsulas'),
+    titulo: z.string(),
+    pasos: z.array(z.object({
+      visual: z.string(),
+      pos: z.enum(['left', 'right', 'center']),
+      tipo: z.enum(['foto', 'figura', 'svg']),
+      // Ruta bajo /public de la foto o figura del paso. Los pasos de tipo "svg" no
+      // llevan imagen: su visual es un gráfico animado del componente.
+      imagen: z.string().optional(),
+      imagenLado: z.enum(['izq', 'der']).optional(),
+      // Crédito y licencia, obligatorio cuando hay imagen (ver política en CLAUDE.md).
+      credito: z.string().optional(),
+      texto: z.string(),
+    })).min(1)
+      .superRefine((pasos, ctx) => {
+        const vistos = new Set<string>();
+        pasos.forEach((p, i) => {
+          if (vistos.has(p.visual)) {
+            ctx.addIssue({ code: 'custom', message: `La clave visual "${p.visual}" está repetida (paso ${i + 1}).`, path: [i, 'visual'] });
+          }
+          vistos.add(p.visual);
+          if (p.tipo === 'svg' && p.imagen) {
+            ctx.addIssue({ code: 'custom', message: `El paso ${i + 1} es de tipo svg y no admite imagen.`, path: [i, 'imagen'] });
+          }
+          if (p.tipo !== 'svg' && !p.imagen) {
+            ctx.addIssue({ code: 'custom', message: `El paso ${i + 1} es de tipo ${p.tipo} y necesita imagen.`, path: [i, 'imagen'] });
+          }
+          if (p.imagenLado && p.tipo !== 'figura') {
+            ctx.addIssue({ code: 'custom', message: `El paso ${i + 1} es de tipo ${p.tipo}: imagenLado solo aplica a las figuras a un costado.`, path: [i, 'imagenLado'] });
+          }
+          if (p.imagen && !p.credito) {
+            ctx.addIssue({ code: 'custom', message: `El paso ${i + 1} tiene imagen sin crédito ni licencia.`, path: [i, 'credito'] });
+          }
+        });
+      }),
+  }),
+});
+
+export const collections = { investigadores, papers, series, capsulas, entrevistas, recorridos };

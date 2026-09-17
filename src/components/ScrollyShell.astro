@@ -1,0 +1,266 @@
+---
+// Armazón común de los recorridos de scrollytelling: escenario fijo, capa de
+// imágenes, subtítulos flotantes, barra de avance, botón de volver al inicio y línea
+// de créditos. Cada recorrido aporta solo su escena SVG (por el slot) y su
+// configuración de cámara.
+//
+// El texto y las imágenes de los pasos vienen de src/content/recorridos/<id>.yaml,
+// que es lo que corrigen los autores desde la ficha en Drive.
+import { withBase } from '../lib/url';
+import { indices, porIndice, type PasoRecorrido } from '../lib/recorrido';
+
+interface Credito {
+  autor: string;
+  licencia: string;
+  fuente: string;
+  /** Qué material cubre ese crédito (ej. "figuras del artículo"). Opcional. */
+  que?: string;
+}
+
+interface Props {
+  pasos: PasoRecorrido[];
+  /** Encuadre del grupo .camera por paso, indexado por clave visual. */
+  camaras?: Record<string, string>;
+  /** Pasos (por clave visual) en los que el mapa se atenúa para dejar leer un momento. */
+  atenuar?: string[];
+  /** Fondo del escenario. */
+  fondo?: string;
+  /** Color del panel de los subtítulos. */
+  fondoCaption?: string;
+  /** Base RGB del velo que oscurece las fotos, en formato "r,g,b". */
+  velo?: string;
+  /** Color de los enlaces de la línea de créditos. */
+  colorEnlace?: string;
+  /** Fondo de la banda de créditos que cierra el recorrido. */
+  fondoCreditos?: string;
+  /** Umbral de disparo de scrollama. */
+  offset?: number;
+  creditos: Credito[];
+  notaCreditos: string;
+}
+
+const {
+  pasos,
+  camaras = {},
+  atenuar = [],
+  fondo = 'radial-gradient(120% 90% at 50% 38%, #173352 0%, #0c1a2b 55%, #050c15 100%)',
+  fondoCaption = 'rgba(8, 20, 32, 0.78)',
+  velo = '5, 14, 24',
+  colorEnlace = '#6f93b0',
+  fondoCreditos = '#0c1a2b',
+  offset = 0.75,
+  creditos,
+  notaCreditos,
+} = Astro.props;
+
+// Las claves visuales se traducen a números de paso aquí, una sola vez. Si una clave
+// no existe, el build falla con un mensaje claro en vez de desincronizar el relato.
+const config = {
+  camaras: porIndice(pasos, camaras),
+  dim: indices(pasos, atenuar),
+  offset,
+};
+const conImagen = pasos.map((p, i) => ({ ...p, i })).filter((p) => p.imagen);
+---
+
+<div class="scrolly-bloque" style={`--fondo: ${fondo}; --caption-bg: ${fondoCaption}; --velo: ${velo}; --enlace: ${colorEnlace}; --banda: ${fondoCreditos}`}>
+<section class="scrolly" data-step="0" data-mode={pasos[0]?.tipo ?? 'svg'} data-config={JSON.stringify(config)}>
+	<!-- Mandos del recorrido: van pegajosos y por encima de los subtítulos, porque si
+	     viven dentro del escenario las captions les pasan por encima al desplazarse. -->
+	<div class="scrolly-chrome">
+		<div class="scrolly-progreso" role="progressbar" aria-label="Avance del recorrido"
+			aria-valuemin="1" aria-valuemax={pasos.length} aria-valuenow="1">
+			<span class="barra"><span class="relleno"></span></span>
+			<span class="conteo"><span class="actual">1</span> / {pasos.length}</span>
+		</div>
+
+		<button type="button" class="scrolly-inicio" hidden>
+			<span aria-hidden="true">↑</span> Volver al inicio
+		</button>
+	</div>
+
+	<div class="scrolly-stage">
+		<div class="media-bg" aria-hidden="true">
+			{conImagen.map((p) => (
+				<img
+					class:list={['media', p.tipo, p.imagenLado]}
+					data-media={p.i}
+					data-credito={p.credito}
+					src={withBase(p.imagen!)}
+					alt=""
+					loading={p.i === 0 ? 'eager' : 'lazy'}
+				/>
+			))}
+			<div class="media-scrim"></div>
+		</div>
+
+		<p class="stage-credito"></p>
+
+		<slot />
+
+	</div>
+
+	<div class="scrolly-steps">
+		{pasos.map((p, i) => (
+			<div class="step" data-step={i} data-pos={p.pos} data-tipo={p.tipo}>
+				<p class="caption">{p.texto}</p>
+			</div>
+		))}
+	</div>
+
+</section>
+
+<!-- La línea de créditos va FUERA de la sección: dentro, el escenario sticky la
+     tapaba y la atribución de las licencias CC quedaba invisible. -->
+<p class="foto-creditos">
+	{notaCreditos}{' '}
+	{creditos.map((c, i) => (
+		<>
+			{i > 0 && ' · '}
+			<a href={c.fuente} target="_blank" rel="noopener">{c.autor}</a> ({c.licencia}{c.que ? `, ${c.que}` : ''})
+		</>
+	))}
+</p>
+</div>
+
+<script>
+	import { initScrolly } from '../scripts/scrolly';
+
+	if (document.readyState !== 'loading') initScrolly();
+	else document.addEventListener('DOMContentLoaded', initScrolly);
+</script>
+
+<style>
+	.scrolly {
+		--stage-top: 64px;
+		position: relative;
+		width: 100%;
+	}
+	.scrolly-stage {
+		position: sticky;
+		top: var(--stage-top);
+		height: calc(100vh - var(--stage-top));
+		width: 100%;
+		background: var(--fondo);
+		overflow: hidden;
+	}
+
+	/* Capa de imágenes: foto a sangre (cover) o figura del artículo (a un costado,
+	   sin marco, para que su texto fino siga siendo legible). */
+	.media-bg { position: absolute; inset: 0; z-index: 0; }
+	.media { opacity: 0; transition: opacity 800ms ease; }
+	.media.on { opacity: 1; }
+	.media.foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+	.media.figura { position: absolute; top: 8%; height: 80%; width: min(52vw, 600px); object-fit: contain; }
+	.media.figura.izq { left: 3%; }
+	.media.figura.der { right: 3%; }
+	.media-scrim {
+		position: absolute; inset: 0; opacity: 0; transition: opacity 800ms ease;
+		background: linear-gradient(180deg, rgba(var(--velo), 0.55) 0%, rgba(var(--velo), 0.22) 40%, rgba(var(--velo), 0.78) 100%);
+	}
+	.media-scrim.on { opacity: 1; }
+
+	/* Crédito y licencia de la imagen activa, en la esquina del escenario. */
+	.stage-credito {
+		position: absolute; right: 0.65rem; bottom: 0.65rem; z-index: 4;
+		max-width: min(72vw, 30rem);
+		font-family: 'Roboto Flex', sans-serif; font-size: 0.72rem; line-height: 1.35;
+		color: rgba(255,255,255,0.82); background: rgba(6,14,22,0.62);
+		padding: 0.3rem 0.6rem; border-radius: 6px; text-align: right;
+		backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		opacity: 0; transition: opacity 400ms ease; pointer-events: none;
+	}
+	.stage-credito.on { opacity: 1; }
+
+	/* Franja de mandos de altura cero: no ocupa sitio, se queda pegada arriba del
+	   escenario y pinta por encima de la capa de subtítulos. */
+	.scrolly-chrome {
+		position: sticky;
+		top: var(--stage-top);
+		height: 0;
+		z-index: 6;
+		pointer-events: none;
+	}
+
+	/* Avance del recorrido: cuánto llevas y cuánto falta. */
+	.scrolly-progreso {
+		position: absolute; top: 0.85rem; left: 0.85rem;
+		display: flex; align-items: center; gap: 0.6rem;
+		padding: 0.35rem 0.7rem; border-radius: 999px;
+		background: rgba(6,14,22,0.88); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		font-family: 'Roboto Flex', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.85);
+		pointer-events: none;
+	}
+	.scrolly-progreso .barra {
+		display: block; width: clamp(60px, 18vw, 150px); height: 4px; border-radius: 2px;
+		background: rgba(255,255,255,0.22); overflow: hidden;
+	}
+	.scrolly-progreso .relleno {
+		display: block; width: 0; height: 100%; border-radius: 2px;
+		background: #e8843f; transition: width 450ms ease;
+	}
+	.scrolly-progreso .conteo { font-variant-numeric: tabular-nums; white-space: nowrap; }
+	.scrolly-progreso .actual { font-weight: 700; color: #ffffff; }
+
+	/* Salida siempre a la vista: volver al principio del recorrido. Va arriba a la
+	   derecha porque los subtítulos ocupan el centro y el pie del escenario, y el
+	   crédito de la imagen vive en la esquina inferior derecha. */
+	.scrolly-inicio {
+		position: absolute; right: 0.85rem; top: 0.85rem; pointer-events: auto;
+		display: inline-flex; align-items: center; gap: 0.4rem;
+		padding: 0.45rem 0.9rem; border-radius: 999px; cursor: pointer;
+		border: 1px solid rgba(255,255,255,0.35); background: rgba(6,14,22,0.9);
+		backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		font-family: 'Roboto Flex', sans-serif; font-size: 0.8rem; font-weight: 500;
+		color: #ffffff; transition: background 200ms ease, border-color 200ms ease;
+	}
+	.scrolly-inicio:hover { background: rgba(196,86,32,0.85); border-color: #e8843f; }
+	.scrolly-inicio:focus-visible { outline: 2px solid #e8843f; outline-offset: 2px; }
+	.scrolly-inicio[hidden] { display: none; }
+
+	.scrolly-bloque { background: var(--banda); }
+	.foto-creditos {
+		max-width: 52rem; margin: 0 auto; padding: 1.75rem 1.5rem 1.5rem;
+		font-size: 0.78rem; line-height: 1.5; color: rgba(255, 255, 255, 0.55); text-align: center;
+	}
+	.foto-creditos a { color: var(--enlace); text-decoration: none; }
+	.foto-creditos a:hover { text-decoration: underline; }
+
+	/* Subtítulos flotantes glass, no diapositivas. */
+	.scrolly-steps { position: relative; z-index: 3; pointer-events: none; }
+	.step {
+		min-height: 100vh; display: flex; align-items: center; justify-content: center;
+		padding: 0 clamp(1rem, 6vw, 6rem);
+	}
+	.step[data-pos='left'] { justify-content: flex-start; }
+	.step[data-pos='right'] { justify-content: flex-end; }
+	.step[data-pos='center'] { justify-content: center; }
+	.step:first-child { min-height: 88vh; }
+	.caption {
+		pointer-events: auto; max-width: 30rem; margin: 0; padding: 1.25rem 1.5rem;
+		font-size: clamp(1.15rem, 1.7vw, 1.5rem); line-height: 1.5; font-weight: 500; color: #ffffff;
+		background: var(--caption-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+		border-left: 3px solid #e8843f; border-radius: 4px; opacity: 0.32; transform: translateY(10px);
+		transition: opacity 350ms ease, transform 350ms ease;
+	}
+	.step.activo .caption { opacity: 1; transform: translateY(0); }
+	.step[data-pos='center'] .caption {
+		max-width: 42rem; text-align: center; border-left: none; border-top: 3px solid #e8843f;
+		border-radius: 6px; padding: 1.5rem 2rem; font-size: clamp(1.2rem, 2vw, 1.65rem);
+		font-weight: 600; line-height: 1.4;
+	}
+	/* En pasos de gráfico centrado la caption baja al tercio inferior para no pisarlo. */
+	.scrolly[data-mode='svg'] .step[data-pos='center'] { align-items: flex-end; padding-bottom: 7vh; }
+
+	@media (max-width: 720px) {
+		.step, .step[data-pos='left'], .step[data-pos='right'] {
+			justify-content: center; align-items: flex-end; padding: 0 1rem 6vh;
+		}
+		.caption { max-width: none; }
+		.media.figura, .media.figura.izq, .media.figura.der {
+			left: 3%; right: 3%; width: auto; top: 2%; height: 40%;
+		}
+		.scrolly-progreso { font-size: 0.7rem; padding: 0.3rem 0.6rem; }
+		.scrolly-inicio { font-size: 0.75rem; padding: 0.4rem 0.75rem; }
+	}
+</style>

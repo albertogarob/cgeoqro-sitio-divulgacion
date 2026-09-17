@@ -98,8 +98,47 @@ Reserva una **foto real para la apertura** y otra para la **conclusión** (ver b
 
 ## Paso 3. Reglas de diseño del scrollytelling
 
-Copia la estructura de `ScrollyUtopias.astro` y adáptala. Puntos que **no** debes
-cambiar (son correcciones ya validadas con el usuario):
+### La estructura ya está partida en dos: no la rehagas
+
+Desde 2026-09, un recorrido son **dos piezas**, y hay que respetarlo:
+
+1. **El texto y las imágenes de los pasos** van en `src/content/recorridos/<id>.yaml`
+   (colección `recorridos`), porque de ahí los corrigen los autores con la ficha de
+   Drive. Ver [docs/ficha-recorrido.md](../../../docs/ficha-recorrido.md) y el skill
+   `ficha-recorrido`. **Nunca metas los textos dentro del componente.**
+2. **La escena visual** va en `src/components/Scrolly<Tema>.astro`, que solo aporta el
+   `<svg>` y su coreografía, envuelto en `ScrollyShell.astro`.
+
+`ScrollyShell.astro` ya trae hecho, para todos los recorridos: escenario sticky bajo el
+navbar, capa de fotos y figuras con su velo, chip de crédito de la imagen activa,
+subtítulos flotantes, **barra de avance ("4 / 13")**, **botón de volver al inicio** y la
+banda de créditos final. No lo reimplementes por recorrido; si algo le falta, añádeselo
+al armazón. Configurable por props: `camaras`, `atenuar`, `fondo`, `fondoCaption`,
+`velo`, `colorEnlace`, `fondoCreditos`, `offset`, `creditos`, `notaCreditos`.
+
+El esqueleto de un componente nuevo:
+
+```astro
+const recorrido = await getEntry('recorridos', 'mitema');
+if (!recorrido) throw new Error('Falta src/content/recorridos/mitema.yaml');
+const pasos = recorrido.data.pasos;
+const v = (clave: string) => indiceVisual(pasos, clave);
+---
+<ScrollyShell pasos={pasos} camaras={{ cierre: 'translate(0,0) scale(0.8)' }}
+  atenuar={['pregunta']} creditos={creditos} notaCreditos={nota}>
+  <svg viewBox="0 0 1000 700" class="mapa" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g class="only" data-only={v('pregunta')}>...</g>
+    <g class="layer" data-from={v('mapa')}>...</g>
+  </svg>
+</ScrollyShell>
+```
+
+**Engancha siempre por clave visual (`v('mapa')`), nunca por número de paso.** Es lo que
+permite insertar un paso sin descolocar las animaciones, y lo que hace que el build
+falle con un mensaje claro si alguien borra un paso que la escena necesita. Un momento
+que deba seguir viéndose sobre una foto a sangre lleva `data-sobre-foto="si"`.
+
+### Puntos que **no** debes cambiar (correcciones ya validadas con el usuario):
 
 - **Full-bleed**: la cápsula usa `bleed` en `Base.astro`. El escenario (`.scrolly-stage`)
   es `position: sticky` a ancho completo.
@@ -228,14 +267,18 @@ y [src/content.config.ts](../../../src/content.config.ts).
 2. **Paper** (`src/content/papers/<slug>.md`), **solo metadatos**: `titulo`,
    `investigador` (ref), `editorial` (incluye la licencia si es CC), `anioPublicacion`,
    `doi`, `driveFileId`, `estadoPipeline: "publicado"`, `temasClave`. Nunca el texto.
-3. **Cápsula** (`src/content/capsulas/<slug>.mdx`): `titulo`, `serie` (ref: `agua`,
+3. **Recorrido** (`src/content/recorridos/<clave>.yaml`): un paso por bloque, con
+   `visual`, `pos`, `tipo`, `texto` y, si lleva imagen, `imagen` y `credito`. Es el
+   archivo que corrigen los autores; escríbelo en el formato canónico (lo produce
+   `npm run ficha:exportar` / `ficha:importar`, y hay una prueba que lo verifica).
+4. **Cápsula** (`src/content/capsulas/<slug>.mdx`): `titulo`, `serie` (ref: `agua`,
    `el-espacio-donde-vivimos` o `sociedad-justa`), `paperFuente` (ref), `investigadores`
    (refs), `formatos`, `resumenCorto`, `fechaPublicacion`, `revisadoPor`,
    `fuenteExternaUrl` (el DOI), y `scrolly: "<clave>"`. **Deja el cuerpo MDX vacío**
    (solo frontmatter): la atribución ya aparece en "Fuente y créditos" (referencia al
    paper, `creditoProduccion` si aplica) y en el pie de página. No metas notas del tipo
    "Esta cápsula está basada en...".
-4. **Registrar el componente** en el mapa de
+5. **Registrar el componente** en el mapa de
    [src/pages/capsulas/[id].astro](../../../src/pages/capsulas/[id].astro):
 
    ```js
@@ -254,6 +297,7 @@ no necesitas cambiar `src/pages/index.astro`.
 ```bash
 # 0 em-dashes y 0 "QRO" en texto visible (excluye rutas/ids con CGeoQRO)
 grep -rn "—\|QRO" src/ | grep -v "CGeoQRO\|divulgacioncentrogeo-qro" || echo "limpio"
+npm test        # incluye las reglas de escritura sobre los recorridos
 npm run build   # debe compilar sin errores
 ```
 

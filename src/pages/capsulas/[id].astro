@@ -57,7 +57,20 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 
 			<ScrollyComp />
 
-			<div class="cap-wrap cap-outro">
+			<section class="cap-final">
+				<div class="cap-wrap">
+					<p class="cap-final-kicker">Fin del recorrido</p>
+					<h2>¿Y ahora?</h2>
+					<div class="cap-final-acciones">
+						<button type="button" class="volver-recorrido">↑ Volver al inicio del recorrido</button>
+						<a href="#tras-el-recorrido">Referencia y créditos</a>
+						{serie && <a href={withBase(`/series/${serie.id}/`)}>Más de {serie.data.nombre}</a>}
+						<a href={withBase('/capsulas/')}>Todas las cápsulas</a>
+					</div>
+				</div>
+			</section>
+
+			<div class="cap-wrap cap-outro" id="tras-el-recorrido">
 				<article><Content /></article>
 				<section class="referencia">
 					<h2>Referencia</h2>
@@ -268,6 +281,55 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
 			gap: 1.25rem;
 		}
+		/* Tarjeta de cierre del recorrido: salidas claras cuando el relato termina. */
+		.cap-final {
+			background: linear-gradient(180deg, #0c1a2b 0%, #101f30 100%);
+			padding: 2.75rem 0 3rem;
+		}
+		.cap-final-kicker {
+			margin: 0 0 0.35rem 0;
+			font-size: 0.8rem;
+			font-weight: 600;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: #e8843f;
+		}
+		.cap-final h2 {
+			margin: 0 0 1.25rem 0;
+			color: #ffffff !important;
+		}
+		.cap-final-acciones {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.7rem;
+		}
+		.cap-final-acciones a,
+		.cap-final-acciones button {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			padding: 0.6rem 1.1rem;
+			border-radius: 999px;
+			border: 1px solid rgba(255, 255, 255, 0.28);
+			background: rgba(255, 255, 255, 0.06);
+			color: #ffffff;
+			font-family: inherit;
+			font-size: 0.92rem;
+			font-weight: 500;
+			text-decoration: none;
+			cursor: pointer;
+			transition: background 200ms ease, border-color 200ms ease;
+		}
+		.cap-final-acciones a:hover,
+		.cap-final-acciones button:hover {
+			background: rgba(196, 86, 32, 0.85);
+			border-color: #e8843f;
+		}
+		.cap-final-acciones button {
+			background: #c45620;
+			border-color: #c45620;
+		}
+
 		.cap-wrap {
 			max-width: 46rem;
 			margin: 0 auto;
@@ -280,6 +342,8 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		.cap-outro {
 			padding-top: 2.5rem;
 			padding-bottom: 3rem;
+			/* El navbar es fijo: sin esto, saltar al ancla deja el título debajo. */
+			scroll-margin-top: 5rem;
 		}
 		.scroll-hint {
 			color: var(--cg-color-naranja-300);
@@ -353,4 +417,13 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			color: var(--cg-color-naranja-300);
 		}
 	</style>
+
+	<script>
+		// Botón de la tarjeta de cierre: regresa al primer paso del recorrido. Comparte
+		// el mismo salto que el botón flotante del escenario.
+		import { irAlInicioDelRecorrido } from '../../scripts/scrolly';
+
+		document.querySelector<HTMLButtonElement>('.volver-recorrido')
+			?.addEventListener('click', irAlInicioDelRecorrido);
+	</script>
 </Base>
