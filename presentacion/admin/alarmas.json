@@ -1,0 +1,14 @@
+{
+ "alarmas": [
+  {
+   "h": "16:44",
+   "t": "Mitad de presentación",
+   "s": "campana"
+  },
+  {
+   "h": "16:47",
+   "t": "Un minuto para cerrar",
+   "s": "campana"
+  }
+ ]
+}

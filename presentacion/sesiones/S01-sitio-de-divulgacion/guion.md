@@ -1,6 +1,6 @@
 # Guion de Ciencia Geoespacial para Todos
 
-## 1. (portada)
+## 1. Ciencia Geoespacial para Todos
 
 [Diez a quince minutos. Todo lo que voy a enseñar está en línea y funcionando: si quieres abrirlo en tu computadora mientras hablo, el enlace está en la última lámina.] Te traigo un prototipo de sitio de divulgación para la sede. La idea es sencilla: que lo que publican los investigadores de aquí, que hoy vive en revistas que leen cien personas en el mundo, se pueda contar en cinco minutos a cualquiera que viva en Querétaro.
 
