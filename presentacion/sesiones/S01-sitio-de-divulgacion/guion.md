@@ -10,43 +10,43 @@ La unidad de todo esto es la cápsula de conocimiento: un hallazgo de un artícu
 
 ## 3. Cómo se organiza
 
-Encima de las cápsulas hay tres formas de recorrer el sitio. La primera son las series temáticas: agua, el espacio donde vivimos, y sociedad justa. Son los ejes que ya usa el equipo, y el sitio se acomoda a ellos. La segunda es por persona. Cada investigador tiene su ficha, y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista y sus publicaciones. Eso es lo que permite, después, reportar el alcance de lo de cada quien. Y la tercera es una sección propia, 3 Preguntas a. Tres preguntas iguales para todos, en video y con su transcripción. La cápsula cuenta el hallazgo; la entrevista pone la cara y la voz de quien lo hizo.
+Encima de las cápsulas hay tres formas de recorrer el sitio. La primera son las series: agua, el espacio donde vivimos, y sociedad justa, que son los ejes que ya usa el equipo. La segunda es por persona. Cada investigador tiene su ficha, y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista y sus publicaciones. Eso es lo que permite, después, reportar el alcance de lo de cada quien. Y la tercera es una sección propia, 3 Preguntas a. Tres preguntas iguales para todos, en video y con su transcripción. La cápsula cuenta el hallazgo; la entrevista pone la cara y la voz de quien lo hizo.
 
 ## 4. La portada
 
-Esto es el sitio, en vivo. Se llama Ciencia Geoespacial para Todos, y junto al logo solo se pone esa parte, porque el logo ya dice CentroGeo. Hay cuatro formas de entrar: por cápsula, que es la unidad de contenido; por serie temática; por investigador; o por las entrevistas. Y lo primero que se ve es la franja que dice que esto es un prototipo y que la identidad del centro está puesta solo para demostrar. Nada de esto está autorizado todavía, y esa franja se queda hasta que tú digas.
+Esta es la portada, en vivo: lo primero que ve quien llega. Esto es el sitio, en vivo. Se llama Ciencia Geoespacial para Todos, y junto al logo solo se pone esa parte, porque el logo ya dice CentroGeo. Hay cuatro formas de entrar: por cápsula, que es la unidad de contenido; por serie temática; por investigador; o por las entrevistas.
 
 ## 5. El catálogo de cápsulas
 
-La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. No hay contenido inventado: hay traducción. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
+Esta es la página del catálogo, con todo lo publicado junto. La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. No hay contenido inventado: hay traducción. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
 
 ## 6. Una cápsula como recorrido
 
-Este es el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Pulso I y le doy al play.] Y si no quieres desplazarte, se cuenta solo. Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea. Y fíjate en cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
+Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Demo a mano. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo.] Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.] Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea. Y fíjate en cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
 
 ## 7. Las series temáticas
 
-Las series son los ejes temáticos. Agua, el espacio donde vivimos, y sociedad justa. Son exactamente las tres de Ivvan. Me parecía importante no reinventar eso: si el equipo ya decidió cómo se agrupa lo que hace, el sitio se acomoda a esa decisión y no al revés.
+Esta página agrupa las cápsulas por tema. Las series son los ejes temáticos. Agua, el espacio donde vivimos, y sociedad justa. Son exactamente las tres de Ivvan. Me parecía importante no reinventar eso: si el equipo ya decidió cómo se agrupa lo que hace, el sitio se acomoda a esa decisión y no al revés.
 
 **Recorte 1**: se pierde sin que nadie se entere.
 
 ## 8. La ficha de un investigador
 
-Los cinco investigadores de la sede tienen ficha. Esta es la de Rodrigo. Y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista, y las publicaciones de origen. Por dentro el sitio relaciona investigador, artículo y contenido, así que puede decir cuánta gente entró a lo de cada quien. Es lo que hace falta para que sirva en un informe.
+Esta es la ficha de un investigador: la entrada por persona. Los cinco investigadores de la sede tienen ficha. Esta es la de Rodrigo. Y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista, y las publicaciones de origen. Por dentro el sitio relaciona investigador, artículo y contenido, así que puede decir cuánta gente entró a lo de cada quien. Es lo que hace falta para que sirva en un informe.
 
 **Recorte 2**: se pierde, pero hay que decirlo.
 
 ## 9. 3 Preguntas a...
 
-Esta sección se llama 3 Preguntas a. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene. Cuatro de las cinco están preparadas como borrador: las redacté a partir del perfil de cada quien, para que la sección se pueda ver completa y para que el investigador tenga de dónde partir en vez de una hoja en blanco. El sitio lo dice en cada tarjeta y en cada ficha, y el paso que falta es media hora de cada uno: revisar su texto y grabarlo.
+Esta es la sección de entrevistas, la que pone cara y voz. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene. Eso es lo que la hace una serie. Cada una va en video, con la transcripción debajo. Hoy está publicada una sola, la mía, porque aquí no se publica nada que el investigador no haya dicho de verdad. Grabar las otras cuatro es una mañana: son tres preguntas por persona.
 
 ## 10. Una entrevista
 
-La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde. Y el texto de abajo no es un resumen: es la transcripción, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde. Y es barato: tres preguntas por persona, los cinco en una mañana.
+Y así se ve una entrevista por dentro. La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde. Y el texto de abajo no es un resumen: es la transcripción, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde. Y es barato: tres preguntas por persona, los cinco en una mañana.
 
 ## 11. De dónde sale cada cosa
 
-Esta página explica al público de dónde sale cada cosa. Del artículo pasan las ideas. El texto literal no pasa nunca: todo está reescrito. Las figuras y las fotos de fuera entran solo cuando su licencia lo permite, y siempre con su crédito al lado. Revisamos artículo por artículo cuáles lo permiten y cuáles no, y está documentado. Y esto está escrito y publicado, no en un cajón. Si alguien de una editorial llega a preguntar, la respuesta está en el sitio.
+Esta página le explica al público de dónde sale cada cosa. Esta página explica al público de dónde sale cada cosa. Del artículo pasan las ideas. El texto literal no pasa nunca: todo está reescrito. Las figuras y las fotos de fuera entran solo cuando su licencia lo permite, y siempre con su crédito al lado. Revisamos artículo por artículo cuáles lo permiten y cuáles no, y está documentado. Y esto está escrito y publicado, no en un cajón. Si alguien de una editorial llega a preguntar, la respuesta está en el sitio.
 
 **Recorte 2**: se pierde, pero hay que decirlo.
 
