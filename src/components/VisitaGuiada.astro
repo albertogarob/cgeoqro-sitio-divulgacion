@@ -30,7 +30,7 @@
 </style>
 
 <script>
-	import { peticionDeResaltado } from '../lib/visita';
+	import { hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
 
 	// Fuera de un iframe esto no pinta nada y no escucha nada.
 	if (window.parent !== window) {
@@ -72,18 +72,31 @@
 		window.addEventListener('message', (ev: MessageEvent) => {
 			const pide = peticionDeResaltado(ev.data);
 			if (!pide) return;
+			// Repetir el mismo resaltado no vuelve a mover la página: el deck manda un
+			// mensaje por cada aviso del guion, y varios pueden ser de la misma pieza.
+			const cambia = pide.selector !== selectorActivo;
 			selectorActivo = pide.selector;
-			if (pide.acercar && selectorActivo) {
-				// Solo si lo piden: desplazar la página por nuestra cuenta se pelearía
-				// con el motor del recorrido, que lleva su propio scroll.
-				try {
-					document.querySelector(selectorActivo)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-				} catch {
-					// Selector inválido: ya lo atajará pintar().
-				}
-			}
+			if (cambia && pide.acercar && selectorActivo) acercarse(selectorActivo);
 			repintar();
 		});
+
+		/**
+		 * Desplaza la página hasta lo resaltado, pero solo si no se está viendo ya.
+		 * Sin esa condición, pasar de una pieza a otra movería la página aunque las
+		 * dos estuvieran delante, y dentro del recorrido se pelearía con su motor.
+		 */
+		function acercarse(selector: string) {
+			let objetivo: Element | null = null;
+			try {
+				objetivo = document.querySelector(selector);
+			} catch {
+				return;
+			}
+			if (!objetivo) return;
+			const r = objetivo.getBoundingClientRect();
+			if (!hayQueAcercarse(r, window.innerHeight)) return;
+			objetivo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+		}
 
 		// Las cajas van en posición fija, así que siguen a la página al desplazarse o
 		// al cambiar de tamaño.

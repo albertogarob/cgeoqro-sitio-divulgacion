@@ -5,7 +5,7 @@
 // y con tope de largo, y nada más. Lo que no encaje se ignora sin hacer nada.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { peticionDeResaltado, TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
+import { peticionDeResaltado, hayQueAcercarse, TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
 
 test('un mensaje bien formado dice qué resaltar', () => {
   assert.deepEqual(
@@ -68,4 +68,35 @@ test('acercar solo es cierto si viene exactamente true', () => {
     assert.equal(peticionDeResaltado({ tipo: TIPO_RESALTAR, selector: '.x', acercar: casi }).acercar,
       false, `con ${JSON.stringify(casi)}`);
   }
+});
+
+test('no se acerca a lo que ya se está viendo', () => {
+  const alto = 700;
+  // Un bloque de 200 px, entero dentro de la ventana.
+  assert.equal(hayQueAcercarse({ top: 100, bottom: 300, height: 200 }, alto), false);
+  // Pegado al borde de arriba, pero entero.
+  assert.equal(hayQueAcercarse({ top: 0, bottom: 200, height: 200 }, alto), false);
+});
+
+test('se acerca a lo que está fuera de la pantalla', () => {
+  const alto = 700;
+  assert.equal(hayQueAcercarse({ top: 900, bottom: 1100, height: 200 }, alto), true, 'más abajo');
+  assert.equal(hayQueAcercarse({ top: -400, bottom: -200, height: 200 }, alto), true, 'más arriba');
+  // Y a lo que asoma apenas: visible 20 de 200, un 10 %.
+  assert.equal(hayQueAcercarse({ top: 680, bottom: 880, height: 200 }, alto), true);
+});
+
+test('un bloque más alto que la ventana se mide contra la ventana, no contra sí mismo', () => {
+  // Es el caso de la rejilla de cápsulas: nunca cabe entera, y exigirlo haría que la
+  // página se moviera siempre.
+  const alto = 700;
+  // Llena la ventana de arriba abajo: se está viendo todo lo que se puede ver.
+  assert.equal(hayQueAcercarse({ top: -300, bottom: 1200, height: 1500 }, alto), false);
+  // Y si solo asoma su borde, sí hay que acercarse.
+  assert.equal(hayQueAcercarse({ top: 620, bottom: 2120, height: 1500 }, alto), true);
+});
+
+test('una caja sin alto, o una ventana sin alto, no mueven nada', () => {
+  assert.equal(hayQueAcercarse({ top: 0, bottom: 0, height: 0 }, 700), false);
+  assert.equal(hayQueAcercarse({ top: 10, bottom: 50, height: 40 }, 0), false);
 });

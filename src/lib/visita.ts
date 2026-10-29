@@ -40,3 +40,28 @@ export function peticionDeResaltado(data: unknown): Resaltado | null {
   if (!selector || selector.length > MAX_SELECTOR) return null;
   return { selector, acercar: m.acercar === true };
 }
+
+/** Caja de un elemento, con lo que hace falta para decidir si se ve. */
+export interface Caja {
+  top: number;
+  bottom: number;
+  height: number;
+}
+
+/**
+ * Si hay que desplazar la página para ver lo que se acaba de resaltar.
+ *
+ * No basta con preguntar si está fuera de pantalla: lo que importa es cuánto de ello
+ * se ve. Un bloque más alto que la ventana nunca cabe entero, así que se mide contra
+ * lo que la ventana puede enseñar, no contra el tamaño del bloque.
+ *
+ * Y se mide para no mover la página cuando no hace falta: dentro del recorrido, la
+ * banda de mandos y el crédito de la foto están siempre a la vista, y desplazarse ahí
+ * se pelearía con el motor del recorrido, que lleva su propio scroll.
+ */
+export function hayQueAcercarse(caja: Caja, alto: number, minimo = 0.55): boolean {
+  if (caja.height <= 0 || alto <= 0) return false;
+  const visible = Math.max(0, Math.min(caja.bottom, alto) - Math.max(caja.top, 0));
+  const alcanzable = Math.min(caja.height, alto);
+  return visible / alcanzable < minimo;
+}
