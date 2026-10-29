@@ -1,0 +1,7 @@
+{
+  "name": "bib-factcheck-helper",
+  "private": true,
+  "type": "module",
+  "description": "Headless-Chromium fetch helper for the bib-factcheck skill",
+  "dependencies": { "playwright": "*" }
+}
