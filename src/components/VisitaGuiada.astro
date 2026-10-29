@@ -1,0 +1,93 @@
+---
+// Resaltado a distancia para la visita guiada.
+//
+// En la presentación, cada parada enseña una página de este sitio dentro de un iframe.
+// El deck y el sitio viven en orígenes distintos, así que el deck no puede marcar nada
+// aquí dentro por su cuenta: manda un mensaje y esto dibuja el contorno.
+//
+// Dos cautelas, porque es un oyente abierto a quien sea que meta el sitio en un marco:
+// solo se enciende cuando la página está DENTRO de un iframe, y lo único que acepta es
+// dibujar un contorno sobre lo que case con un selector. No mueve nada ni escribe nada
+// más que eso. La validación del mensaje vive en src/lib/visita.ts, con sus pruebas.
+---
+
+<div id="visita-capa" aria-hidden="true"></div>
+
+<style>
+	#visita-capa {
+		position: fixed;
+		inset: 0;
+		z-index: 2147483000;
+		pointer-events: none;
+	}
+	#visita-capa :global(.visita-caja) {
+		position: fixed;
+		border: 3px solid var(--cg-color-naranja-300, #c45620);
+		border-radius: 6px;
+		box-shadow: 0 0 0 4px rgba(196, 86, 32, 0.22), 0 0 0 9999px rgba(8, 20, 32, 0.28);
+		transition: opacity 160ms ease;
+	}
+</style>
+
+<script>
+	import { peticionDeResaltado } from '../lib/visita';
+
+	// Fuera de un iframe esto no pinta nada y no escucha nada.
+	if (window.parent !== window) {
+		const capa = document.getElementById('visita-capa');
+		let selectorActivo = '';
+		let cuadro: number | undefined;
+
+		function pintar() {
+			cuadro = undefined;
+			if (!capa) return;
+			capa.replaceChildren();
+			if (!selectorActivo) return;
+			let nodos: Element[] = [];
+			try {
+				nodos = Array.from(document.querySelectorAll(selectorActivo));
+			} catch {
+				// Un selector inválido no es motivo para tirar nada: se deja sin marcar.
+				return;
+			}
+			// Tope de cajas: un selector amplio no puede llenar la pantalla de marcos.
+			for (const n of nodos.slice(0, 24)) {
+				const r = n.getBoundingClientRect();
+				if (r.width < 1 || r.height < 1) continue;
+				if (r.bottom < 0 || r.top > window.innerHeight) continue;
+				const caja = document.createElement('div');
+				caja.className = 'visita-caja';
+				caja.style.top = `${r.top}px`;
+				caja.style.left = `${r.left}px`;
+				caja.style.width = `${r.width}px`;
+				caja.style.height = `${r.height}px`;
+				capa.appendChild(caja);
+			}
+		}
+
+		function repintar() {
+			if (cuadro === undefined) cuadro = requestAnimationFrame(pintar);
+		}
+
+		window.addEventListener('message', (ev: MessageEvent) => {
+			const pide = peticionDeResaltado(ev.data);
+			if (!pide) return;
+			selectorActivo = pide.selector;
+			if (pide.acercar && selectorActivo) {
+				// Solo si lo piden: desplazar la página por nuestra cuenta se pelearía
+				// con el motor del recorrido, que lleva su propio scroll.
+				try {
+					document.querySelector(selectorActivo)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+				} catch {
+					// Selector inválido: ya lo atajará pintar().
+				}
+			}
+			repintar();
+		});
+
+		// Las cajas van en posición fija, así que siguen a la página al desplazarse o
+		// al cambiar de tamaño.
+		window.addEventListener('scroll', repintar, { passive: true });
+		window.addEventListener('resize', repintar);
+	}
+</script>
