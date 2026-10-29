@@ -18,10 +18,19 @@
 .parada .pa { position: absolute; inset: 0; display: flex; flex-direction: column; }
 
 .parada .pabarra {
-  flex: none; height: 36px; display: flex; align-items: center; gap: 12px;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  height: 36px; display: flex; align-items: center; gap: 12px;
   background: #0c1a2b; color: rgba(255,255,255,.8);
   font: 13px/1 'Noto Sans', sans-serif; padding: 0 14px;
+  /* Escondida: robaba atención al sitio, que es lo que hay que mirar. Baja al
+     acercar el ratón al borde de arriba, que es donde está su zona. */
+  transform: translateY(-100%);
+  transition: transform 160ms ease;
 }
+.parada .pazona { position: absolute; top: 0; left: 0; right: 0; height: 16px; z-index: 4; }
+.parada .pazona:hover ~ .pabarra,
+.parada .pabarra:hover,
+.parada .pabarra:focus-within { transform: none; }
 .parada .pabarra .titulo {
   font: 600 14px/1 'Noto Sans', sans-serif; color: #fff; margin: 0; padding: 0;
   text-transform: none; letter-spacing: 0;
@@ -62,7 +71,7 @@
 <section id="portada" class="portada" data-sid="portada">
   <div class="titulo">Sitio de divulgación de CentroGeo Querétaro</div>
   <div class="bajada"><strong>Ciencia Geoespacial para Todos</strong><br>
-    Dr. Alberto Garcia-Robledo<br>
+    Alberto García Robledo y S. Ivvan Valdez Peña<br>
     <span class="secundario">Visita guiada a la dirección general<br>29 de octubre de 2026</span></div>
   <aside class="notes">
   <p>[Diez a quince minutos. Todo lo que voy a enseñar está en línea y funcionando: si quieres abrirlo en tu computadora mientras hablo, el enlace está en la última lámina.]</p>
@@ -100,6 +109,7 @@
 
 <section id="parada-portada" class="parada" data-sid="parada-portada">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">La portada</div><span class="paurl">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -120,6 +130,7 @@
 
 <section id="parada-capsulas" class="parada" data-sid="parada-capsulas">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">El catálogo de cápsulas</div><span class="paurl">/capsulas/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -140,6 +151,7 @@
 
 <section id="parada-recorrido" class="parada" data-sid="parada-recorrido">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Una cápsula como recorrido</div><span class="paurl">/capsulas/mapas-sequia/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -162,6 +174,7 @@
 
 <section id="parada-series" class="parada" data-recorte="1" data-sid="parada-series">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Las series temáticas</div><span class="paurl">/series/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -180,6 +193,7 @@
 
 <section id="parada-investigador" class="parada" data-recorte="2" data-sid="parada-investigador">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">La ficha de un investigador</div><span class="paurl">/investigadores/rodrigo-lopez-farias/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -200,6 +214,7 @@
 
 <section id="parada-entrevistas" class="parada" data-sid="parada-entrevistas">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">3 Preguntas a...</div><span class="paurl">/entrevistas/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -218,6 +233,7 @@
 
 <section id="parada-entrevista" class="parada" data-sid="parada-entrevista">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Una entrevista</div><span class="paurl">/entrevistas/rodrigo-lopez-farias/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -238,6 +254,7 @@
 
 <section id="parada-acerca" class="parada" data-recorte="2" data-sid="parada-acerca">
   <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">De dónde sale cada cosa</div><span class="paurl">/acerca-de/</span>
       <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
@@ -270,23 +287,23 @@
   </aside>
 </section>
 
-<section id="lo-que-pido" class="guinda-banda" data-sid="lo-que-pido"><h2>Lo que te pido</h2><div class="cuerpo">
+<section id="lo-que-pido" class="guinda-banda" data-sid="lo-que-pido"><h2>Lo que pedimos</h2><div class="cuerpo">
   <ul>
-    <li data-pieza="1">La decisión de fondo: si esto <strong>lo adopta la sede</strong> o se queda como experimento.</li>
-    <li data-pieza="2">Autorización para usar la <strong>identidad del centro</strong>, o seguir con la franja de prototipo.</li>
-    <li data-pieza="3">Que los investigadores <strong>validen su entrevista</strong>, y dos datos que hoy me faltan.</li>
+    <li data-pieza="1">Autorización para usar la <strong>identidad del centro</strong>, o seguir con la franja de prototipo.</li>
+    <li data-pieza="2">Cómo maneja CentroGeo sus <strong>redes sociales</strong>, y si la subsede Querétaro puede llevar las suyas.</li>
+    <li data-pieza="3">Un <strong>enlace desde el portal oficial</strong> de CentroGeo hacia este sitio.</li>
   </ul>
   </div>
   <aside class="notes">
-  <p data-sinc="1">Lo que te pido son tres cosas, y la primera es la de fondo: si esto lo adopta la sede como suyo, o se queda como un experimento mío. De esa respuesta depende todo lo demás.</p>
-  <p data-sinc="2">La segunda, decidir si puedo usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto.</p>
-  <p data-sinc="3">Y la tercera, pedirles a los cinco que revisen su entrevista y grabar los videos, que es una mañana. Y dos datos que me faltan y que dejan dos funciones apagadas: a qué correo llegan los mensajes del público y con qué cuenta medimos el tráfico.</p>
+  <p data-sinc="1">Te pedimos tres cosas. La primera, decidir si podemos usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto.</p>
+  <p data-sinc="2">La segunda es sobre redes. Queremos entender cómo las maneja el centro hoy, quién publica y con qué criterio, y si la subsede Querétaro puede llevar las suyas de forma independiente. Un sitio de divulgación sin redes que lo empujen se queda esperando a que alguien lo encuentre.</p>
+  <p data-sinc="3">Y la tercera es la más barata y la que más tráfico mueve: un enlace desde el portal oficial de CentroGeo hacia este sitio. Eso es lo que le da respaldo institucional a la vista de cualquiera que llegue.</p>
   </aside>
 </section>
 
 <section id="gracias" class="cierre" data-sid="gracias"><div class="gracias">Gracias</div>
   <div class="firma">
-    <span class="nombre">Dr. Alberto Garcia-Robledo</span><br>
+    <span class="nombre">Alberto García Robledo y S. Ivvan Valdez Peña</span><br>
     agarcia@centrogeo.edu.mx<br>
     <span class="programa">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
   </div>

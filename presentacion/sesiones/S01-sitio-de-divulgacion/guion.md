@@ -54,9 +54,9 @@ Esta página explica al público de dónde sale cada cosa. Del artículo pasan l
 
 Tres cosas que no se ven y que son las que hacen que esto se pueda sostener. La primera: el investigador corrige su propio texto desde una hoja de cálculo que le llega a su Drive. Cambia una frase, la devuelve, y el sitio la valida y la aplica, sin pedirle nada a nadie. La segunda: un enlace pegado en WhatsApp sale con su título, su resumen y su imagen, que es la diferencia entre que se comparta y que no. Y las analíticas desglosan por cápsula, serie e investigador, para que cada quien reporte el alcance de lo suyo. La tercera: esto es un sitio estático. No hay servidor que mantener ni que pagar. Hoy vive en GitHub Pages.
 
-## 13. Lo que te pido
+## 13. Lo que pedimos
 
-Lo que te pido son tres cosas, y la primera es la de fondo: si esto lo adopta la sede como suyo, o se queda como un experimento mío. De esa respuesta depende todo lo demás. La segunda, decidir si puedo usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto. Y la tercera, pedirles a los cinco que revisen su entrevista y grabar los videos, que es una mañana. Y dos datos que me faltan y que dejan dos funciones apagadas: a qué correo llegan los mensajes del público y con qué cuenta medimos el tráfico.
+Te pedimos tres cosas. La primera, decidir si podemos usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto. La segunda es sobre redes. Queremos entender cómo las maneja el centro hoy, quién publica y con qué criterio, y si la subsede Querétaro puede llevar las suyas de forma independiente. Un sitio de divulgación sin redes que lo empujen se queda esperando a que alguien lo encuentre. Y la tercera es la más barata y la que más tráfico mueve: un enlace desde el portal oficial de CentroGeo hacia este sitio. Eso es lo que le da respaldo institucional a la vista de cualquiera que llegue.
 
 ## 14. Gracias
 

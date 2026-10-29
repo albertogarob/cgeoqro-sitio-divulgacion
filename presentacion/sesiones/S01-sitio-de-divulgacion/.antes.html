@@ -1,0 +1,381 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Sitio de divulgación de CentroGeo Querétaro</title>
+<link rel="stylesheet" href="../../plantillas/tema-centrogeo/vendor/reveal/dist/reveal.css">
+<link rel="stylesheet" href="../../plantillas/tema-centrogeo/tema-centrogeo.css">
+<style>
+/* ============ PARADAS: el sitio de verdad dentro de la lámina ============
+   Una parada no es una captura del sitio, es el sitio. El iframe carga la
+   página publicada y al lado va la tira de puntos que sí se resalta con el
+   guion, porque dentro del iframe no se puede marcar nada: es otro origen.
+
+   El iframe recibe los clics desde el principio: se presenta con el apuntador
+   abierto, y desde esa ventana las flechas mueven el deck aunque el foco esté
+   dentro de la página. Quien presente sin apuntador y se quede sin flechas,
+   pulsa el botón de la barra: deja el iframe sordo a los clics y el teclado
+   vuelve al deck. */
+.reveal section.parada::before { display: none; }
+.reveal section.parada { background: #0c1a2b; padding: 0; }
+.parada .pa { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.parada .pabarra {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  height: 36px; display: flex; align-items: center; gap: 12px;
+  background: #0c1a2b; color: rgba(255,255,255,.8);
+  font: 13px/1 'Noto Sans', sans-serif; padding: 0 14px;
+  /* Escondida: robaba atención al sitio, que es lo que hay que mirar. Baja al
+     acercar el ratón al borde de arriba, que es donde está su zona. */
+  transform: translateY(-100%);
+  transition: transform 160ms ease;
+}
+.parada .pazona { position: absolute; top: 0; left: 0; right: 0; height: 16px; z-index: 4; }
+.parada .pazona:hover ~ .pabarra,
+.parada .pabarra:hover,
+.parada .pabarra:focus-within { transform: none; }
+.parada .pabarra .titulo {
+  font: 600 14px/1 'Noto Sans', sans-serif; color: #fff; margin: 0; padding: 0;
+  text-transform: none; letter-spacing: 0;
+}
+.parada .paurl { font-family: ui-monospace, 'SF Mono', Menlo, monospace; opacity: .85; }
+.parada .pacontrol {
+  margin-left: auto; border: 1px solid rgba(255,255,255,.3); background: transparent;
+  color: rgba(255,255,255,.8); font: 12px/1 'Noto Sans', sans-serif;
+  padding: 5px 10px; border-radius: 999px; cursor: pointer;
+}
+.parada.sordo .pacontrol { background: #C45620; border-color: #C45620; color: #fff; }
+
+.parada .pacuerpo { flex: 1; display: flex; min-height: 0; }
+.parada iframe { flex: 1; border: 0; background: #fff; }
+.parada.sordo iframe { pointer-events: none; }
+
+.parada .pamira {
+  width: 348px; flex: none; margin: 0; padding: 20px 20px 16px; list-style: none;
+  background: #F4F4F2; border-left: 3px solid #C45620; overflow: hidden;
+}
+.parada .pamira .paqué {
+  margin: 0 0 14px; font: 600 11px/1 'Noto Sans', sans-serif; letter-spacing: .9px;
+  text-transform: uppercase; color: #6B6B6B;
+}
+.parada .pamira li {
+  font: 15.5px/1.5 'Noto Sans', sans-serif; color: #333; text-align: left;
+  margin: 0 0 15px; padding-left: 18px; position: relative;
+}
+.parada .pamira li::before {
+  content: ''; position: absolute; left: 0; top: .52em;
+  width: 7px; height: 7px; border-radius: 50%; background: #C45620;
+}
+.parada .pamira li strong { color: #111; }
+</style>
+</head><body>
+<div class="reveal"><div class="slides">
+
+<section id="portada" class="portada" data-sid="portada">
+  <div class="titulo">Sitio de divulgación de CentroGeo Querétaro</div>
+  <div class="bajada"><strong>Ciencia Geoespacial para Todos</strong><br>
+    Alberto García Robledo y S. Ivvan Valdez Peña<br>
+    <span class="secundario">Visita guiada a la dirección general<br>29 de octubre de 2026</span></div>
+  <aside class="notes">
+  <p>[Diez a quince minutos. Todo lo que voy a enseñar está en línea y funcionando: si quieres abrirlo en tu computadora mientras hablo, el enlace está en la última lámina.]</p>
+  <p>Te traigo un prototipo de sitio de divulgación para la sede. La idea es sencilla: que lo que publican los investigadores de aquí, que hoy vive en revistas que leen cien personas en el mundo, se pueda contar en cinco minutos a cualquiera que viva en Querétaro.</p>
+  </aside>
+</section>
+
+<section id="la-capsula" class="guinda-linea" data-sid="la-capsula"><h2>La cápsula de conocimiento</h2><div class="cuerpo">
+  <ul>
+    <li data-pieza="1">Un hallazgo de un artículo, contado en <strong>pocos minutos</strong> y en lenguaje llano.</li>
+    <li data-pieza="2">En varios formatos: <strong>recorrido interactivo</strong>, video, texto o infografía.</li>
+    <li data-pieza="3">Siempre con su <strong>artículo de origen</strong> citado y su autor a la vista.</li>
+  </ul>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">La unidad de todo esto es la cápsula de conocimiento: un hallazgo de un artículo publicado, contado en pocos minutos y en lenguaje llano, para alguien que no es del gremio.</p>
+  <p data-sinc="2">La forma la pide el contenido. El recorrido interactivo, que es el que te voy a enseñar y donde el relato avanza con un gráfico detrás. El video, para lo que se cuenta mejor hablando. Y el texto con infografía.</p>
+  <p data-sinc="3">Lo que no cambia nunca es que cada cápsula dice de qué artículo salió, con su referencia completa, y quién lo firmó. Aquí no hay divulgación anónima: el crédito es de quien hizo la investigación, y eso es parte del punto.</p>
+  </aside>
+</section>
+
+<section id="como-se-organiza" class="verde-linea" data-sid="como-se-organiza"><h2>Cómo se organiza</h2><div class="cuerpo">
+  <ul>
+    <li data-pieza="1">Las cápsulas se agrupan en <strong>series temáticas</strong>, por eje de investigación.</li>
+    <li data-pieza="2">Cada <strong>investigador</strong> tiene su ficha, con todo lo suyo reunido.</li>
+    <li data-pieza="3">Y <strong>3 Preguntas a...</strong>, que es la voz de quien lo investigó, en video.</li>
+  </ul>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Encima de las cápsulas hay tres formas de recorrer el sitio. La primera son las series temáticas: agua, el espacio donde vivimos, y sociedad justa. Son los ejes que ya usa el equipo, y el sitio se acomoda a ellos.</p>
+  <p data-sinc="2">La segunda es por persona. Cada investigador tiene su ficha, y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista y sus publicaciones. Eso es lo que permite, después, reportar el alcance de lo de cada quien.</p>
+  <p data-sinc="3">Y la tercera es una sección propia, 3 Preguntas a. Tres preguntas iguales para todos, en video y con su transcripción. La cápsula cuenta el hallazgo; la entrevista pone la cara y la voz de quien lo hizo.</p>
+  </aside>
+</section>
+
+<section id="parada-portada" class="parada" data-sid="parada-portada">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">La portada</div><span class="paurl">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/" title="Portada del sitio"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">El nombre: <strong>Ciencia Geoespacial para Todos</strong>, con el logo del centro.</li>
+        <li data-pieza="2">Cuatro puertas de entrada: cápsulas, series, investigadores y entrevistas.</li>
+        <li data-pieza="3">La franja de arriba avisa de que es un <strong>prototipo no autorizado</strong>.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Esto es el sitio, en vivo. Se llama Ciencia Geoespacial para Todos, y junto al logo solo se pone esa parte, porque el logo ya dice CentroGeo.</p>
+  <p data-sinc="2">Hay cuatro formas de entrar: por cápsula, que es la unidad de contenido; por serie temática; por investigador; o por las entrevistas.</p>
+  <p data-sinc="3">Y lo primero que se ve es la franja que dice que esto es un prototipo y que la identidad del centro está puesta solo para demostrar. Nada de esto está autorizado todavía, y esa franja se queda hasta que tú digas.</p>
+  </aside>
+</section>
+
+<section id="parada-capsulas" class="parada" data-sid="parada-capsulas">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">El catálogo de cápsulas</div><span class="paurl">/capsulas/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/" title="Catálogo de cápsulas"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">Cuatro cápsulas, cada una nacida de <strong>un artículo real</strong> de un investigador de la sede.</li>
+        <li data-pieza="2">Tres son <strong>recorridos interactivos</strong>; una es video.</li>
+        <li data-pieza="3">Cada tarjeta dice a qué <strong>serie</strong> pertenece.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. No hay contenido inventado: hay traducción.</p>
+  <p data-sinc="2">Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China.</p>
+  <p data-sinc="3">Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.</p>
+  </aside>
+</section>
+
+<section id="parada-recorrido" class="parada" data-sid="parada-recorrido">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">Una cápsula como recorrido</div><span class="paurl">/capsulas/mapas-sequia/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/mapas-sequia/" title="Recorrido sobre mapas de sequía"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">El relato avanza con el scroll, o <strong>se cuenta solo</strong>: hay botón de play.</li>
+        <li data-pieza="2">Quince paradas, <strong>minuto y medio</strong> de principio a fin.</li>
+        <li data-pieza="3">Los gráficos se dibujan para la cápsula; las fotos son de <strong>licencia libre</strong>, con su crédito.</li>
+        <li data-pieza="4">Termina en la ficha del investigador y los botones para <strong>compartirlo</strong>.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Este es el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Pulso I y le doy al play.] Y si no quieres desplazarte, se cuenta solo.</p>
+  <p data-sinc="2">Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo.</p>
+  <p data-sinc="3">Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea.</p>
+  <p data-sinc="4">Y fíjate en cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.</p>
+  </aside>
+</section>
+
+<section id="parada-series" class="parada" data-recorte="1" data-sid="parada-series">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">Las series temáticas</div><span class="paurl">/series/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/series/" title="Series temáticas"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">Las tres líneas: <strong>Agua</strong>, <strong>El espacio donde vivimos</strong> y <strong>Sociedad justa</strong>.</li>
+        <li data-pieza="2">Son las de Ivvan: el sitio <strong>no reinventa</strong> la organización temática.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Las series son los ejes temáticos. Agua, el espacio donde vivimos, y sociedad justa.</p>
+  <p data-sinc="2">Son exactamente las tres de Ivvan. Me parecía importante no reinventar eso: si el equipo ya decidió cómo se agrupa lo que hace, el sitio se acomoda a esa decisión y no al revés.</p>
+  </aside>
+</section>
+
+<section id="parada-investigador" class="parada" data-recorte="2" data-sid="parada-investigador">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">La ficha de un investigador</div><span class="paurl">/investigadores/rodrigo-lopez-farias/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/investigadores/rodrigo-lopez-farias/" title="Perfil de un investigador"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">Cada investigador tiene su ficha, con sus <strong>líneas de investigación</strong>.</li>
+        <li data-pieza="2">Debajo se reúne <strong>todo lo suyo</strong>: cápsulas, entrevistas y publicaciones.</li>
+        <li data-pieza="3">El sitio sabe <strong>quién hizo qué</strong>: eso es lo que permite medir y reportar por persona.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Los cinco investigadores de la sede tienen ficha. Esta es la de Rodrigo.</p>
+  <p data-sinc="2">Y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista, y las publicaciones de origen.</p>
+  <p data-sinc="3">Por dentro el sitio relaciona investigador, artículo y contenido, así que puede decir cuánta gente entró a lo de cada quien. Es lo que hace falta para que sirva en un informe.</p>
+  </aside>
+</section>
+
+<section id="parada-entrevistas" class="parada" data-sid="parada-entrevistas">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">3 Preguntas a...</div><span class="paurl">/entrevistas/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/" title="Catálogo de entrevistas"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">Formato fijo: <strong>las mismas tres preguntas</strong> a todo el mundo.</li>
+        <li data-pieza="2">Cuatro son <strong>borradores</strong>, listos para que cada quien los revise y los grabe.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Esta sección se llama 3 Preguntas a. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene.</p>
+  <p data-sinc="2">Cuatro de las cinco están preparadas como borrador: las redacté a partir del perfil de cada quien, para que la sección se pueda ver completa y para que el investigador tenga de dónde partir en vez de una hoja en blanco. El sitio lo dice en cada tarjeta y en cada ficha, y el paso que falta es media hora de cada uno: revisar su texto y grabarlo.</p>
+  </aside>
+</section>
+
+<section id="parada-entrevista" class="parada" data-sid="parada-entrevista">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">Una entrevista</div><span class="paurl">/entrevistas/rodrigo-lopez-farias/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/rodrigo-lopez-farias/" title="Una entrevista"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">La entrevista <strong>siempre es un video</strong>. Mientras no se grabe, se ve el hueco donde irá.</li>
+        <li data-pieza="2">El texto es la <strong>transcripción</strong> de ese video, a dos voces.</li>
+        <li data-pieza="3">Grabar cinco entrevistas de tres preguntas es <strong>una mañana</strong> de trabajo.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde.</p>
+  <p data-sinc="2">Y el texto de abajo no es un resumen: es la transcripción, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde.</p>
+  <p data-sinc="3">Y es barato: tres preguntas por persona, los cinco en una mañana.</p>
+  </aside>
+</section>
+
+<section id="parada-acerca" class="parada" data-recorte="2" data-sid="parada-acerca">
+  <div class="pa">
+    <div class="pazona" aria-hidden="true"></div>
+    <div class="pabarra"><div class="titulo">De dónde sale cada cosa</div><span class="paurl">/acerca-de/</span>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+    <div class="pacuerpo">
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/acerca-de/" title="Acerca de y política de derechos"></iframe>
+      <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
+        <li data-pieza="1">Qué cruza del artículo a la cápsula y qué <strong>no cruza nunca</strong>.</li>
+        <li data-pieza="2">Las figuras ajenas entran <strong>solo con licencia</strong> que lo permita y con su crédito.</li>
+        <li data-pieza="3">La política está <strong>escrita y es pública</strong>: cualquiera puede leerla.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Esta página explica al público de dónde sale cada cosa. Del artículo pasan las ideas. El texto literal no pasa nunca: todo está reescrito.</p>
+  <p data-sinc="2">Las figuras y las fotos de fuera entran solo cuando su licencia lo permite, y siempre con su crédito al lado. Revisamos artículo por artículo cuáles lo permiten y cuáles no, y está documentado.</p>
+  <p data-sinc="3">Y esto está escrito y publicado, no en un cajón. Si alguien de una editorial llega a preguntar, la respuesta está en el sitio.</p>
+  </aside>
+</section>
+
+<section id="lo-que-no-se-ve" class="verde-linea" data-sid="lo-que-no-se-ve"><h2>Lo que no se ve</h2><div class="cuerpo">
+  <ul>
+    <li data-pieza="1">Los autores <strong>corrigen su propio texto</strong> desde una hoja de cálculo en Drive, sin tocar código.</li>
+    <li data-pieza="2">Se comparte bien y se mide: por <strong>cápsula, serie e investigador</strong>.</li>
+    <li data-pieza="3">Todo es estático: <strong>sin servidor que mantener y sin costo</strong>.</li>
+  </ul>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Tres cosas que no se ven y que son las que hacen que esto se pueda sostener. La primera: el investigador corrige su propio texto desde una hoja de cálculo que le llega a su Drive. Cambia una frase, la devuelve, y el sitio la valida y la aplica, sin pedirle nada a nadie.</p>
+  <p data-sinc="2">La segunda: un enlace pegado en WhatsApp sale con su título, su resumen y su imagen, que es la diferencia entre que se comparta y que no. Y las analíticas desglosan por cápsula, serie e investigador, para que cada quien reporte el alcance de lo suyo.</p>
+  <p data-sinc="3">La tercera: esto es un sitio estático. No hay servidor que mantener ni que pagar. Hoy vive en GitHub Pages.</p>
+  </aside>
+</section>
+
+<section id="lo-que-pido" class="guinda-banda" data-sid="lo-que-pido"><h2>Lo que pedimos</h2><div class="cuerpo">
+  <ul>
+    <li data-pieza="1">Autorización para usar la <strong>identidad del centro</strong>, o seguir con la franja de prototipo.</li>
+    <li data-pieza="2">Cómo maneja CentroGeo sus <strong>redes sociales</strong>, y si la subsede Querétaro puede llevar las suyas.</li>
+    <li data-pieza="3">Un <strong>enlace desde el portal oficial</strong> de CentroGeo hacia este sitio.</li>
+  </ul>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Te pedimos tres cosas. La primera, decidir si podemos usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto.</p>
+  <p data-sinc="2">La segunda es sobre redes. Queremos entender cómo las maneja el centro hoy, quién publica y con qué criterio, y si la subsede Querétaro puede llevar las suyas de forma independiente. Un sitio de divulgación sin redes que lo empujen se queda esperando a que alguien lo encuentre.</p>
+  <p data-sinc="3">Y la tercera es la más barata y la que más tráfico mueve: un enlace desde el portal oficial de CentroGeo hacia este sitio. Eso es lo que le da respaldo institucional a la vista de cualquiera que llegue.</p>
+  </aside>
+</section>
+
+<section id="gracias" class="cierre" data-sid="gracias"><div class="gracias">Gracias</div>
+  <div class="firma">
+    <span class="nombre">Alberto García Robledo y S. Ivvan Valdez Peña</span><br>
+    agarcia@centrogeo.edu.mx<br>
+    <span class="programa">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
+  </div>
+  <aside class="notes"><p>Ahí está el enlace. Ábrelo cuando quieras, desde el teléfono también funciona, y dime qué le falta.</p></aside>
+  <aside class="ficha"><h3>Qué hay hoy en el sitio</h3>
+  <ul>
+    <li><strong>4 cápsulas</strong>, de cuatro artículos de investigadores de la sede. Tres son recorridos interactivos; una es el video de Joaquín Piña que ya existía.</li>
+    <li><strong>3 series</strong> temáticas, las mismas de la página de Ivvan: Agua, El espacio donde vivimos y Sociedad justa.</li>
+    <li><strong>5 investigadores</strong> con ficha, y <strong>5 entrevistas</strong>, de las cuales cuatro están marcadas como muestra sin validar.</li>
+    <li><strong>Sin configurar:</strong> el formulario de contacto y la cuenta de analíticas. Las dos funciones están hechas y quedan apagadas hasta tener el dato.</li>
+  </ul>
+  <h3>Créditos</h3>
+  <p>Sitio de divulgación de CentroGeo Querétaro, prototipo. Presentación del 29 de octubre de 2026.</p>
+  <p>Diapositivas, guion y sitio: <strong>Dr. Alberto Garcia-Robledo</strong>,
+    <a href="mailto:agarcia@centrogeo.edu.mx">agarcia@centrogeo.edu.mx</a></p>
+  <p>Elaborados con asistencia de un modelo de lenguaje (Claude, de Anthropic). La selección de contenidos y la revisión final son del autor, que responde de lo que aquí se afirma.</p>
+  </aside>
+</section>
+
+</div></div>
+<video id="reproductor" muted preload="auto" playsinline></video>
+<script src="../../plantillas/tema-centrogeo/vendor/reveal/dist/reveal.js"></script>
+<script src="../../plantillas/tema-centrogeo/vendor/reveal/dist/plugin/notes.js"></script>
+<script>Reveal.initialize({width:1280,height:720,margin:0,center:false,hash:true,controls:false,progress:false,slideNumber:'c/t',transition:'none',plugins:[RevealNotes]});</script>
+<script>
+/* El control de las paradas. El iframe no recibe clics hasta que se le pasa el
+   mando, para que las flechas sigan moviendo el deck; en cuanto el foco entra
+   en el iframe el teclado ya no llega aquí, así que la vuelta se hace con el
+   botón de la barra, que vive fuera del iframe. */
+(function () {
+  const paradaActual = () => document.querySelector('.reveal section.present.parada');
+
+  function pintar(sec) {
+    const b = sec.querySelector('.pacontrol');
+    if (!b) return;
+    const sordo = sec.classList.contains('sordo');
+    b.textContent = sordo ? 'I · el teclado manda · clic aquí para usar el sitio'
+                          : 'I · el sitio recibe los clics';
+  }
+
+  function alternar(sec) {
+    if (!sec) return;
+    sec.classList.toggle('sordo');
+    pintar(sec);
+  }
+
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'i' && ev.key !== 'I') return;
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    alternar(paradaActual());
+  });
+
+  document.addEventListener('click', (ev) => {
+    const b = ev.target.closest('.pacontrol');
+    if (b) alternar(b.closest('.parada'));
+  });
+
+  // Cada parada empieza con el sitio vivo: si alguien lo dejó sordo en la
+  // anterior, eso no se arrastra a la siguiente.
+  Reveal.on('slidechanged', () => {
+    document.querySelectorAll('.parada.sordo').forEach((s) => {
+      s.classList.remove('sordo');
+      pintar(s);
+    });
+  });
+})();
+</script>
+<script src="../../plantillas/tema-centrogeo/reproductor.js"></script>
+<script src="../../plantillas/tema-centrogeo/glosas.js"></script>
+<script src="../../plantillas/tema-centrogeo/zoom.js"></script>
+<script src="../../plantillas/tema-centrogeo/apuntador.js"></script>
+<script src="../../plantillas/tema-centrogeo/estudio.js"></script>
+<script src="../../plantillas/tema-centrogeo/revisar.js"></script>
+<script src="../../plantillas/tema-centrogeo/pincel.js"></script>
+</body></html>
