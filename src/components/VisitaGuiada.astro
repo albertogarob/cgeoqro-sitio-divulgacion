@@ -43,7 +43,7 @@
 
 <script>
 	import type { Hueco } from '../lib/visita';
-	import { caminoDePenumbra, hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
+	import { caminoDePenumbra, desplazamientoDeseado, hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
 
 	// Fuera de un iframe esto no pinta nada y no escucha nada.
 	if (window.parent !== window) {
@@ -123,14 +123,36 @@
 		});
 
 		/**
+		 * Lo que tapa por arriba la cabecera pegada del sitio, para no dejar lo
+		 * resaltado detrás de ella. Se mide mirando qué hay en el borde de arriba de la
+		 * ventana, en tres puntos, y quedándose con lo más bajo que llegue una caja fija
+		 * o pegada. Con tope, porque una cabecera que ocupara media pantalla haría la
+		 * cuenta inútil.
+		 */
+		function altoDeCabecera(): number {
+			let techo = 0;
+			for (const x of [8, Math.round(window.innerWidth / 2), window.innerWidth - 8]) {
+				for (const el of document.elementsFromPoint(x, 2)) {
+					const pos = getComputedStyle(el).position;
+					if (pos !== 'fixed' && pos !== 'sticky') continue;
+					const r = el.getBoundingClientRect();
+					if (r.top <= 2 && r.bottom > techo) techo = r.bottom;
+				}
+			}
+			return Math.min(techo, window.innerHeight * 0.4);
+		}
+
+		/**
 		 * Desplaza la página hasta lo resaltado, pero solo si no se está viendo ya.
 		 * Sin esa condición, pasar de una pieza a otra movería la página aunque las
 		 * dos estuvieran delante, y dentro del recorrido se pelearía con su motor.
 		 */
 		function acercarse(objetivo: Element) {
+			const techo = altoDeCabecera();
 			const r = objetivo.getBoundingClientRect();
-			if (!hayQueAcercarse(r, window.innerHeight)) return;
-			objetivo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+			if (!hayQueAcercarse(r, window.innerHeight, 0.55, techo)) return;
+			const delta = desplazamientoDeseado(r, window.innerHeight, techo);
+			if (delta) window.scrollBy({ top: delta, behavior: 'smooth' });
 		}
 
 		// Las cajas van en posición fija, así que siguen a la página al desplazarse o

@@ -30,6 +30,7 @@ sitio de verdad desde https://albertogarob.github.io/cgeoqro-sitio-divulgacion/
 | **Y** | enciende el resaltado sincronizado | en el apuntador |
 | **↓ ↑** | mueve el guion párrafo a párrafo, y con él el resaltado | en el apuntador |
 | **I** | deja el sitio de la parada sordo a los clics, y lo devuelve | en el deck |
+| **D** | modo demo: el sitio ocupa la lámina entera, sin tira de puntos ni resaltado | en el deck |
 
 ## El control de las paradas
 
@@ -55,8 +56,14 @@ sola capa oscura con un agujero por cada cosa resaltada. Cuando un punto señala
 cosas a la vez, las varias quedan claras: esa es la razón de que sea una capa con
 agujeros y no una sombra por contorno.
 
-**Un párrafo del guion sin `data-sinc` apaga las dos cosas**, contorno y penumbra. Es lo
-que deja la página limpia en el punto del recorrido donde hay que hacer el demo a mano.
+**Un párrafo del guion sin `data-sinc` apaga las dos cosas**, contorno y penumbra. Van
+sin anclaje la frase con la que abre cada parada, que sirve para decir qué es esa página
+antes de señalar nada, y el párrafo del recorrido donde toca el demo a mano.
+
+Y para el demo de verdad está la tecla **D**: el sitio pasa a ocupar la lámina entera,
+se va la tira de puntos y se apaga el resaltado, de modo que la página se ve como la
+vería cualquiera. Mientras dure, avanzar el guion no vuelve a encender nada. D otra vez,
+o cambiar de parada, lo devuelve todo.
 
 ## Lo que dicen las herramientas
 

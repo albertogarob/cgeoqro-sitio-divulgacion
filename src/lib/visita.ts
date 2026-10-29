@@ -59,11 +59,29 @@ export interface Caja {
  * banda de mandos y el crédito de la foto están siempre a la vista, y desplazarse ahí
  * se pelearía con el motor del recorrido, que lleva su propio scroll.
  */
-export function hayQueAcercarse(caja: Caja, alto: number, minimo = 0.55): boolean {
-  if (caja.height <= 0 || alto <= 0) return false;
-  const visible = Math.max(0, Math.min(caja.bottom, alto) - Math.max(caja.top, 0));
-  const alcanzable = Math.min(caja.height, alto);
+export function hayQueAcercarse(caja: Caja, alto: number, minimo = 0.55, techo = 0): boolean {
+  const banda = alto - techo;
+  if (caja.height <= 0 || banda <= 0) return false;
+  const visible = Math.max(0, Math.min(caja.bottom, alto) - Math.max(caja.top, techo));
+  const alcanzable = Math.min(caja.height, banda);
   return visible / alcanzable < minimo;
+}
+
+/**
+ * Cuánto hay que desplazar la página para dejar lo resaltado en medio de la banda que
+ * de verdad se ve. Positivo es hacia abajo.
+ *
+ * El `techo` es lo que tapa la cabecera pegada del sitio. Sin descontarlo, centrar en
+ * la ventana deja el elemento justo detrás de la barra de navegación cuando el
+ * elemento está cerca del principio de la página y no hay scroll de sobra para bajarlo
+ * más. Alberto lo vio el 29 de octubre de 2026, con las etiquetas de formato de las
+ * tarjetas del catálogo.
+ */
+export function desplazamientoDeseado(caja: Caja, alto: number, techo = 0): number {
+  const banda = alto - techo;
+  if (banda <= 0) return 0;
+  const hueco = Math.max(0, banda - Math.min(caja.height, banda));
+  return Math.round(caja.top - (techo + hueco / 2));
 }
 
 /** Rectángulo de un elemento resaltado, en coordenadas de la ventana. */

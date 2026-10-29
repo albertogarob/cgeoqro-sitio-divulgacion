@@ -423,13 +423,18 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   font: 600 14px/1 'Noto Sans', sans-serif; color: #fff; margin: 0; padding: 0;
   text-transform: none; letter-spacing: 0;
 }
-.parada .paurl { font-family: ui-monospace, 'SF Mono', Menlo, monospace; opacity: .85; }
-.parada .pacontrol {
-  margin-left: auto; border: 1px solid rgba(255,255,255,.3); background: transparent;
+.parada .paurl { font-family: ui-monospace, 'SF Mono', Menlo, monospace; opacity: .85; margin-right: auto; }
+.parada .pacontrol, .parada .pademo {
+  margin-left: 8px; border: 1px solid rgba(255,255,255,.3); background: transparent;
   color: rgba(255,255,255,.8); font: 12px/1 'Noto Sans', sans-serif;
   padding: 5px 10px; border-radius: 999px; cursor: pointer;
 }
 .parada.sordo .pacontrol { background: #C45620; border-color: #C45620; color: #fff; }
+.parada.demo .pademo { background: #C45620; border-color: #C45620; color: #fff; }
+/* Modo demo: el sitio ocupa la lámina entera. La tira de puntos se va, y con ella el
+   resaltado, porque enseñar el recorrido a mano necesita todo el ancho y la página
+   limpia. */
+.parada.demo .pamira { display: none; }
 
 .parada .pacuerpo { flex: 1; display: flex; min-height: 0; }
 .parada iframe { flex: 1; border: 0; background: #fff; }
@@ -499,9 +504,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">La portada</div><span class="paurl">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/?v=20261029f" title="Portada del sitio"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/?v=20261029g" title="Portada del sitio"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".marca">El nombre: <strong>Ciencia Geoespacial para Todos</strong>, con el logo del centro.</li>
         <li data-pieza="2" data-mira=".explorar-grid">Cuatro puertas de entrada: cápsulas, series, investigadores y entrevistas.</li>
@@ -519,9 +524,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">El catálogo de cápsulas</div><span class="paurl">/capsulas/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/?v=20261029f" title="Catálogo de cápsulas"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/?v=20261029g" title="Catálogo de cápsulas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".cap-grid">Cuatro cápsulas, cada una nacida de <strong>un artículo real</strong> de un investigador de la sede.</li>
         <li data-pieza="2" data-mira=".cap-card-formato">Tres son <strong>recorridos interactivos</strong>; una es video.</li>
@@ -541,9 +546,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Una cápsula como recorrido</div><span class="paurl">/capsulas/mapas-sequia/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/mapas-sequia/?v=20261029f" title="Recorrido sobre mapas de sequía"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/mapas-sequia/?v=20261029g" title="Recorrido sobre mapas de sequía"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".hint-play">El relato avanza con el scroll, o <strong>se cuenta solo</strong>: hay botón de play.</li>
         <li data-pieza="2" data-mira=".scrolly-cine">Quince paradas, <strong>minuto y medio</strong> de principio a fin.</li>
@@ -555,7 +560,7 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <aside class="notes">
   <p>Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte.</p>
   <p data-sinc="1">Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto.</p>
-  <p>[Demo a mano. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo.]</p>
+  <p>[Demo a mano. Pulsa D: el sitio ocupa la lámina entera y se apaga el resaltado. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo. D otra vez para volver.]</p>
   <p>Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.]</p>
   <p data-sinc="2">Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo.</p>
   <p data-sinc="3">Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea.</p>
@@ -567,9 +572,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Las series temáticas</div><span class="paurl">/series/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/series/?v=20261029f" title="Series temáticas"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/series/?v=20261029g" title="Series temáticas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".series-lista">Las tres líneas: <strong>Agua</strong>, <strong>El espacio donde vivimos</strong> y <strong>Sociedad justa</strong>.</li>
         <li data-pieza="2" data-mira=".serie-banner-nombre">Son las de Ivvan: el sitio <strong>no reinventa</strong> la organización temática.</li>
@@ -587,9 +592,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">La ficha de un investigador</div><span class="paurl">/investigadores/rodrigo-lopez-farias/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/investigadores/rodrigo-lopez-farias/?v=20261029f" title="Perfil de un investigador"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/investigadores/rodrigo-lopez-farias/?v=20261029g" title="Perfil de un investigador"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".perfil-bio">Cada investigador tiene su ficha, con sus <strong>líneas de investigación</strong>.</li>
         <li data-pieza="2" data-mira=".lista">Debajo se reúne <strong>todo lo suyo</strong>: cápsulas, entrevistas y publicaciones.</li>
@@ -609,9 +614,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">3 Preguntas a...</div><span class="paurl">/entrevistas/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/?v=20261029f" title="Catálogo de entrevistas"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/?v=20261029g" title="Catálogo de entrevistas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".cg-list-card">Formato fijo: <strong>las mismas tres preguntas</strong> a todo el mundo.</li>
         <li data-pieza="2" data-mira=".retrato-glifo">Cada una va <strong>en video</strong>, con su transcripción debajo.</li>
@@ -629,9 +634,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">Una entrevista</div><span class="paurl">/entrevistas/rodrigo-lopez-farias/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/rodrigo-lopez-farias/?v=20261029f" title="Una entrevista"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/rodrigo-lopez-farias/?v=20261029g" title="Una entrevista"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".cine-hueco">La entrevista <strong>siempre es un video</strong>. Mientras no se grabe, se ve el hueco donde irá.</li>
         <li data-pieza="2" data-mira=".turnos">El texto es la <strong>transcripción</strong> de ese video, a dos voces.</li>
@@ -651,9 +656,9 @@ html.sinc .reveal .slides section.present pre .cl.sinc-cl {
   <div class="pa">
     <div class="pazona" aria-hidden="true"></div>
     <div class="pabarra"><div class="titulo">De dónde sale cada cosa</div><span class="paurl">/acerca-de/</span>
-      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button><button class="pademo" type="button">D &middot; demo a pantalla completa</button></div>
     <div class="pacuerpo">
-      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/acerca-de/?v=20261029f" title="Acerca de y política de derechos"></iframe>
+      <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/acerca-de/?v=20261029g" title="Acerca de y política de derechos"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1" data-mira=".cruce">Qué cruza del artículo a la cápsula y qué <strong>no cruza nunca</strong>.</li>
         <li data-pieza="2" data-mira=".cruce-quiza">Las figuras ajenas entran <strong>solo con licencia</strong> que lo permita y con su crédito.</li>
@@ -1758,23 +1763,54 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
     pintar(sec);
   }
 
+  /* El modo demo. Deja la lámina entera para el sitio: se va la tira de puntos, se
+     apaga el resaltado y con él la penumbra, y la página se ve como la vería
+     cualquiera. Es lo que hace falta para enseñar un recorrido a mano, con la rueda
+     del ratón, sin un contorno rojo encima ni media pantalla ocupada. */
+  function pintarDemo(sec) {
+    const b = sec.querySelector('.pademo');
+    if (!b) return;
+    b.textContent = sec.classList.contains('demo')
+      ? 'D · volver a la visita' : 'D · demo a pantalla completa';
+  }
+
+  function alternarDemo(sec) {
+    if (!sec) return;
+    sec.classList.toggle('demo');
+    pintarDemo(sec);
+    // Al entrar se apaga lo que hubiera; al salir, el guion vuelve a mandar en cuanto
+    // se mueve de párrafo.
+    resaltarEnElSitio('');
+  }
+
+  const enDemo = () => {
+    const sec = paradaActual();
+    return !!sec && sec.classList.contains('demo');
+  };
+
   document.addEventListener('keydown', (ev) => {
-    if (ev.key !== 'i' && ev.key !== 'I') return;
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
-    alternar(paradaActual());
+    if (ev.key === 'i' || ev.key === 'I') alternar(paradaActual());
+    if (ev.key === 'd' || ev.key === 'D') alternarDemo(paradaActual());
   });
 
   document.addEventListener('click', (ev) => {
     const b = ev.target.closest('.pacontrol');
     if (b) alternar(b.closest('.parada'));
+    const d = ev.target.closest('.pademo');
+    if (d) alternarDemo(d.closest('.parada'));
   });
 
-  // Cada parada empieza con el sitio vivo: si alguien lo dejó sordo en la
-  // anterior, eso no se arrastra a la siguiente.
+  // Cada parada empieza con el sitio vivo y con la visita puesta: si alguien lo dejó
+  // sordo o en demo en la anterior, eso no se arrastra a la siguiente.
   Reveal.on('slidechanged', () => {
     document.querySelectorAll('.parada.sordo').forEach((s) => {
       s.classList.remove('sordo');
       pintar(s);
+    });
+    document.querySelectorAll('.parada.demo').forEach((s) => {
+      s.classList.remove('demo');
+      pintarDemo(s);
     });
     resaltarEnElSitio('');
   });
@@ -1812,6 +1848,8 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
 
   // El guion manda: cuando el apuntador enciende una pieza, se marca lo suyo.
   const vigia = new MutationObserver(() => {
+    // Durante el demo manda el demo: avanzar el guion no vuelve a encender nada.
+    if (enDemo()) { resaltarEnElSitio(''); return; }
     const pieza = document.querySelector('.reveal section.present.parada [data-pieza].sinc-aqui');
     // Se pide acercarse siempre; quien decide si hace falta es el sitio, que es el
     // único que sabe si eso ya se está viendo.
@@ -1832,7 +1870,7 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
   document.querySelectorAll('.parada iframe').forEach((marco) => {
     marco.addEventListener('load', () => {
       const parada = marco.closest('.parada');
-      if (parada && parada.classList.contains('present') && ultimoSelector) {
+      if (parada && parada.classList.contains('present') && ultimoSelector && !enDemo()) {
         resaltarEnElSitio(ultimoSelector, true);
       }
     });

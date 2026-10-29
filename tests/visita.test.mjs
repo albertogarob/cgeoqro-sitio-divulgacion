@@ -5,8 +5,8 @@
 // y con tope de largo, y nada más. Lo que no encaje se ignora sin hacer nada.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { peticionDeResaltado, hayQueAcercarse, caminoDePenumbra, rectangulosDePenumbra,
-         TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
+import { peticionDeResaltado, hayQueAcercarse, desplazamientoDeseado, caminoDePenumbra,
+         rectangulosDePenumbra, TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
 
 test('un mensaje bien formado dice qué resaltar', () => {
   assert.deepEqual(
@@ -266,4 +266,44 @@ test('las coordenadas se redondean a un decimal, para no escribir un camino kilo
     assert.ok(camino.includes(filo), `falta el filo ${filo} en ${camino}`);
   }
   assert.doesNotMatch(camino, /\d\.\d\d/, 'quedó más de un decimal');
+});
+
+// ── Acercarse sin quedar detrás de la cabecera pegada ──
+//
+// El sitio lleva una barra de navegación pegada arriba. Centrar lo resaltado en la
+// ventana lo dejaba justo detrás de ella cuando el elemento está cerca del principio
+// de la página y no queda scroll de sobra. Por eso las dos cuentas reciben el `techo`,
+// que es lo que esa barra tapa.
+
+test('lo que queda detrás de la cabecera cuenta como no visible', () => {
+  // Una caja entera dentro de los primeros 90 píxeles, que es donde está la barra.
+  const tapada = { top: 20, bottom: 70, height: 50 };
+  assert.equal(hayQueAcercarse(tapada, 800, 0.55, 0), false, 'sin techo se da por vista');
+  assert.equal(hayQueAcercarse(tapada, 800, 0.55, 90), true, 'con techo hay que moverla');
+  // Y una que empieza justo debajo de la barra sigue contando como vista.
+  assert.equal(hayQueAcercarse({ top: 100, bottom: 150, height: 50 }, 800, 0.55, 90), false);
+});
+
+test('el desplazamiento deja lo resaltado en medio de lo que de verdad se ve', () => {
+  // Banda útil de 90 a 800, o sea 710 de alto; una caja de 110 queda centrada con
+  // 300 por arriba, así que su top debe acabar en 90 + 300 = 390.
+  const caja = { top: 500, bottom: 610, height: 110 };
+  assert.equal(desplazamientoDeseado(caja, 800, 90), 110);
+  // Sin techo, la misma caja se centra en la ventana entera: top en 345.
+  assert.equal(desplazamientoDeseado(caja, 800, 0), 155);
+  // Hacia arriba también: una caja por encima del pliegue devuelve negativo.
+  assert.equal(desplazamientoDeseado({ top: -200, bottom: -90, height: 110 }, 800, 90), -590);
+});
+
+test('una caja más alta que la banda se pega al techo en vez de centrarse', () => {
+  // Si no cabe, no hay hueco que repartir: lo mejor es enseñar su principio.
+  assert.equal(desplazamientoDeseado({ top: 300, bottom: 1500, height: 1200 }, 800, 90), 210);
+  assert.equal(desplazamientoDeseado({ top: 90, bottom: 1290, height: 1200 }, 800, 90), 0);
+});
+
+test('sin banda útil no se mueve nada', () => {
+  // Una cabecera que se comiera la ventana entera no puede mandar a ningún sitio.
+  assert.equal(desplazamientoDeseado({ top: 10, bottom: 60, height: 50 }, 800, 800), 0);
+  assert.equal(desplazamientoDeseado({ top: 10, bottom: 60, height: 50 }, 800, 900), 0);
+  assert.equal(hayQueAcercarse({ top: 10, bottom: 60, height: 50 }, 800, 0.55, 800), false);
 });
