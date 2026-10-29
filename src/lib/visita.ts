@@ -74,40 +74,97 @@ export interface Hueco {
   height: number;
 }
 
-/**
- * El camino de la penumbra: la ventana entera menos un agujero por cada cosa resaltada.
- *
- * La penumbra se dibuja UNA vez, con agujeros, y no una por caja. Con una sombra de
- * gran extensión por caja, cada caja oscurecía todo lo que quedaba fuera de ella, o sea
- * también las demás cajas: cuando un selector casaba con cuatro tarjetas, las cuatro
- * resaltadas salían igual de apagadas que el resto de la página. Alberto lo vio en la
- * parada de cápsulas el 29 de octubre de 2026.
- *
- * El camino se interpreta con la regla par e impar, así que los subcaminos de dentro
- * recortan en vez de sumar. Devuelve cadena vacía si la ventana no tiene tamaño, y un
- * camino sin agujeros si ninguno de los que llegan es utilizable: quien lo use decide
- * si en ese caso vale la pena pintar penumbra.
- */
-export function caminoDePenumbra(huecos: Hueco[], ancho: number, alto: number): string {
-  if (!(ancho > 0) || !(alto > 0)) return '';
-  const r = (n: number) => Math.round(n * 10) / 10;
-  let d = `M0 0 H${r(ancho)} V${r(alto)} H0 Z`;
-  for (const h of huecos) {
-    const x0 = r(Math.max(0, h.left));
-    const y0 = r(Math.max(0, h.top));
-    const x1 = r(Math.min(ancho, h.left + h.width));
-    const y1 = r(Math.min(alto, h.top + h.height));
-    // Un agujero que la ventana recorta hasta menos de un píxel no se dibuja: el
-    // camino quedaría con un subcamino degenerado y la regla par e impar no lo cuenta.
-    if (x1 - x0 < 1 || y1 - y0 < 1) continue;
-    d += ` M${x0} ${y0} H${x1} V${y1} H${x0} Z`;
-  }
-  return d;
+interface Rect {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
 }
 
-/** Cuántos agujeros tiene un camino de penumbra. Cero significa que no hay nada que recortar. */
-export function cuentaDeHuecos(camino: string): number {
-  if (!camino) return 0;
-  // El primer subcamino es la ventana; los demás son los agujeros.
-  return Math.max(0, (camino.match(/M/g) ?? []).length - 1);
+/** Un decimal, que es toda la precisión que necesita un recorte en píxeles. */
+const redondo = (n: number) => Math.round(n * 10) / 10;
+
+/**
+ * Los huecos, recortados a la ventana y sin los que no dan ni un píxel.
+ *
+ * Un rectángulo degenerado no abre nada y además ensucia lo que venga detrás, así que
+ * se descarta aquí y no en mitad del dibujo.
+ */
+function huecosUtiles(huecos: Hueco[], ancho: number, alto: number): Rect[] {
+  const utiles: Rect[] = [];
+  for (const h of huecos) {
+    const x0 = redondo(Math.max(0, h.left));
+    const y0 = redondo(Math.max(0, h.top));
+    const x1 = redondo(Math.min(ancho, h.left + h.width));
+    const y1 = redondo(Math.min(alto, h.top + h.height));
+    if (!(x1 - x0 >= 1) || !(y1 - y0 >= 1)) continue;
+    utiles.push({ x0, y0, x1, y1 });
+  }
+  return utiles;
+}
+
+/**
+ * La penumbra, troceada en rectángulos que no se pisan entre sí.
+ *
+ * Se parte la ventana por todas las coordenadas que aportan los huecos, y de la rejilla
+ * resultante se queda lo que no cae dentro de ningún hueco. Después se funden las
+ * celdas contiguas de cada franja, para no escribir cien rectángulos donde caben tres.
+ *
+ * Por qué así y no un rectángulo grande con agujeros recortados: **dos huecos que se
+ * solapan, o uno dentro de otro, se cancelan** con la regla par e impar, y la zona
+ * común vuelve a quedar tan oscura como el resto, con el contorno rojo alrededor. Es
+ * la misma avería que la penumbra venía a arreglar, entrando por otra puerta. Troceada
+ * así no hay regla de relleno de la que depender: lo que se pinta es exactamente lo que
+ * tiene que quedar oscuro.
+ */
+export function rectangulosDePenumbra(huecos: Hueco[], ancho: number, alto: number): Rect[] {
+  if (!(ancho > 0) || !(alto > 0)) return [];
+  const utiles = huecosUtiles(huecos, ancho, alto);
+  // Sin un solo hueco que abrir no hay penumbra: oscurecerlo todo marcaría la página
+  // entera como "esto no es lo que hay que mirar", que es lo contrario de lo que se
+  // quiere decir.
+  if (!utiles.length) return [];
+
+  const cortesX = [...new Set([0, redondo(ancho), ...utiles.flatMap((r) => [r.x0, r.x1])])].sort((a, b) => a - b);
+  const cortesY = [...new Set([0, redondo(alto), ...utiles.flatMap((r) => [r.y0, r.y1])])].sort((a, b) => a - b);
+
+  const trozos: Rect[] = [];
+  for (let j = 0; j < cortesY.length - 1; j++) {
+    const y0 = cortesY[j];
+    const y1 = cortesY[j + 1];
+    if (y1 <= y0) continue;
+    let abierto: Rect | null = null;
+    for (let i = 0; i < cortesX.length - 1; i++) {
+      const x0 = cortesX[i];
+      const x1 = cortesX[i + 1];
+      if (x1 <= x0) continue;
+      const tapada = utiles.some((r) => r.x0 <= x0 && x1 <= r.x1 && r.y0 <= y0 && y1 <= r.y1);
+      if (tapada) {
+        if (abierto) trozos.push(abierto);
+        abierto = null;
+        continue;
+      }
+      // Celda a oscuras: se alarga la franja que ya venía en vez de abrir otra.
+      if (abierto && abierto.x1 === x0) abierto.x1 = x1;
+      else {
+        if (abierto) trozos.push(abierto);
+        abierto = { x0, y0, x1, y1 };
+      }
+    }
+    if (abierto) trozos.push(abierto);
+  }
+  return trozos;
+}
+
+/**
+ * El camino que recorta la capa de penumbra, en coordenadas de la ventana.
+ *
+ * Cadena vacía significa que no hay nada que oscurecer, y quien lo use no debe pintar
+ * la capa: ni cuando la ventana no tiene tamaño, ni cuando ningún hueco es utilizable.
+ * Los subcaminos no se pisan entre sí, así que la regla de relleno da igual.
+ */
+export function caminoDePenumbra(huecos: Hueco[], ancho: number, alto: number): string {
+  const trozos = rectangulosDePenumbra(huecos, ancho, alto);
+  if (!trozos.length) return '';
+  return trozos.map((r) => `M${r.x0} ${r.y0} H${r.x1} V${r.y1} H${r.x0} Z`).join(' ');
 }

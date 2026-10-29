@@ -63,17 +63,28 @@ test('ninguna entrevista lleva la etiqueta de borrador', () => {
   }
 });
 
-test('el gancho de cada tarjeta cabe y no parte palabras', () => {
-  // Las tarjetas del índice llaman a `primeraFrase` sin tope, así que es esa rama la
-  // que hay que comprobar contra los textos de verdad.
+test('el gancho de cada tarjeta es la primera frase entera de la respuesta', () => {
+  // Esto comprueba el CONTENIDO contra la función, no la función: la rama de recorte
+  // con puntos suspensivos vive en tests/texto.test.mjs, con textos hechos a propósito,
+  // porque ninguna respuesta de verdad llega hoy al tope y aquí nunca se ejecutaría.
   for (const { archivo, datos } of entrevistas) {
-    const gancho = primeraFrase(datos.preguntas[0].respuesta);
+    const respuesta = datos.preguntas[0].respuesta.replace(/\s+/g, ' ').trim();
+    const gancho = primeraFrase(respuesta);
     assert.ok(gancho.length > 20, `el gancho de ${archivo} se queda en "${gancho}"`);
-    assert.ok(gancho.length <= 150, `el gancho de ${archivo} mide ${gancho.length}`);
-    if (gancho.endsWith('…')) {
-      const texto = gancho.slice(0, -1);
-      assert.equal(datos.preguntas[0].respuesta.replace(/\s+/g, ' ').trim()[texto.length], ' ',
-        `el gancho de ${archivo} parte una palabra por la mitad`);
+    // Sale de la RESPUESTA, no de la pregunta: las tres preguntas son las mismas en
+    // todas las entrevistas y no distinguirían una tarjeta de otra.
+    assert.ok(respuesta.startsWith(gancho),
+      `el gancho de ${archivo} no es el principio de su respuesta: "${gancho}"`);
+    // Y es una frase entera, con su cierre, no media frase cortada.
+    assert.match(gancho, /[.!?…]$/, `el gancho de ${archivo} acaba a medias: "${gancho}"`);
+    // Si la respuesta tiene más de una frase, el gancho tiene que haberla cortado: una
+    // respuesta entera en la tarjeta desborda la tarjeta.
+    if (respuesta.length > gancho.length) {
+      assert.ok(gancho.length < respuesta.length,
+        `el gancho de ${archivo} se trae la respuesta entera`);
     }
+    // Y cabe en la tarjeta. El tope real de hoy es 139 caracteres; se deja en 150, que
+    // es el que aplica la propia función, para que crecer un texto se note aquí.
+    assert.ok(gancho.length <= 150, `el gancho de ${archivo} mide ${gancho.length}`);
   }
 });

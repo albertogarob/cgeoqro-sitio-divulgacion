@@ -6,7 +6,7 @@
 
 ## 2. La cápsula de conocimiento
 
-La unidad de todo esto es la cápsula de conocimiento: un hallazgo de un artículo publicado, contado en pocos minutos y en lenguaje llano, para alguien que no es del gremio. La forma la pide el contenido. El recorrido interactivo, que es el que te voy a enseñar y donde el relato avanza con un gráfico detrás. El video, para lo que se cuenta mejor hablando. Y el texto con infografía. Lo que no cambia nunca es que cada cápsula dice de qué artículo salió, con su referencia completa, y quién lo firmó. Aquí no hay divulgación anónima: el crédito es de quien hizo la investigación, y eso es parte del punto.
+La unidad de todo esto es la cápsula de conocimiento: un hallazgo de un artículo publicado, contado en pocos minutos y en lenguaje llano, para alguien que no es del gremio. La forma la pide el contenido. El recorrido interactivo, que es el que te voy a enseñar y donde el relato avanza con un gráfico detrás. El video, para lo que se cuenta mejor hablando. Y el texto con infografía. Lo que no cambia nunca es que cada cápsula dice de qué artículo salió, con su referencia completa, y quién lo firmó. El crédito es siempre de quien hizo la investigación, y eso es parte del punto.
 
 ## 3. Cómo se organiza
 
@@ -18,11 +18,11 @@ Esta es la portada, en vivo: lo primero que ve quien llega. Esto es el sitio, en
 
 ## 5. El catálogo de cápsulas
 
-Esta es la página del catálogo, con todo lo publicado junto. La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. No hay contenido inventado: hay traducción. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
+Esta es la página del catálogo, con todo lo publicado junto. La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. Todo lo que se publica es la traducción de algo que ya se investigó. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
 
 ## 6. Una cápsula como recorrido
 
-Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Demo a mano. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo.] Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.] Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea. Y fíjate en cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
+Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Demo a mano. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo.] Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.] Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea. Lo que más me importa es cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
 
 ## 7. Las series temáticas
 
@@ -42,7 +42,7 @@ Esta es la sección de entrevistas, la que pone cara y voz. El formato es fijo: 
 
 ## 10. Una entrevista
 
-Y así se ve una entrevista por dentro. La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde. Y el texto de abajo no es un resumen: es la transcripción, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde. Y es barato: tres preguntas por persona, los cinco en una mañana.
+Y así se ve una entrevista por dentro. La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde. Y el texto de abajo es la transcripción completa, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde. Y es barato: tres preguntas por persona, los cinco en una mañana.
 
 ## 11. De dónde sale cada cosa
 

@@ -43,21 +43,24 @@
 
 <script>
 	import type { Hueco } from '../lib/visita';
-	import { caminoDePenumbra, cuentaDeHuecos, hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
+	import { caminoDePenumbra, hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
 
 	// Fuera de un iframe esto no pinta nada y no escucha nada.
 	if (window.parent !== window) {
 		const capa = document.getElementById('visita-capa');
 		let selectorActivo = '';
 		let cuadro: number | undefined;
-		// Un navegador que no recorte por camino se queda sin penumbra, con los contornos
-		// rojos a secas, en vez de quedarse con la pantalla entera a oscuras.
-		const hayPenumbra = typeof CSS !== 'undefined' && CSS.supports('clip-path', 'path("M0 0")');
+		// Queda pendiente acercarse hasta el siguiente cuadro, donde ya están medidos los
+		// elementos. Antes el mensaje disparaba su propia consulta, sin acelerador: un
+		// selector caro, mandado muchas veces seguidas, congelaba la página.
+		let pedirAcercarse = false;
 		const GROSOR = 4;
 
 		function pintar() {
 			cuadro = undefined;
 			if (!capa) return;
+			const acercar = pedirAcercarse;
+			pedirAcercarse = false;
 			capa.replaceChildren();
 			if (!selectorActivo) return;
 			let nodos: Element[] = [];
@@ -67,13 +70,18 @@
 				// Un selector inválido no es motivo para tirar nada: se deja sin marcar.
 				return;
 			}
+			if (acercar && nodos.length) acercarse(nodos[0]);
+
 			const cajas: HTMLDivElement[] = [];
 			const huecos: Hueco[] = [];
 			// Tope de cajas: un selector amplio no puede llenar la pantalla de marcos.
 			for (const n of nodos.slice(0, 24)) {
 				const r = n.getBoundingClientRect();
 				if (r.width < 1 || r.height < 1) continue;
+				// Fuera de la ventana por cualquiera de los cuatro lados: ni se le dibuja
+				// contorno ni gasta una de las plazas de la penumbra.
 				if (r.bottom < 0 || r.top > window.innerHeight) continue;
+				if (r.right < 0 || r.left > window.innerWidth) continue;
 				const caja = document.createElement('div');
 				caja.className = 'visita-caja';
 				caja.style.top = `${r.top - GROSOR}px`;
@@ -84,16 +92,18 @@
 				huecos.push({ top: r.top, left: r.left, width: r.width, height: r.height });
 			}
 			if (!cajas.length) return;
+
 			// La penumbra va primero, para que los contornos se pinten encima de ella y
 			// no se apaguen con el resto de la página.
-			if (hayPenumbra) {
-				const camino = caminoDePenumbra(huecos, window.innerWidth, window.innerHeight);
-				if (cuentaDeHuecos(camino) > 0) {
-					const sombra = document.createElement('div');
-					sombra.className = 'visita-penumbra';
-					sombra.style.clipPath = `path(evenodd, "${camino}")`;
-					capa.appendChild(sombra);
-				}
+			const camino = caminoDePenumbra(huecos, window.innerWidth, window.innerHeight);
+			if (camino) {
+				const sombra = document.createElement('div');
+				sombra.className = 'visita-penumbra';
+				sombra.style.clipPath = `path("${camino}")`;
+				// Se mira el resultado y no la promesa de CSS.supports: si el navegador
+				// no entendió el recorte, la propiedad se queda vacía y la capa taparía
+				// la pantalla entera. Entonces se queda solo el contorno rojo.
+				if (sombra.style.clipPath) capa.appendChild(sombra);
 			}
 			for (const caja of cajas) capa.appendChild(caja);
 		}
@@ -107,9 +117,8 @@
 			if (!pide) return;
 			// Repetir el mismo resaltado no vuelve a mover la página: el deck manda un
 			// mensaje por cada aviso del guion, y varios pueden ser de la misma pieza.
-			const cambia = pide.selector !== selectorActivo;
+			if (pide.selector !== selectorActivo && pide.acercar && pide.selector) pedirAcercarse = true;
 			selectorActivo = pide.selector;
-			if (cambia && pide.acercar && selectorActivo) acercarse(selectorActivo);
 			repintar();
 		});
 
@@ -118,14 +127,7 @@
 		 * Sin esa condición, pasar de una pieza a otra movería la página aunque las
 		 * dos estuvieran delante, y dentro del recorrido se pelearía con su motor.
 		 */
-		function acercarse(selector: string) {
-			let objetivo: Element | null = null;
-			try {
-				objetivo = document.querySelector(selector);
-			} catch {
-				return;
-			}
-			if (!objetivo) return;
+		function acercarse(objetivo: Element) {
 			const r = objetivo.getBoundingClientRect();
 			if (!hayQueAcercarse(r, window.innerHeight)) return;
 			objetivo.scrollIntoView({ block: 'center', behavior: 'smooth' });

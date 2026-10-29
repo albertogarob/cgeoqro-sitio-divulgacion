@@ -4,8 +4,8 @@ Presentación del sitio de divulgación a la dirección general, el 29 de octubr
 2026. Catorce paradas, de doce a quince minutos.
 
 Lo que la distingue del deck del observatorio enoturístico, de donde viene toda la
-maquinaria: **ocho de las trece paradas no son láminas, son el sitio**. Cargan la
-página publicada dentro de la lámina, en un iframe. Una captura de un recorrido de
+maquinaria: **ocho de las catorce láminas son el sitio de verdad**. Cargan la página
+publicada dentro de la lámina, en un iframe. Una captura de un recorrido de
 scrollytelling está muerta, y el argumento del sitio es que se mueve.
 
 ## Para trabajar
