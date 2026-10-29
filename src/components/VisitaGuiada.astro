@@ -21,24 +21,39 @@
 		pointer-events: none;
 	}
 	/* Rojo vivo y no el naranja de la casa: proyectado, el naranja se confunde con
-	   el propio acento del sitio y casi no se ve. Aquí el contorno tiene que gritar. */
+	   el propio acento del sitio y casi no se ve. Aquí el contorno tiene que gritar.
+	   La caja se dibuja alrededor del elemento, con box-sizing de borde, para que el
+	   filo de dentro del contorno coincida con el agujero de la penumbra. */
 	#visita-capa :global(.visita-caja) {
 		position: fixed;
+		box-sizing: border-box;
 		border: 4px solid #e60f0f;
 		border-radius: 6px;
-		box-shadow: 0 0 0 5px rgba(230, 15, 15, 0.3), 0 0 0 9999px rgba(8, 20, 32, 0.34);
+		box-shadow: 0 0 0 5px rgba(230, 15, 15, 0.3);
 		transition: opacity 160ms ease;
+	}
+	/* La penumbra: una sola capa oscura con un agujero por cada cosa resaltada. Antes
+	   era una sombra de 9999px por caja, y cada caja apagaba a las demás. */
+	#visita-capa :global(.visita-penumbra) {
+		position: fixed;
+		inset: 0;
+		background: rgba(8, 20, 32, 0.34);
 	}
 </style>
 
 <script>
-	import { hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
+	import type { Hueco } from '../lib/visita';
+	import { caminoDePenumbra, cuentaDeHuecos, hayQueAcercarse, peticionDeResaltado } from '../lib/visita';
 
 	// Fuera de un iframe esto no pinta nada y no escucha nada.
 	if (window.parent !== window) {
 		const capa = document.getElementById('visita-capa');
 		let selectorActivo = '';
 		let cuadro: number | undefined;
+		// Un navegador que no recorte por camino se queda sin penumbra, con los contornos
+		// rojos a secas, en vez de quedarse con la pantalla entera a oscuras.
+		const hayPenumbra = typeof CSS !== 'undefined' && CSS.supports('clip-path', 'path("M0 0")');
+		const GROSOR = 4;
 
 		function pintar() {
 			cuadro = undefined;
@@ -52,6 +67,8 @@
 				// Un selector inválido no es motivo para tirar nada: se deja sin marcar.
 				return;
 			}
+			const cajas: HTMLDivElement[] = [];
+			const huecos: Hueco[] = [];
 			// Tope de cajas: un selector amplio no puede llenar la pantalla de marcos.
 			for (const n of nodos.slice(0, 24)) {
 				const r = n.getBoundingClientRect();
@@ -59,12 +76,26 @@
 				if (r.bottom < 0 || r.top > window.innerHeight) continue;
 				const caja = document.createElement('div');
 				caja.className = 'visita-caja';
-				caja.style.top = `${r.top}px`;
-				caja.style.left = `${r.left}px`;
-				caja.style.width = `${r.width}px`;
-				caja.style.height = `${r.height}px`;
-				capa.appendChild(caja);
+				caja.style.top = `${r.top - GROSOR}px`;
+				caja.style.left = `${r.left - GROSOR}px`;
+				caja.style.width = `${r.width + GROSOR * 2}px`;
+				caja.style.height = `${r.height + GROSOR * 2}px`;
+				cajas.push(caja);
+				huecos.push({ top: r.top, left: r.left, width: r.width, height: r.height });
 			}
+			if (!cajas.length) return;
+			// La penumbra va primero, para que los contornos se pinten encima de ella y
+			// no se apaguen con el resto de la página.
+			if (hayPenumbra) {
+				const camino = caminoDePenumbra(huecos, window.innerWidth, window.innerHeight);
+				if (cuentaDeHuecos(camino) > 0) {
+					const sombra = document.createElement('div');
+					sombra.className = 'visita-penumbra';
+					sombra.style.clipPath = `path(evenodd, "${camino}")`;
+					capa.appendChild(sombra);
+				}
+			}
+			for (const caja of cajas) capa.appendChild(caja);
 		}
 
 		function repintar() {

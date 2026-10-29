@@ -27,7 +27,12 @@ const entrevistas = readdirSync(dir).filter((f) => f.endsWith('.mdx')).map((f) =
 }));
 
 test('cada entrevista apunta a un investigador que existe, y solo una por persona', () => {
-  assert.ok(entrevistas.length >= 1, 'no hay ninguna entrevista');
+  // El número va fijo a propósito, y es la lección del 29 de octubre de 2026: ese día
+  // se borraron cuatro entrevistas por una lectura equivocada de una nota, y la suite
+  // se quedó en verde porque solo exigía que hubiera alguna. Si publicas una nueva,
+  // sube este número a mano; si baja sin querer, la prueba lo dice.
+  assert.equal(entrevistas.length, 5,
+    `hay ${entrevistas.length} entrevistas y se esperaban 5: ${entrevistas.map((e) => e.archivo).join(', ')}`);
   const vistos = new Set();
   for (const { archivo, datos } of entrevistas) {
     assert.ok(datos?.investigador, `${archivo} no declara investigador`);

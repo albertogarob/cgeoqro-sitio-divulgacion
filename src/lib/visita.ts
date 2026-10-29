@@ -65,3 +65,49 @@ export function hayQueAcercarse(caja: Caja, alto: number, minimo = 0.55): boolea
   const alcanzable = Math.min(caja.height, alto);
   return visible / alcanzable < minimo;
 }
+
+/** Rectángulo de un elemento resaltado, en coordenadas de la ventana. */
+export interface Hueco {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * El camino de la penumbra: la ventana entera menos un agujero por cada cosa resaltada.
+ *
+ * La penumbra se dibuja UNA vez, con agujeros, y no una por caja. Con una sombra de
+ * gran extensión por caja, cada caja oscurecía todo lo que quedaba fuera de ella, o sea
+ * también las demás cajas: cuando un selector casaba con cuatro tarjetas, las cuatro
+ * resaltadas salían igual de apagadas que el resto de la página. Alberto lo vio en la
+ * parada de cápsulas el 29 de octubre de 2026.
+ *
+ * El camino se interpreta con la regla par e impar, así que los subcaminos de dentro
+ * recortan en vez de sumar. Devuelve cadena vacía si la ventana no tiene tamaño, y un
+ * camino sin agujeros si ninguno de los que llegan es utilizable: quien lo use decide
+ * si en ese caso vale la pena pintar penumbra.
+ */
+export function caminoDePenumbra(huecos: Hueco[], ancho: number, alto: number): string {
+  if (!(ancho > 0) || !(alto > 0)) return '';
+  const r = (n: number) => Math.round(n * 10) / 10;
+  let d = `M0 0 H${r(ancho)} V${r(alto)} H0 Z`;
+  for (const h of huecos) {
+    const x0 = r(Math.max(0, h.left));
+    const y0 = r(Math.max(0, h.top));
+    const x1 = r(Math.min(ancho, h.left + h.width));
+    const y1 = r(Math.min(alto, h.top + h.height));
+    // Un agujero que la ventana recorta hasta menos de un píxel no se dibuja: el
+    // camino quedaría con un subcamino degenerado y la regla par e impar no lo cuenta.
+    if (x1 - x0 < 1 || y1 - y0 < 1) continue;
+    d += ` M${x0} ${y0} H${x1} V${y1} H${x0} Z`;
+  }
+  return d;
+}
+
+/** Cuántos agujeros tiene un camino de penumbra. Cero significa que no hay nada que recortar. */
+export function cuentaDeHuecos(camino: string): number {
+  if (!camino) return 0;
+  // El primer subcamino es la ventana; los demás son los agujeros.
+  return Math.max(0, (camino.match(/M/g) ?? []).length - 1);
+}

@@ -5,7 +5,8 @@
 // y con tope de largo, y nada más. Lo que no encaje se ignora sin hacer nada.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { peticionDeResaltado, hayQueAcercarse, TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
+import { peticionDeResaltado, hayQueAcercarse, caminoDePenumbra, cuentaDeHuecos,
+         TIPO_RESALTAR, MAX_SELECTOR } from '../src/lib/visita.ts';
 
 test('un mensaje bien formado dice qué resaltar', () => {
   assert.deepEqual(
@@ -99,4 +100,59 @@ test('un bloque más alto que la ventana se mide contra la ventana, no contra s�
 test('una caja sin alto, o una ventana sin alto, no mueven nada', () => {
   assert.equal(hayQueAcercarse({ top: 0, bottom: 0, height: 0 }, 700), false);
   assert.equal(hayQueAcercarse({ top: 10, bottom: 50, height: 40 }, 0), false);
+});
+
+// ── La penumbra, que es una sola capa con agujeros ──
+//
+// El fallo que estas pruebas vigilan: con una sombra enorme por caja, cada caja
+// oscurecía todo lo de fuera de ella, incluidas las otras cajas, así que un selector
+// que casaba con cuatro tarjetas las dejaba las cuatro tan apagadas como el resto.
+
+const VENTANA = [1000, 800];
+
+test('cada cosa resaltada abre su propio agujero, y las cuatro a la vez', () => {
+  const cuatro = [
+    { top: 10, left: 10, width: 100, height: 50 },
+    { top: 10, left: 200, width: 100, height: 50 },
+    { top: 100, left: 10, width: 100, height: 50 },
+    { top: 100, left: 200, width: 100, height: 50 },
+  ];
+  assert.equal(cuentaDeHuecos(caminoDePenumbra(cuatro, ...VENTANA)), 4);
+  assert.equal(cuentaDeHuecos(caminoDePenumbra(cuatro.slice(0, 1), ...VENTANA)), 1);
+});
+
+test('el camino abre la ventana entera y después recorta', () => {
+  const camino = caminoDePenumbra([{ top: 20, left: 30, width: 100, height: 40 }], 1000, 800);
+  assert.equal(camino, 'M0 0 H1000 V800 H0 Z M30 20 H130 V60 H30 Z');
+});
+
+test('un agujero que se sale de la ventana se recorta a la ventana', () => {
+  // La caja de un elemento a medio entrar por abajo, o medio salido por arriba: el
+  // agujero no puede pedir coordenadas de fuera, que el recorte las ignora y deja la
+  // penumbra entera.
+  const camino = caminoDePenumbra([{ top: -30, left: -40, width: 200, height: 100 }], 1000, 800);
+  assert.equal(camino, 'M0 0 H1000 V800 H0 Z M0 0 H160 V70 H0 Z');
+  const abajo = caminoDePenumbra([{ top: 760, left: 900, width: 300, height: 300 }], 1000, 800);
+  assert.equal(abajo, 'M0 0 H1000 V800 H0 Z M900 760 H1000 V800 H900 Z');
+});
+
+test('un agujero que la ventana deja en menos de un píxel no se dibuja', () => {
+  // Pedir un subcamino degenerado no abre nada y además ensucia el camino.
+  const camino = caminoDePenumbra([{ top: 799.5, left: 10, width: 100, height: 50 }], 1000, 800);
+  assert.equal(cuentaDeHuecos(camino), 0, `no debería abrir agujero: ${camino}`);
+  assert.equal(cuentaDeHuecos(caminoDePenumbra([{ top: 10, left: 10, width: 0.4, height: 50 }], 1000, 800)), 0);
+});
+
+test('sin ventana no hay camino, y sin camino no hay agujeros', () => {
+  assert.equal(caminoDePenumbra([{ top: 10, left: 10, width: 100, height: 50 }], 0, 800), '');
+  assert.equal(caminoDePenumbra([{ top: 10, left: 10, width: 100, height: 50 }], 1000, 0), '');
+  assert.equal(caminoDePenumbra([], ...VENTANA), 'M0 0 H1000 V800 H0 Z');
+  assert.equal(cuentaDeHuecos(''), 0);
+  assert.equal(cuentaDeHuecos(caminoDePenumbra([], ...VENTANA)), 0);
+});
+
+test('las coordenadas se redondean a un decimal, para no escribir un camino kilométrico', () => {
+  const camino = caminoDePenumbra([{ top: 20.666, left: 30.333, width: 100.5, height: 40.25 }], 1000, 800);
+  assert.equal(camino, 'M0 0 H1000 V800 H0 Z M30.3 20.7 H130.8 V60.9 H30.3 Z');
+  assert.doesNotMatch(camino, /\d\.\d\d/, 'quedó más de un decimal');
 });

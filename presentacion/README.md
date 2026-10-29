@@ -43,9 +43,20 @@ mueven el deck igual. Quien presente sin apuntador y se quede sin flechas pulsa 
 botón de la barra**, que deja el iframe sordo a los clics y devuelve el teclado. Al
 cambiar de parada el sitio vuelve a estar vivo.
 
-El resaltado sincronizado marca **la tira de puntos de la derecha**, no el sitio: no se
-puede marcar nada dentro de un iframe de otro origen. Esa tira dice qué mirar en cada
-parada, y es la que barre de arriba hacia abajo mientras avanzas el guion.
+El resaltado sincronizado marca **la tira de puntos de la derecha y, a la vez, lo que
+ese punto señala dentro del sitio**. La tira dice qué mirar en cada parada y barre de
+arriba hacia abajo mientras avanzas el guion; el contorno rojo dentro del iframe lo
+dibuja el propio sitio, que trae un oyente para eso (`src/components/VisitaGuiada.astro`),
+porque desde el deck no se puede tocar el DOM de otro origen. Si lo señalado se queda
+fuera de la pantalla, el sitio se desplaza solo hasta enseñarlo.
+
+El contorno va acompañado de **una penumbra sobre el resto de la página**, que es una
+sola capa oscura con un agujero por cada cosa resaltada. Cuando un punto señala varias
+cosas a la vez, las varias quedan claras: esa es la razón de que sea una capa con
+agujeros y no una sombra por contorno.
+
+**Un párrafo del guion sin `data-sinc` apaga las dos cosas**, contorno y penumbra. Es lo
+que deja la página limpia en el punto del recorrido donde hay que hacer el demo a mano.
 
 ## Lo que dicen las herramientas
 
@@ -55,7 +66,7 @@ parada, y es la que barre de arriba hacia abajo mientras avanzas el guion.
 | `titulos.py` | títulos de más de una línea | los 4 caben en una línea |
 | `gordas.py` | láminas gordas de texto | ninguna, de 4 medidas |
 | `barrido.py` | resaltado que salta en vez de barrer | 11 láminas con piezas, 0 rompen el barrido |
-| `tiempos.py` | cuánto dura | 12 a 15 min; 10 a 13 recortando |
+| `tiempos.py` | cuánto dura | 12 a 15 min; 10 a 12 recortando los dos niveles |
 | `guion.py` | regenera `guion.md` desde el deck | 14 de 14 con guion |
 | `empaquetar.py` | el archivo único | 1.4 MB, con apuntador |
 
@@ -74,6 +85,18 @@ medidas, y un sobrecosto por lámina que sigue siendo **un supuesto sin medir**.
 
 Las que no se tocan son las dos del concepto, el catálogo, el recorrido, las
 entrevistas, lo que no se ve y lo que se pide.
+
+## `anclas.py` NO se corre sobre este deck
+
+El pipeline del curso lo incluye, y aquí rompe el deck. `anclas.py` renumera los
+`data-sinc` del guion contando las piezas de la lámina, y en estas paradas cuenta como
+pieza el rótulo "Qué mirar aquí" de la tira: corre todos los anclajes un número, y el
+punto 1 de cada parada deja de encenderse. Pasó el 29 de octubre de 2026 y lo cazó
+`barrido.py`, que saltó de 0 a 8 láminas rotas.
+
+Aquí los `data-sinc` se escriben a mano, porque además de encender el punto de la tira
+son los que mandan el selector al sitio. Si hace falta comprobar que cada punto tiene su
+párrafo, se mira con `barrido.py`, que es el que entiende esta clase de lámina.
 
 ## El riesgo que hay que mirar antes de entrar
 

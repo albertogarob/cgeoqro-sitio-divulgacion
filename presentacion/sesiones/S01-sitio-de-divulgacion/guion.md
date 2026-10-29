@@ -38,7 +38,7 @@ Esta es la ficha de un investigador: la entrada por persona. Los cinco investiga
 
 ## 9. 3 Preguntas a...
 
-Esta es la sección de entrevistas, la que pone cara y voz. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene. Eso es lo que la hace una serie. Cada una va en video, con la transcripción debajo. Hoy está publicada una sola, la mía, porque aquí no se publica nada que el investigador no haya dicho de verdad. Grabar las otras cuatro es una mañana: son tres preguntas por persona.
+Esta es la sección de entrevistas, la que pone cara y voz. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene. Eso es lo que la hace una serie. Cada una va en video, con la transcripción debajo. Hay una por investigador, las cinco. El texto lo redactamos del perfil de cada quien, y cada uno valida el suyo antes de grabarlo. Grabar las cinco es una mañana: tres preguntas por persona.
 
 ## 10. Una entrevista
 
