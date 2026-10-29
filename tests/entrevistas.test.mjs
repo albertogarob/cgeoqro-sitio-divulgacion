@@ -1,13 +1,12 @@
-// Pruebas del contenido de las entrevistas y de su marca de "muestra".
+// Pruebas del contenido de las entrevistas.
 //
-// Cuatro de las entrevistas del repositorio están en borrador: las preparó el equipo de
-// divulgación a partir del perfil de cada investigador, y quedan pendientes de que él
-// las revise y las grabe. Que aparezcan marcadas no es un detalle de estilo: sin la
-// marca, el sitio presenta como declaración de una persona algo que todavía no ha dicho.
+// Hubo cuatro entrevistas de muestra, redactadas por el equipo de divulgación y
+// marcadas como borrador en el sitio. Se retiraron el 29 de octubre de 2026: la idea
+// de publicar borradores para que el investigador los revise en línea pide un servidor
+// con pantallas de edición y soporte a usuarios, y este sitio es estático. Se publica
+// lo que el investigador ya dijo, y nada más.
 //
-// La marca se cayó dos veces durante la revisión (en el perfil del investigador y en
-// los metadatos que se comparten en redes), así que aquí se sujetan las dos mitades:
-// el valor en el contenido y el hecho de que cada vista lo lea.
+// Esta prueba es lo que impide que vuelvan a colarse sin querer.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -17,71 +16,38 @@ import { primeraFrase } from '../src/lib/texto.ts';
 const dir = new URL('../src/content/entrevistas/', import.meta.url);
 const leer = (ruta) => readFileSync(new URL('../' + ruta, import.meta.url), 'utf8');
 
-const archivos = readdirSync(dir).filter((f) => f.endsWith('.mdx'));
-const entrevistas = archivos.map((f) => {
-  const texto = readFileSync(new URL(f, dir), 'utf8');
-  const bloque = texto.split('---')[1];
-  return { archivo: f, datos: yaml.load(bloque) };
-});
-
-/**
- * Las que redactamos nosotros, con nombre y apellido. Si alguna se graba de verdad y
- * el investigador la revisa, se quita de aquí Y se le quita `esEjemplo` del archivo:
- * las dos cosas juntas, que es la fricción que esta lista existe para poner.
- */
-const REDACTADAS_POR_NOSOTROS = [
-  'rodrigo-lopez-farias.mdx',
-  'karol-yanez-soria.mdx',
-  'sergio-ivvan-valdez-pena.mdx',
-  'jose-joaquin-pina-mondragon.mdx',
-];
+const entrevistas = readdirSync(dir).filter((f) => f.endsWith('.mdx')).map((f) => ({
+  archivo: f,
+  datos: yaml.load(readFileSync(new URL(f, dir), 'utf8').split('---')[1]),
+}));
 
 test('se leyeron las entrevistas del repositorio', () => {
-  assert.ok(entrevistas.length >= 5, `solo se leyeron ${entrevistas.length} entrevistas`);
+  assert.ok(entrevistas.length >= 1, 'no hay ninguna entrevista');
   for (const { archivo, datos } of entrevistas) {
     assert.ok(datos?.investigador, `${archivo} no declara investigador`);
     assert.equal(datos.preguntas?.length, 3, `${archivo} no trae tres preguntas`);
   }
 });
 
-test('las entrevistas que redactamos nosotros van marcadas como muestra', () => {
-  for (const archivo of REDACTADAS_POR_NOSOTROS) {
-    const e = entrevistas.find((x) => x.archivo === archivo);
-    assert.ok(e, `falta ${archivo}: si se borró, quítalo también de la lista de arriba`);
-    assert.equal(e.datos.esEjemplo, true,
-      `${archivo} la escribimos nosotros y tiene que ir marcada como muestra`);
+test('ninguna entrevista se publica como borrador', () => {
+  // Publicar un texto que el investigador no ha dicho, aunque vaya marcado, obliga a
+  // un circuito de revisión que un sitio estático no tiene.
+  for (const { archivo, datos } of entrevistas) {
+    assert.equal(datos.esEjemplo, undefined,
+      `${archivo} se marca como borrador: o se graba de verdad, o no se publica`);
   }
-});
-
-test('todas las vistas que enseñan una entrevista leen la marca', () => {
-  // El agujero que hubo: el índice y la ficha avisaban, pero el perfil del
-  // investigador enlazaba la entrevista inventada sin decir nada.
-  const vistas = [
-    'src/pages/entrevistas/index.astro',
-    'src/pages/entrevistas/[id].astro',
-    'src/pages/investigadores/[id].astro',
-  ];
-  for (const vista of vistas) {
-    assert.match(leer(vista), /esEjemplo/,
-      `${vista} enseña entrevistas y no mira si son de muestra`);
+  // Y ninguna vista puede volver a leer esa marca.
+  for (const vista of ['src/pages/entrevistas/index.astro',
+                       'src/pages/entrevistas/[id].astro',
+                       'src/pages/investigadores/[id].astro',
+                       'src/content.config.ts']) {
+    assert.doesNotMatch(leer(vista), /esEjemplo/, `${vista} todavía mira la marca de borrador`);
   }
-});
-
-test('la marca viaja también en lo que se comparte en redes', () => {
-  // Un enlace pegado en WhatsApp se lee sin abrir la página: si el aviso vive solo
-  // dentro, el texto inventado circula como declaración real.
-  const ficha = leer('src/pages/entrevistas/[id].astro');
-  const desde = ficha.indexOf('const descripcion');
-  assert.ok(desde !== -1, 'la ficha no arma una descripción propia');
-  const bloque = ficha.slice(desde, desde + 420);
-  assert.match(bloque, /esEjemplo/, 'la descripción compartida no distingue las de muestra');
-  assert.match(bloque, /borrador/i, 'la descripción compartida no dice que es un borrador');
-  assert.match(ficha, /description=\{descripcion\}/, 'la descripción no llega al layout');
 });
 
 test('el gancho de cada tarjeta cabe y no parte palabras', () => {
   // Las tarjetas del índice llaman a `primeraFrase` sin tope, así que es esa rama la
-  // que hay que comprobar contra los textos de verdad, no contra uno inventado.
+  // que hay que comprobar contra los textos de verdad.
   for (const { archivo, datos } of entrevistas) {
     const gancho = primeraFrase(datos.preguntas[0].respuesta);
     assert.ok(gancho.length > 20, `el gancho de ${archivo} se queda en "${gancho}"`);

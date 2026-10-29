@@ -20,11 +20,13 @@
 		z-index: 2147483000;
 		pointer-events: none;
 	}
+	/* Rojo vivo y no el naranja de la casa: proyectado, el naranja se confunde con
+	   el propio acento del sitio y casi no se ve. Aquí el contorno tiene que gritar. */
 	#visita-capa :global(.visita-caja) {
 		position: fixed;
-		border: 3px solid var(--cg-color-naranja-300, #c45620);
+		border: 4px solid #e60f0f;
 		border-radius: 6px;
-		box-shadow: 0 0 0 4px rgba(196, 86, 32, 0.22), 0 0 0 9999px rgba(8, 20, 32, 0.28);
+		box-shadow: 0 0 0 5px rgba(230, 15, 15, 0.3), 0 0 0 9999px rgba(8, 20, 32, 0.34);
 		transition: opacity 160ms ease;
 	}
 </style>

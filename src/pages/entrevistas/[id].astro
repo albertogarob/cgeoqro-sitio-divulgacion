@@ -25,12 +25,8 @@ const foto = investigador?.data.fotoUrl;
 
 // La transcripción se arma alternando las dos voces: cada pregunta y su respuesta son
 // dos turnos distintos, como se oirían en el video.
-// La descripción que se ve al pegar el enlace en WhatsApp o Facebook. En una
-// entrevista en borrador el aviso va DENTRO de ella: ahí nadie abre la página para
-// enterarse, y sin esto el texto circulaba como declaración ya dada.
-const descripcion = entrevista.data.esEjemplo
-  ? `Borrador de entrevista, preparado por el equipo de divulgación a partir del perfil de ${nombre}. Pendiente de que lo revise y lo grabe.`
-  : `${nombre} responde tres preguntas sobre su trabajo en CentroGeo Querétaro.`;
+// La descripción que se ve al pegar el enlace en WhatsApp o Facebook.
+const descripcion = `${nombre} responde tres preguntas sobre su trabajo en CentroGeo Querétaro.`;
 
 const turnos = entrevista.data.preguntas.flatMap((qa) => [
   { voz: 'entrevista' as const, quien: 'Divulgación CentroGeo Querétaro', texto: qa.pregunta },
@@ -44,13 +40,6 @@ const turnos = entrevista.data.preguntas.flatMap((qa) => [
 		<h1>3 Preguntas a {nombre}</h1>
 		{investigador && (
 			<p class="meta"><a href={withBase(`/investigadores/${investigador.id}/`)}>Ver perfil de {nombre}</a></p>
-		)}
-		{entrevista.data.esEjemplo && (
-			<p class="aviso-ejemplo">
-				<strong>Borrador para revisión.</strong> El equipo de divulgación preparó este texto
-				a partir del perfil de {nombre}, para que tenga de dónde partir. Queda pendiente que
-				lo revise y lo grabe; hasta entonces el texto no recoge declaraciones suyas.
-			</p>
 		)}
 	</div>
 
@@ -139,16 +128,6 @@ const turnos = entrevista.data.preguntas.flatMap((qa) => [
 		.meta {
 			color: #666;
 			font-size: 0.9rem;
-		}
-		.aviso-ejemplo {
-			margin-top: 1.25rem;
-			padding: 0.9rem 1.1rem;
-			border-left: 4px solid var(--cg-color-amarillo-500, #916802);
-			border-radius: 0 var(--cg-border-radius-s) var(--cg-border-radius-s) 0;
-			background: var(--cg-color-amarillo-100, #f6edd2);
-			color: var(--cg-color-gris-700);
-			font-size: 0.9rem;
-			line-height: 1.5;
 		}
 
 		/* ── Modo cine: el video, o el hueco donde irá ── */

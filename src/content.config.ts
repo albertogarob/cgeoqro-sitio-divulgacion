@@ -90,11 +90,6 @@ const entrevistas = defineCollection({
     // Nota de producción del video (ej. "Avatar generado con IA a partir de un guion
     // de divulgación propio"). Se muestra bajo el reproductor.
     videoNota: z.string().optional(),
-    // Borrador: el equipo de divulgación preparó el texto a partir del perfil del
-    // investigador, y queda pendiente que él lo revise y lo grabe. El sitio lo avisa
-    // en la tarjeta y en la página, porque mientras tanto son palabras puestas en boca
-    // de una persona real. Se quita en cuanto la entrevista se graba.
-    esEjemplo: z.boolean().default(false),
   }),
 });
 
