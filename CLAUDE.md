@@ -75,10 +75,14 @@ sobre lo que se puede construir, y deben respetarse en todo el desarrollo:
   GitHub Pages distinguen mayúsculas; mantener slugs siempre en minúsculas.
 - **Despliegue**: vía GitHub Actions (`.github/workflows/deploy.yml`, usando
   `withastro/action` + `actions/deploy-pages`), no despliegue manual.
-- Repo actual: https://github.com/albertogarob/cgeoqro-sitio-divulgacion (**privado**).
-  GitHub Pages en repos privados de cuentas personales requiere plan GitHub
-  Pro/Team/Enterprise; con plan gratuito, el workflow `deploy.yml` no podrá publicar
-  hasta que el repo se haga público o se confirme un plan compatible.
+- Repo actual: https://github.com/albertogarob/cgeoqro-sitio-divulgacion, **público**
+  desde antes del 29 de octubre de 2026 (comprobado ese día con
+  `gh repo view --json visibility`). En un repositorio público GitHub Pages no cuesta
+  nada, así que el workflow `deploy.yml` publica sin plan de pago, y la afirmación de
+  "sin costo" que hace el deck de la visita guiada se sostiene. La advertencia anterior,
+  que lo daba por privado y avisaba de que haría falta plan Pro, dejó de aplicar.
+  Si algún día el repositorio vuelve a ser privado, Pages exigirá plan
+  Pro/Team/Enterprise en una cuenta personal, y esa frase del deck habría que quitarla.
 - Esta restricción es el estado inicial, no necesariamente permanente: si más
   adelante se requiere backend real (ej. CRM con autenticación, base de datos), se
   debe migrar a otro hosting (Vercel, Netlify, servidor propio) y esta sección debe

@@ -14,15 +14,15 @@ Encima de las cápsulas hay tres formas de recorrer el sitio. La primera son las
 
 ## 4. La portada
 
-Esta es la portada, en vivo: lo primero que ve quien llega. Esto es el sitio, en vivo. Se llama Ciencia Geoespacial para Todos, y junto al logo solo se pone esa parte, porque el logo ya dice CentroGeo. Hay cuatro formas de entrar: por cápsula, que es la unidad de contenido; por serie temática; por investigador; o por las entrevistas.
+Esta es la portada, en vivo: lo primero que ve quien llega. Se llama Ciencia Geoespacial para Todos, y junto al logo solo se pone esa parte, porque el logo ya dice CentroGeo. Hay cuatro formas de entrar: por cápsula, que es la unidad de contenido; por serie temática; por investigador; o por las entrevistas.
 
 ## 5. El catálogo de cápsulas
 
-Esta es la página del catálogo, con todo lo publicado junto. La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. Todo lo que se publica es la traducción de algo que ya se investigó. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
+Esta es la página del catálogo, con todo lo publicado junto. La unidad de contenido es la cápsula: un hallazgo, contado en pocos minutos. Hoy hay cuatro, y cada una sale de un artículo publicado por alguien de la sede. Todo lo que se publica es la traducción de algo que ya se investigó. Tres de ellas son recorridos interactivos, que es el formato que te quiero enseñar. La cuarta es el video que ya existía, el de Joaquín sobre Estados Unidos y China. [No piques la tarjeta del video. Ese archivo está compartido solo dentro del sitio de Ivvan, así que fuera de ahí sale "No se pudo cargar el video". Si sale el tema, se dice: hace falta que lo resuban a YouTube o que le cambien el permiso en Drive.] Y cada una cuelga de una serie temática, que son las mismas tres que usó Ivvan.
 
 ## 6. Una cápsula como recorrido
 
-Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Demo a mano. Pulsa D: el sitio ocupa la lámina entera y se apaga el resaltado. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo. D otra vez para volver.] Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.] Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea. Lo que más me importa es cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
+Y esta es una cápsula por dentro, en el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Demo a mano. Pulsa D: el sitio ocupa la lámina entera y se apaga el resaltado. Rueda del ratón sobre el sitio, tres o cuatro pasos, despacio. Que se vea el gráfico cambiar con el texto antes de hablar de que se cuenta solo. D otra vez para volver.] Esta es la forma normal de verlo. Y si no quieres desplazarte, se cuenta solo. [Le doy al play.] Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo. Los gráficos están dibujados para la cápsula, y las fotos solo entran si su licencia lo permite, siempre con su crédito. Del artículo no se copia ni una línea. Lo que más me importa es cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.
 
 ## 7. Las series temáticas
 
@@ -46,7 +46,7 @@ Y así se ve una entrevista por dentro. La entrevista está pensada como video d
 
 ## 11. De dónde sale cada cosa
 
-Esta página le explica al público de dónde sale cada cosa. Esta página explica al público de dónde sale cada cosa. Del artículo pasan las ideas. El texto literal no pasa nunca: todo está reescrito. Las figuras y las fotos de fuera entran solo cuando su licencia lo permite, y siempre con su crédito al lado. Revisamos artículo por artículo cuáles lo permiten y cuáles no, y está documentado. Y esto está escrito y publicado, no en un cajón. Si alguien de una editorial llega a preguntar, la respuesta está en el sitio.
+Esta página le explica al público de dónde sale cada cosa. Del artículo pasan las ideas. El texto literal no pasa nunca: todo está reescrito. Las figuras y las fotos de fuera entran solo cuando su licencia lo permite, y siempre con su crédito al lado. Revisamos artículo por artículo cuáles lo permiten y cuáles no, y está documentado. Y esto está escrito y publicado, no en un cajón. Si alguien de una editorial llega a preguntar, la respuesta está en el sitio.
 
 **Recorte 2**: se pierde, pero hay que decirlo.
 

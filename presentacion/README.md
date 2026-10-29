@@ -104,12 +104,12 @@ corriéndolas todas:
 | `anclas.py` | renumera los `data-sinc` y rompe el deck | ver el apartado siguiente |
 | `citas.py` | "la bibliografía no tiene entradas con id" | esta visita no cita nada: no hay lámina de bibliografía |
 | `parcelas.py` | "el deck no declara `<template id="mapa-parcelas">`" | el terreno de la brigada es del curso, no de aquí |
-| `apuntes.py` | "0 de 14 láminas con apunte" | los apuntes son material de estudio para un grupo; esto es una junta de quince minutos |
+| `apuntes.py` | "0 de 14 láminas con apunte" | los apuntes son material de estudio para un grupo; esto es una junta de quince minutos. **Su `apuntes.md` no se guarda**: lo que diría ya está en la ficha de la lámina de cierre |
 | `figuras.py` | "0 figuras" | las figuras de esta visita están dentro del sitio, no en las láminas |
 | `terminos.py` | 31 términos sin definir | mide contra el vocabulario de un curso. Lo único que merece una mirada es que "recorrido interactivo" sale en la lámina 2 y se ve en la 5, y "transcripción" en la 9 antes de la 10 |
 
-Las que sí mandan aquí son las seis de la tabla de arriba, y sobre todo `barrido.py`,
-que es la que entiende la tira de puntos.
+Las que sí mandan aquí son las siete de la tabla de arriba, más `verifica.py`, y sobre
+todo `barrido.py`, que es la que entiende la tira de puntos.
 
 ## `anclas.py` NO se corre sobre este deck
 
@@ -139,7 +139,7 @@ npm run build && npm run preview -- --port 4321 --host 127.0.0.1
 Después se apuntan los marcos a esa copia y se rehace el paquete:
 
 ```bash
-sed -i 's#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#http://localhost:4321/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
+sed -i 's#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#http://127.0.0.1:4321/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
 python3 presentacion/tools/empaquetar.py presentacion/sesiones/S01-sitio-de-divulgacion/index.html --con-apuntador
 cp presentacion/salidas/S01-sitio-de-divulgacion.html presentacion/salidas/S01-para-presentar.html
 ```
@@ -147,7 +147,7 @@ cp presentacion/salidas/S01-sitio-de-divulgacion.html presentacion/salidas/S01-p
 Y para volver a la copia publicada, la misma sustitución al revés:
 
 ```bash
-sed -i 's#http://localhost:4321/cgeoqro-sitio-divulgacion/#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
+sed -i 's#http://127.0.0.1:4321/cgeoqro-sitio-divulgacion/#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
 ```
 
 Dos cosas que hay que saber. El paquete **sigue necesitando el servidor local levantado**
