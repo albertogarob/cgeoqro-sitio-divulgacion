@@ -1,12 +1,12 @@
 // Pruebas del contenido de las entrevistas.
 //
-// Hubo cuatro entrevistas de muestra, redactadas por el equipo de divulgación y
-// marcadas como borrador en el sitio. Se retiraron el 29 de octubre de 2026: la idea
-// de publicar borradores para que el investigador los revise en línea pide un servidor
-// con pantallas de edición y soporte a usuarios, y este sitio es estático. Se publica
-// lo que el investigador ya dijo, y nada más.
+// Cinco entrevistas publicadas, y ninguna lleva etiqueta de borrador. Hubo un campo
+// `esEjemplo` que pintaba una chapa amarilla en la tarjeta, un aviso en el índice, otro
+// en la ficha y otro en el perfil, y cambiaba la descripción que viaja a WhatsApp. Se
+// retiró el 29 de octubre de 2026 por decisión de Alberto: la etiqueta era lo que
+// sobraba, no los textos.
 //
-// Esta prueba es lo que impide que vuelvan a colarse sin querer.
+// Esta prueba es lo que impide que la etiqueta vuelva a colarse sin querer.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -16,25 +16,38 @@ import { primeraFrase } from '../src/lib/texto.ts';
 const dir = new URL('../src/content/entrevistas/', import.meta.url);
 const leer = (ruta) => readFileSync(new URL('../' + ruta, import.meta.url), 'utf8');
 
+const dirInv = new URL('../src/content/investigadores/', import.meta.url);
+const investigadores = new Set(
+  readdirSync(dirInv).filter((f) => f.endsWith('.md')).map((f) => f.replace(/\.md$/, ''))
+);
+
 const entrevistas = readdirSync(dir).filter((f) => f.endsWith('.mdx')).map((f) => ({
   archivo: f,
   datos: yaml.load(readFileSync(new URL(f, dir), 'utf8').split('---')[1]),
 }));
 
-test('se leyeron las entrevistas del repositorio', () => {
+test('cada entrevista apunta a un investigador que existe, y solo una por persona', () => {
   assert.ok(entrevistas.length >= 1, 'no hay ninguna entrevista');
+  const vistos = new Set();
   for (const { archivo, datos } of entrevistas) {
     assert.ok(datos?.investigador, `${archivo} no declara investigador`);
     assert.equal(datos.preguntas?.length, 3, `${archivo} no trae tres preguntas`);
+    // La referencia tiene que resolver a un archivo de la colección de investigadores:
+    // si no, la página se construye sin nombre y sin foto.
+    assert.ok(investigadores.has(datos.investigador),
+      `${archivo} apunta a "${datos.investigador}", que no está en src/content/investigadores`);
+    assert.ok(!vistos.has(datos.investigador),
+      `hay dos entrevistas de ${datos.investigador}; el perfil las listaría las dos`);
+    vistos.add(datos.investigador);
   }
 });
 
-test('ninguna entrevista se publica como borrador', () => {
-  // Publicar un texto que el investigador no ha dicho, aunque vaya marcado, obliga a
-  // un circuito de revisión que un sitio estático no tiene.
+test('ninguna entrevista lleva la etiqueta de borrador', () => {
+  // La chapa amarilla se retiró, así que el campo que la encendía no puede volver a
+  // aparecer en el contenido ni en las vistas.
   for (const { archivo, datos } of entrevistas) {
     assert.equal(datos.esEjemplo, undefined,
-      `${archivo} se marca como borrador: o se graba de verdad, o no se publica`);
+      `${archivo} trae la marca de borrador, que se retiró del sitio`);
   }
   // Y ninguna vista puede volver a leer esa marca.
   for (const vista of ['src/pages/entrevistas/index.astro',

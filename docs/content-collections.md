@@ -105,6 +105,10 @@ La entrevista **siempre se presenta como un video**: mientras `videoUrl` esté v
 página pinta el hueco donde irá, y el texto se muestra como la transcripción a dos
 voces de ese video (quien pregunta y quien responde).
 
+Hoy hay una entrevista por investigador, cinco en total, y ninguna grabada todavía, así
+que las cinco se ven con su hueco de video y su transcripción.
+`tests/entrevistas.test.mjs` comprueba que cada una apunte a un investigador que existe
+y que no haya dos de la misma persona.
 
 ### `recorridos`
 
