@@ -97,7 +97,7 @@ const entrevistas = defineCollection({
     fechaPublicacion: z.date(),
     videoUrl: z.string().url().optional(),   // YouTube, nunca Drive (ver CLAUDE.md)
     videoNota: z.string().optional(),        // nota de producción bajo el reproductor
-    esEjemplo: z.boolean().default(false),   // entrevista de muestra, sin grabar ni revisar
+    esEjemplo: z.boolean().default(false),   // borrador, pendiente de revisar y grabar
   }),
 })
 ```
@@ -106,9 +106,9 @@ La entrevista **siempre se presenta como un video**: mientras `videoUrl` esté v
 página pinta el hueco donde irá, y el texto se muestra como la transcripción a dos
 voces de ese video (quien pregunta y quien responde).
 
-**`esEjemplo` no es cosmético.** Marca las entrevistas que redactó el equipo de
-divulgación y que el investigador todavía no ha grabado ni revisado, es decir palabras
-puestas en boca de una persona real. Con la marca puesta, el sitio avisa en cuatro
+**`esEjemplo` no es cosmético.** Marca las entrevistas en borrador: las preparó el
+equipo de divulgación a partir del perfil del investigador, y queda pendiente que él las
+revise y las grabe. Mientras tanto son palabras puestas en boca de una persona real. Con la marca puesta, el sitio avisa en cuatro
 sitios: la tarjeta del índice, el aviso de cabecera del índice, la ficha de la
 entrevista y el enlace desde el perfil del investigador; y además cambia la descripción
 que viaja a WhatsApp y a Facebook, que es donde nadie abre la página para enterarse.

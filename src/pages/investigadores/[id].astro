@@ -55,7 +55,7 @@ const { Content } = await render(inv);
 					<a href={withBase(`/entrevistas/${e.id}/`)}>Entrevista del {fechaCorta(e.data.fechaPublicacion)}</a>
 					{/* El aviso va también aquí: quien llega por el perfil se metía en una
 					    entrevista inventada sin saberlo hasta estar dentro. */}
-					{e.data.esEjemplo && <span class="etiqueta-muestra">Muestra</span>}
+					{e.data.esEjemplo && <span class="etiqueta-muestra">Borrador</span>}
 				</li>
 		))}
 	</ul>

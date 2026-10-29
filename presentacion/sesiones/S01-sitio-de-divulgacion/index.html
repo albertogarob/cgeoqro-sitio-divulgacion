@@ -1,5 +1,5 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Ciencia Geoespacial para Todos</title>
+<title>Sitio de divulgación de CentroGeo Querétaro</title>
 <link rel="stylesheet" href="../../plantillas/tema-centrogeo/vendor/reveal/dist/reveal.css">
 <link rel="stylesheet" href="../../plantillas/tema-centrogeo/tema-centrogeo.css">
 <style>
@@ -8,10 +8,11 @@
    página publicada y al lado va la tira de puntos que sí se resalta con el
    guion, porque dentro del iframe no se puede marcar nada: es otro origen.
 
-   El iframe arranca SIN recibir clics (pointer-events: none). Así las flechas
-   siguen moviendo el deck en vez de perderse dentro de la página. Con la tecla
-   I se le pasa el control al sitio, y con el botón de la barra se recupera:
-   una vez que el foco está dentro del iframe, el teclado ya no llega aquí. */
+   El iframe recibe los clics desde el principio: se presenta con el apuntador
+   abierto, y desde esa ventana las flechas mueven el deck aunque el foco esté
+   dentro de la página. Quien presente sin apuntador y se quede sin flechas,
+   pulsa el botón de la barra: deja el iframe sordo a los clics y el teclado
+   vuelve al deck. */
 .reveal section.parada::before { display: none; }
 .reveal section.parada { background: #0c1a2b; padding: 0; }
 .parada .pa { position: absolute; inset: 0; display: flex; flex-direction: column; }
@@ -31,11 +32,11 @@
   color: rgba(255,255,255,.8); font: 12px/1 'Noto Sans', sans-serif;
   padding: 5px 10px; border-radius: 999px; cursor: pointer;
 }
-.parada.interactiva .pacontrol { background: #C45620; border-color: #C45620; color: #fff; }
+.parada.sordo .pacontrol { background: #C45620; border-color: #C45620; color: #fff; }
 
 .parada .pacuerpo { flex: 1; display: flex; min-height: 0; }
-.parada iframe { flex: 1; border: 0; background: #fff; pointer-events: none; }
-.parada.interactiva iframe { pointer-events: auto; }
+.parada iframe { flex: 1; border: 0; background: #fff; }
+.parada.sordo iframe { pointer-events: none; }
 
 .parada .pamira {
   width: 348px; flex: none; margin: 0; padding: 20px 20px 16px; list-style: none;
@@ -59,8 +60,8 @@
 <div class="reveal"><div class="slides">
 
 <section id="portada" class="portada" data-sid="portada">
-  <div class="titulo">Ciencia Geoespacial para Todos</div>
-  <div class="bajada"><strong>Sitio de divulgación de CentroGeo Querétaro</strong><br>
+  <div class="titulo">Sitio de divulgación de CentroGeo Querétaro</div>
+  <div class="bajada"><strong>Ciencia Geoespacial para Todos</strong><br>
     Dr. Alberto Garcia-Robledo<br>
     <span class="secundario">Visita guiada a la dirección general<br>29 de octubre de 2026</span></div>
   <aside class="notes">
@@ -69,24 +70,38 @@
   </aside>
 </section>
 
-<section id="el-problema" class="guinda-linea" data-sid="el-problema"><h2>De qué se trata</h2><div class="cuerpo">
+<section id="la-capsula" class="guinda-linea" data-sid="la-capsula"><h2>La cápsula de conocimiento</h2><div class="cuerpo">
   <ul>
-    <li data-pieza="1">Lo que publica la sede vive en <strong>revistas académicas</strong> y ahí se queda.</li>
-    <li data-pieza="2">Ya hay un precedente que funciona: el <strong>sitio de Ivvan</strong> en Google Sites.</li>
-    <li data-pieza="3">Esto recoge esa idea y le pone <strong>maquinaria detrás</strong>: crece, se mide y lo corrigen los autores.</li>
+    <li data-pieza="1">Un hallazgo de un artículo, contado en <strong>pocos minutos</strong> y en lenguaje llano.</li>
+    <li data-pieza="2">En varios formatos: <strong>recorrido interactivo</strong>, video, texto o infografía.</li>
+    <li data-pieza="3">Siempre con su <strong>artículo de origen</strong> citado y su autor a la vista.</li>
   </ul>
   </div>
   <aside class="notes">
-  <p data-sinc="1">El problema no es que no se publique. Se publica, y bien. El problema es que un artículo en una revista indexada llega a los pares y a nadie más. Y hay un segundo problema, que es de la sede: en Querétaro casi nadie sabe que aquí hay un centro público haciendo ciencia del territorio del estado.</p>
-  <p data-sinc="2">Esto no empieza de cero. Ivvan ya montó un sitio en Google Sites con tres líneas temáticas, agua, el espacio donde vivimos y sociedad justa, y ahí hay video y hay material interactivo.</p>
-  <p data-sinc="3">Lo que propongo recoge esa organización y le pone detrás algo que pueda crecer: un sitio donde cada contenido nace de un artículo concreto, donde el propio investigador corrige su texto, y donde se puede medir quién entra y a qué.</p>
+  <p data-sinc="1">La unidad de todo esto es la cápsula de conocimiento: un hallazgo de un artículo publicado, contado en pocos minutos y en lenguaje llano, para alguien que no es del gremio.</p>
+  <p data-sinc="2">La forma la pide el contenido. El recorrido interactivo, que es el que te voy a enseñar y donde el relato avanza con un gráfico detrás. El video, para lo que se cuenta mejor hablando. Y el texto con infografía.</p>
+  <p data-sinc="3">Lo que no cambia nunca es que cada cápsula dice de qué artículo salió, con su referencia completa, y quién lo firmó. Aquí no hay divulgación anónima: el crédito es de quien hizo la investigación, y eso es parte del punto.</p>
+  </aside>
+</section>
+
+<section id="como-se-organiza" class="verde-linea" data-sid="como-se-organiza"><h2>Cómo se organiza</h2><div class="cuerpo">
+  <ul>
+    <li data-pieza="1">Las cápsulas se agrupan en <strong>series temáticas</strong>, por eje de investigación.</li>
+    <li data-pieza="2">Cada <strong>investigador</strong> tiene su ficha, con todo lo suyo reunido.</li>
+    <li data-pieza="3">Y <strong>3 Preguntas a...</strong>, que es la voz de quien lo investigó, en video.</li>
+  </ul>
+  </div>
+  <aside class="notes">
+  <p data-sinc="1">Encima de las cápsulas hay tres formas de recorrer el sitio. La primera son las series temáticas: agua, el espacio donde vivimos, y sociedad justa. Son los ejes que ya usa el equipo, y el sitio se acomoda a ellos.</p>
+  <p data-sinc="2">La segunda es por persona. Cada investigador tiene su ficha, y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista y sus publicaciones. Eso es lo que permite, después, reportar el alcance de lo de cada quien.</p>
+  <p data-sinc="3">Y la tercera es una sección propia, 3 Preguntas a. Tres preguntas iguales para todos, en video y con su transcripción. La cápsula cuenta el hallazgo; la entrevista pone la cara y la voz de quien lo hizo.</p>
   </aside>
 </section>
 
 <section id="parada-portada" class="parada" data-sid="parada-portada">
   <div class="pa">
     <div class="pabarra"><div class="titulo">La portada</div><span class="paurl">albertogarob.github.io/cgeoqro-sitio-divulgacion/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/" title="Portada del sitio"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -106,7 +121,7 @@
 <section id="parada-capsulas" class="parada" data-sid="parada-capsulas">
   <div class="pa">
     <div class="pabarra"><div class="titulo">El catálogo de cápsulas</div><span class="paurl">/capsulas/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/" title="Catálogo de cápsulas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -126,7 +141,7 @@
 <section id="parada-recorrido" class="parada" data-sid="parada-recorrido">
   <div class="pa">
     <div class="pabarra"><div class="titulo">Una cápsula como recorrido</div><span class="paurl">/capsulas/mapas-sequia/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/capsulas/mapas-sequia/" title="Recorrido sobre mapas de sequía"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -139,8 +154,8 @@
   </div>
   <aside class="notes">
   <p data-sinc="1">Este es el formato que más me interesa enseñarte. Es un recorrido: el relato avanza conforme bajas, y el gráfico de atrás cambia con el texto. [Pulso I y le doy al play.] Y si no quieres desplazarte, se cuenta solo.</p>
-  <p data-sinc="2">Son quince paradas y dura minuto y medio. La duración de cada paso la calcula el propio sitio a partir de lo que mide el texto, así que un paso largo se queda más tiempo en pantalla.</p>
-  <p data-sinc="3">Todo lo que se ve de gráficos está dibujado para la cápsula. Las fotos son de licencia libre y llevan su crédito abajo. Del artículo no se copia ni una línea de texto.</p>
+  <p data-sinc="2">Son quince paradas y dura minuto y medio. Cada paso dura lo que pide su texto: el sitio lo calcula solo.</p>
+  <p data-sinc="3">Los gráficos están dibujados para la cápsula, y las fotos son de licencia libre con su crédito. Del artículo no se copia ni una línea.</p>
   <p data-sinc="4">Y fíjate en cómo acaba: la última parada del recorrido es quién firma el artículo y los botones para compartirlo. El recorrido no te deja en el aire.</p>
   </aside>
 </section>
@@ -148,7 +163,7 @@
 <section id="parada-series" class="parada" data-recorte="1" data-sid="parada-series">
   <div class="pa">
     <div class="pabarra"><div class="titulo">Las series temáticas</div><span class="paurl">/series/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/series/" title="Series temáticas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -166,7 +181,7 @@
 <section id="parada-investigador" class="parada" data-recorte="2" data-sid="parada-investigador">
   <div class="pa">
     <div class="pabarra"><div class="titulo">La ficha de un investigador</div><span class="paurl">/investigadores/rodrigo-lopez-farias/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/investigadores/rodrigo-lopez-farias/" title="Perfil de un investigador"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -179,32 +194,32 @@
   <aside class="notes">
   <p data-sinc="1">Los cinco investigadores de la sede tienen ficha. Esta es la de Rodrigo.</p>
   <p data-sinc="2">Y debajo se le junta todo lo suyo: las cápsulas que salieron de sus artículos, su entrevista, y las publicaciones de origen.</p>
-  <p data-sinc="3">Esto parece cosmético y no lo es. Por dentro el sitio relaciona investigador, artículo y contenido, así que puede decir cuánta gente entró a lo de cada quien. Es lo que hace falta para que esto sirva en un informe.</p>
+  <p data-sinc="3">Por dentro el sitio relaciona investigador, artículo y contenido, así que puede decir cuánta gente entró a lo de cada quien. Es lo que hace falta para que sirva en un informe.</p>
   </aside>
 </section>
 
 <section id="parada-entrevistas" class="parada" data-sid="parada-entrevistas">
   <div class="pa">
     <div class="pabarra"><div class="titulo">3 Preguntas a...</div><span class="paurl">/entrevistas/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/" title="Catálogo de entrevistas"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
         <li data-pieza="1">Formato fijo: <strong>las mismas tres preguntas</strong> a todo el mundo.</li>
-        <li data-pieza="2">Cuatro están marcadas como <strong>muestra</strong>: las escribí yo y nadie las ha validado.</li>
+        <li data-pieza="2">Cuatro son <strong>borradores</strong>, listos para que cada quien los revise y los grabe.</li>
       </ul>
     </div>
   </div>
   <aside class="notes">
   <p data-sinc="1">Esta sección se llama 3 Preguntas a. El formato es fijo: las mismas tres preguntas para todos. Qué estudias, para qué sirve, y qué te entusiasma de lo que viene.</p>
-  <p data-sinc="2">Y aquí quiero ser muy claro: cuatro de las cinco entrevistas las redacté yo a partir del perfil de cada quien, para que vieras cómo se ve la sección llena. Ninguno de ellos las ha dicho ni las ha revisado, y por eso el sitio lo avisa en cada tarjeta, en la ficha, en el perfil del investigador y hasta en lo que se ve al pegar el enlace en WhatsApp. No se publica nada en boca de nadie sin que esa persona lo valide.</p>
+  <p data-sinc="2">Cuatro de las cinco están preparadas como borrador: las redacté a partir del perfil de cada quien, para que la sección se pueda ver completa y para que el investigador tenga de dónde partir en vez de una hoja en blanco. El sitio lo dice en cada tarjeta y en cada ficha, y el paso que falta es media hora de cada uno: revisar su texto y grabarlo.</p>
   </aside>
 </section>
 
 <section id="parada-entrevista" class="parada" data-sid="parada-entrevista">
   <div class="pa">
     <div class="pabarra"><div class="titulo">Una entrevista</div><span class="paurl">/entrevistas/rodrigo-lopez-farias/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/entrevistas/rodrigo-lopez-farias/" title="Una entrevista"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -215,16 +230,16 @@
     </div>
   </div>
   <aside class="notes">
-  <p data-sinc="1">La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde. Prefiero que se vea que falta a que parezca que es un texto suelto.</p>
+  <p data-sinc="1">La entrevista está pensada como video desde el principio. Mientras no esté grabado, el sitio enseña el hueco donde va, con la cara de quien responde.</p>
   <p data-sinc="2">Y el texto de abajo no es un resumen: es la transcripción, con sus dos voces, quien pregunta y quien responde. Así, cuando el video exista, el texto ya le corresponde.</p>
-  <p data-sinc="3">Lo digo porque es barato: son tres preguntas por persona. Grabar a los cinco investigadores cabe en una mañana, y a partir de ahí la sección deja de ser una muestra.</p>
+  <p data-sinc="3">Y es barato: tres preguntas por persona, los cinco en una mañana.</p>
   </aside>
 </section>
 
 <section id="parada-acerca" class="parada" data-recorte="2" data-sid="parada-acerca">
   <div class="pa">
     <div class="pabarra"><div class="titulo">De dónde sale cada cosa</div><span class="paurl">/acerca-de/</span>
-      <button class="pacontrol" type="button">I &middot; control del sitio</button></div>
+      <button class="pacontrol" type="button">I &middot; el sitio recibe los clics</button></div>
     <div class="pacuerpo">
       <iframe data-src="https://albertogarob.github.io/cgeoqro-sitio-divulgacion/acerca-de/" title="Acerca de y política de derechos"></iframe>
       <ul class="pamira"><p class="paqué">Qué mirar aquí</p>
@@ -249,8 +264,8 @@
   </ul>
   </div>
   <aside class="notes">
-  <p data-sinc="1">Tres cosas que no se ven y que son las que hacen que esto se pueda sostener. La primera: el investigador corrige su propio texto desde una hoja de cálculo que le llega a su Drive. Cambia una frase, la devuelve, y el sitio la valida y la aplica. No tiene que pedirle nada a nadie ni tocar una línea de código.</p>
-  <p data-sinc="2">La segunda: cuando alguien pega un enlace del sitio en WhatsApp, sale con su título, su resumen y su imagen, que es la diferencia entre que se comparta y que no. Y las analíticas están puestas para desglosar por cápsula, por serie y por investigador, con la idea de que cada quien pueda reportar el alcance de lo suyo.</p>
+  <p data-sinc="1">Tres cosas que no se ven y que son las que hacen que esto se pueda sostener. La primera: el investigador corrige su propio texto desde una hoja de cálculo que le llega a su Drive. Cambia una frase, la devuelve, y el sitio la valida y la aplica, sin pedirle nada a nadie.</p>
+  <p data-sinc="2">La segunda: un enlace pegado en WhatsApp sale con su título, su resumen y su imagen, que es la diferencia entre que se comparta y que no. Y las analíticas desglosan por cápsula, serie e investigador, para que cada quien reporte el alcance de lo suyo.</p>
   <p data-sinc="3">La tercera: esto es un sitio estático. No hay servidor que mantener ni que pagar. Hoy vive en GitHub Pages.</p>
   </aside>
 </section>
@@ -265,7 +280,7 @@
   <aside class="notes">
   <p data-sinc="1">Lo que te pido son tres cosas, y la primera es la de fondo: si esto lo adopta la sede como suyo, o se queda como un experimento mío. De esa respuesta depende todo lo demás.</p>
   <p data-sinc="2">La segunda, decidir si puedo usar la identidad del centro, el logo y el nombre. Mientras no lo decidas, el sitio sigue con la franja de prototipo, que es lo correcto.</p>
-  <p data-sinc="3">Y la tercera, pedirles a los cinco investigadores que validen su entrevista y grabar los videos, que es una mañana. Y dos datos que hoy me faltan y que dejan dos funciones apagadas: a qué correo quieres que lleguen los mensajes del público, y con qué cuenta medimos el tráfico.</p>
+  <p data-sinc="3">Y la tercera, pedirles a los cinco que revisen su entrevista y grabar los videos, que es una mañana. Y dos datos que me faltan y que dejan dos funciones apagadas: a qué correo llegan los mensajes del público y con qué cuenta medimos el tráfico.</p>
   </aside>
 </section>
 
@@ -307,13 +322,14 @@
   function pintar(sec) {
     const b = sec.querySelector('.pacontrol');
     if (!b) return;
-    const dentro = sec.classList.contains('interactiva');
-    b.textContent = dentro ? 'I · el sitio manda · clic aquí para volver' : 'I · control del sitio';
+    const sordo = sec.classList.contains('sordo');
+    b.textContent = sordo ? 'I · el teclado manda · clic aquí para usar el sitio'
+                          : 'I · el sitio recibe los clics';
   }
 
   function alternar(sec) {
     if (!sec) return;
-    sec.classList.toggle('interactiva');
+    sec.classList.toggle('sordo');
     pintar(sec);
   }
 
@@ -328,11 +344,11 @@
     if (b) alternar(b.closest('.parada'));
   });
 
-  // Al cambiar de parada se devuelve el mando al deck: si no, se llega a la
-  // siguiente lámina con el teclado secuestrado por el iframe anterior.
+  // Cada parada empieza con el sitio vivo: si alguien lo dejó sordo en la
+  // anterior, eso no se arrastra a la siguiente.
   Reveal.on('slidechanged', () => {
-    document.querySelectorAll('.parada.interactiva').forEach((s) => {
-      s.classList.remove('interactiva');
+    document.querySelectorAll('.parada.sordo').forEach((s) => {
+      s.classList.remove('sordo');
       pintar(s);
     });
   });

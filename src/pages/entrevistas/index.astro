@@ -24,9 +24,9 @@ const hayEjemplos = conInvestigador.some(({ entrevista }) => entrevista.data.esE
 
 	{hayEjemplos && (
 		<p class="aviso-ejemplo">
-			Algunas de estas entrevistas están marcadas como <strong>muestra</strong>: las redactó
-			el equipo de divulgación para enseñar cómo se verá la sección, y el investigador
-			todavía no las ha grabado ni revisado.
+			Algunas están en <strong>borrador</strong>: el equipo de divulgación las preparó a
+			partir del perfil de cada investigador, y quedan listas para que él las revise y las
+			grabe.
 		</p>
 	)}
 
@@ -50,7 +50,7 @@ const hayEjemplos = conInvestigador.some(({ entrevista }) => entrevista.data.esE
 						<div class="cg-list-body">
 							<h3>
 								{investigador ? investigador.data.nombre : entrevista.id}
-								{entrevista.data.esEjemplo && <span class="etiqueta-ejemplo">Muestra</span>}
+								{entrevista.data.esEjemplo && <span class="etiqueta-ejemplo">Borrador</span>}
 							</h3>
 							{/* La primera frase de la respuesta, no la pregunta: las tres preguntas
 						    son las mismas en todas las entrevistas y no distinguen una de otra. */}

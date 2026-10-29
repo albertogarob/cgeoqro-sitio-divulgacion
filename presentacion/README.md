@@ -1,7 +1,7 @@
 # La visita guiada al sitio
 
 Presentación del sitio de divulgación a la dirección general, el 29 de octubre de
-2026. Trece paradas, de diez a quince minutos.
+2026. Catorce paradas, de doce a quince minutos.
 
 Lo que la distingue del deck del observatorio enoturístico, de donde viene toda la
 maquinaria: **ocho de las trece paradas no son láminas, son el sitio**. Cargan la
@@ -29,18 +29,19 @@ sitio de verdad desde https://albertogarob.github.io/cgeoqro-sitio-divulgacion/
 | **V** | el apuntador pasa a ventana flotante, por encima de las demás | en el apuntador |
 | **Y** | enciende el resaltado sincronizado | en el apuntador |
 | **↓ ↑** | mueve el guion párrafo a párrafo, y con él el resaltado | en el apuntador |
-| **I** | le pasa el control del teclado y el ratón al sitio de la parada | en el deck |
+| **I** | deja el sitio de la parada sordo a los clics, y lo devuelve | en el deck |
 
-## El control de las paradas, que es lo único raro
+## El control de las paradas
 
-Una parada tiene un iframe con el sitio dentro. Si el iframe recibiera los clics desde
-el principio, el foco se iría dentro y **las flechas dejarían de mover el deck**: el
-iframe es de otro origen y el teclado ya no vuelve.
+Una parada tiene un iframe con el sitio dentro, y **se puede picar desde el primer
+momento**: al play del recorrido, a un enlace, a lo que sea.
 
-Por eso el iframe arranca sordo a los clics. Cuando toque interactuar, por ejemplo para
-darle al play del recorrido, se pulsa **I** y la barra de arriba se pone naranja. Para
-volver, **el botón de esa barra**, que vive fuera del iframe y sí recibe el clic. Al
-cambiar de parada el mando vuelve solo al deck.
+Lo que hay que saber: en cuanto el foco entra en el iframe, **las flechas dejan de
+mover el deck**, porque es otro origen y el teclado ya no vuelve. No estorba si se
+presenta con el apuntador abierto, que es lo normal: desde esa ventana las flechas
+mueven el deck igual. Quien presente sin apuntador y se quede sin flechas pulsa **el
+botón de la barra**, que deja el iframe sordo a los clics y devuelve el teclado. Al
+cambiar de parada el sitio vuelve a estar vivo.
 
 El resaltado sincronizado marca **la tira de puntos de la derecha**, no el sitio: no se
 puede marcar nada dentro de un iframe de otro origen. Esa tira dice qué mirar en cada
@@ -51,11 +52,11 @@ parada, y es la que barre de arriba hacia abajo mientras avanzas el guion.
 | Herramienta | Qué caza | Estado al 29 de octubre |
 |---|---|---|
 | `verifica-lamina-por-lamina.py` | texto recortado por debajo del borde | sin desbordes ni colisiones |
-| `titulos.py` | títulos de más de una línea | los 3 caben en una línea |
-| `gordas.py` | láminas gordas de texto | ninguna, de 3 medidas |
-| `barrido.py` | resaltado que salta en vez de barrer | 10 láminas con piezas, 0 rompen el barrido |
-| `tiempos.py` | cuánto dura | 12 a 15 min; 10 a 12 recortando |
-| `guion.py` | regenera `guion.md` desde el deck | 13 de 13 con guion |
+| `titulos.py` | títulos de más de una línea | los 4 caben en una línea |
+| `gordas.py` | láminas gordas de texto | ninguna, de 4 medidas |
+| `barrido.py` | resaltado que salta en vez de barrer | 11 láminas con piezas, 0 rompen el barrido |
+| `tiempos.py` | cuánto dura | 12 a 15 min; 10 a 13 recortando |
+| `guion.py` | regenera `guion.md` desde el deck | 14 de 14 con guion |
 | `empaquetar.py` | el archivo único | 1.4 MB, con apuntador |
 
 El objetivo de `tiempos.py` se bajó a **12 minutos** (en el deck del observatorio son
@@ -71,8 +72,8 @@ medidas, y un sobrecosto por lámina que sigue siendo **un supuesto sin medir**.
 * **De dónde sale cada cosa**, nivel 2. Es la de derechos de autor: solo se cae si la
   junta se está yendo de tiempo y el tema no ha salido.
 
-Las que no se tocan son el problema, el catálogo, el recorrido, las entrevistas, lo que
-no se ve y lo que se pide.
+Las que no se tocan son las dos del concepto, el catálogo, el recorrido, las
+entrevistas, lo que no se ve y lo que se pide.
 
 ## El riesgo que hay que mirar antes de entrar
 

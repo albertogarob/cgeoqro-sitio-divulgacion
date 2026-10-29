@@ -1,9 +1,9 @@
 // Pruebas del contenido de las entrevistas y de su marca de "muestra".
 //
-// Cuatro de las entrevistas del repositorio las redactó el equipo de divulgación y las
-// puso en boca de investigadores reales, para enseñar cómo se verá la sección. Que
-// aparezcan marcadas no es un detalle de estilo: sin la marca, el sitio presenta como
-// declaración de una persona algo que esa persona no ha dicho.
+// Cuatro de las entrevistas del repositorio están en borrador: las preparó el equipo de
+// divulgación a partir del perfil de cada investigador, y quedan pendientes de que él
+// las revise y las grabe. Que aparezcan marcadas no es un detalle de estilo: sin la
+// marca, el sitio presenta como declaración de una persona algo que todavía no ha dicho.
 //
 // La marca se cayó dos veces durante la revisión (en el perfil del investigador y en
 // los metadatos que se comparten en redes), así que aquí se sujetan las dos mitades:
@@ -75,7 +75,7 @@ test('la marca viaja también en lo que se comparte en redes', () => {
   assert.ok(desde !== -1, 'la ficha no arma una descripción propia');
   const bloque = ficha.slice(desde, desde + 420);
   assert.match(bloque, /esEjemplo/, 'la descripción compartida no distingue las de muestra');
-  assert.match(bloque, /muestra/i, 'la descripción compartida no dice que es una muestra');
+  assert.match(bloque, /borrador/i, 'la descripción compartida no dice que es un borrador');
   assert.match(ficha, /description=\{descripcion\}/, 'la descripción no llega al layout');
 });
 
