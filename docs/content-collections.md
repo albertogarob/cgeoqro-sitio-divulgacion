@@ -16,7 +16,6 @@ const investigadores = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/investigadores' }),
   schema: z.object({
     nombre: z.string(),
-    slug: z.string(), // usado en /investigadores/[slug]
     fotoUrl: z.string().optional(),
     bioBreve: z.string(), // 1-2 líneas, redactada por el equipo, no copiada de CV externo
     lineasInvestigacion: z.array(z.string()),
@@ -55,7 +54,6 @@ const capsulas = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/capsulas' }),
   schema: z.object({
     titulo: z.string(),
-    slug: z.string(),
     serie: reference('series'),
     paperFuente: reference('papers'), // trazabilidad obligatoria a la fuente
     investigadores: z.array(reference('investigadores')),
@@ -81,7 +79,6 @@ const series = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/series' }),
   schema: z.object({
     nombre: z.string(),
-    slug: z.string(),
     descripcion: z.string(),
     colorAcento: z.string().optional(), // pendiente de identidad visual institucional
   }),
@@ -98,9 +95,25 @@ const entrevistas = defineCollection({
     preguntas: z.array(z.object({ pregunta: z.string(), respuesta: z.string() })).length(3),
     paperRelacionado: reference('papers').optional(),
     fechaPublicacion: z.date(),
+    videoUrl: z.string().url().optional(),   // YouTube, nunca Drive (ver CLAUDE.md)
+    videoNota: z.string().optional(),        // nota de producción bajo el reproductor
+    esEjemplo: z.boolean().default(false),   // entrevista de muestra, sin grabar ni revisar
   }),
 })
 ```
+
+La entrevista **siempre se presenta como un video**: mientras `videoUrl` esté vacío, la
+página pinta el hueco donde irá, y el texto se muestra como la transcripción a dos
+voces de ese video (quien pregunta y quien responde).
+
+**`esEjemplo` no es cosmético.** Marca las entrevistas que redactó el equipo de
+divulgación y que el investigador todavía no ha grabado ni revisado, es decir palabras
+puestas en boca de una persona real. Con la marca puesta, el sitio avisa en cuatro
+sitios: la tarjeta del índice, el aviso de cabecera del índice, la ficha de la
+entrevista y el enlace desde el perfil del investigador; y además cambia la descripción
+que viaja a WhatsApp y a Facebook, que es donde nadie abre la página para enterarse.
+`tests/entrevistas.test.mjs` vigila las dos mitades: que las que escribimos nosotros
+lleven la marca, y que ninguna vista deje de mirarla.
 
 ### `recorridos`
 

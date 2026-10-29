@@ -1,4 +1,12 @@
 ---
+// Página de una entrevista. Dos decisiones de formato que vienen de cómo se graban:
+//
+//  - La entrevista SIEMPRE es un video. Mientras no esté grabado, el sitio enseña el
+//    hueco donde va, no lo esconde: así se ve que falta y no parece que la entrevista
+//    sea un texto suelto.
+//  - El texto es la TRANSCRIPCIÓN de ese video, y en un video hay dos voces: quien
+//    pregunta y quien responde. Por eso se pinta como turnos de conversación, cada uno
+//    con su hablante, y no como una lista de preguntas.
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { withBase } from '../../lib/url';
@@ -12,74 +20,107 @@ const { entrevista } = Astro.props;
 const investigador = await getEntry(entrevista.data.investigador);
 const paper = entrevista.data.paperRelacionado ? await getEntry(entrevista.data.paperRelacionado) : null;
 const tieneVideo = Boolean(entrevista.data.videoUrl);
+const nombre = investigador?.data.nombre ?? 'el investigador';
+const foto = investigador?.data.fotoUrl;
+
+// La transcripción se arma alternando las dos voces: cada pregunta y su respuesta son
+// dos turnos distintos, como se oirían en el video.
+// La descripción que se ve al pegar el enlace en WhatsApp o Facebook. En una
+// entrevista de muestra el aviso va DENTRO de ella: ahí nadie abre la página para
+// enterarse, y sin esto el texto inventado circulaba como declaración real.
+const descripcion = entrevista.data.esEjemplo
+  ? `Entrevista de muestra: texto redactado por el equipo de divulgación para enseñar cómo se verá la sección. ${nombre} todavía no la ha grabado ni revisado.`
+  : `${nombre} responde tres preguntas sobre su trabajo en CentroGeo Querétaro.`;
+
+const turnos = entrevista.data.preguntas.flatMap((qa) => [
+  { voz: 'entrevista' as const, quien: 'Divulgación CentroGeo Querétaro', texto: qa.pregunta },
+  { voz: 'investigador' as const, quien: nombre, texto: qa.respuesta },
+]);
 ---
 
-<Base title={investigador ? `3 preguntas a ${investigador.data.nombre}` : 'Entrevista'} bleed={tieneVideo}>
-	{tieneVideo ? (
-		<>
-			<div class="ent-wrap ent-intro">
-				<p><a href={withBase('/entrevistas/')}>← Todas las entrevistas</a></p>
-				<h1>3 preguntas a {investigador?.data.nombre}</h1>
-				{investigador && (
-					<p class="meta"><a href={withBase(`/investigadores/${investigador.id}/`)}>Ver perfil de {investigador.data.nombre}</a></p>
-				)}
-			</div>
+<Base title={`3 Preguntas a ${nombre}`} bleed description={descripcion}>
+	<div class="ent-wrap ent-intro">
+		<p><a href={withBase('/entrevistas/')}>← Todas las entrevistas</a></p>
+		<h1>3 Preguntas a {nombre}</h1>
+		{investigador && (
+			<p class="meta"><a href={withBase(`/investigadores/${investigador.id}/`)}>Ver perfil de {nombre}</a></p>
+		)}
+		{entrevista.data.esEjemplo && (
+			<p class="aviso-ejemplo">
+				<strong>Entrevista de muestra.</strong> El equipo de divulgación la redactó para
+				enseñar cómo se verá esta sección. {nombre} todavía no la ha grabado ni revisado,
+				así que no son declaraciones suyas.
+			</p>
+		)}
+	</div>
 
-			<div class="cine">
-				<div class="cine-inner">
-					<div class="cine-video">
-						<iframe
-							src={entrevista.data.videoUrl}
-							allow="autoplay; fullscreen; picture-in-picture"
-							allowfullscreen
-							loading="lazy"
-							title={`Entrevista en video: ${investigador?.data.nombre ?? ''}`}
-						></iframe>
-					</div>
-					{entrevista.data.videoNota && <p class="cine-nota">{entrevista.data.videoNota}</p>}
+	<div class="cine">
+		<div class="cine-inner">
+			{tieneVideo ? (
+				<div class="cine-video">
+					<iframe
+						src={entrevista.data.videoUrl}
+						allow="autoplay; fullscreen; picture-in-picture"
+						allowfullscreen
+						loading="lazy"
+						title={`Entrevista en video: ${nombre}`}
+					></iframe>
 				</div>
-			</div>
-
-			<div class="ent-wrap ent-outro">
-				<ol class="preguntas">
-					{entrevista.data.preguntas.map((qa) => (
-						<li>
-							<p class="pregunta">{qa.pregunta}</p>
-							<p class="respuesta">{qa.respuesta}</p>
-						</li>
-					))}
-				</ol>
-				{paper && (
-					<p class="meta">
-						A propósito de: {paper.data.titulo}. {paper.data.editorial} ({paper.data.anioPublicacion})
-					</p>
-				)}
-			</div>
-		</>
-	) : (
-		<>
-			<p><a href={withBase('/entrevistas/')}>← Todas las entrevistas</a></p>
-			<h1>3 preguntas a {investigador?.data.nombre}</h1>
-			{investigador && (
-				<p class="meta"><a href={withBase(`/investigadores/${investigador.id}/`)}>Ver perfil de {investigador.data.nombre}</a></p>
+			) : (
+				/* Hueco del video, no un reproductor: nada aquí se puede pulsar, para no
+				   prometer un play que todavía no existe. */
+				<div class="cine-video cine-hueco">
+					<div class="hueco-centro">
+						<span class="hueco-retrato">
+							{foto
+								? <img src={withBase(foto)} alt="" aria-hidden="true" />
+								: <span class="hueco-inicial" aria-hidden="true">{nombre.slice(0, 1)}</span>}
+							<span class="hueco-glifo" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+							</span>
+						</span>
+						<p class="hueco-titulo">Entrevista en video con {nombre}</p>
+						<p class="hueco-pie">Pendiente de grabación. El texto de abajo es el guion de lo que se grabará.</p>
+					</div>
+				</div>
 			)}
+			{entrevista.data.videoNota && <p class="cine-nota">{entrevista.data.videoNota}</p>}
+		</div>
+	</div>
 
-			<ol class="preguntas">
-				{entrevista.data.preguntas.map((qa) => (
-					<li>
-						<p class="pregunta">{qa.pregunta}</p>
-						<p class="respuesta">{qa.respuesta}</p>
-					</li>
-				))}
-			</ol>
+	<div class="ent-wrap ent-outro">
+		<h2 class="transcripcion-titulo">
+			Transcripción
+			{!tieneVideo && <span class="transcripcion-nota"> (guion previsto)</span>}
+		</h2>
 
-			{paper && (
-				<p class="meta">
-					A propósito de: {paper.data.titulo}. {paper.data.editorial} ({paper.data.anioPublicacion})
-				</p>
-			)}
-		</>
-	)}
+		<ol class="turnos">
+			{turnos.map((t) => (
+				<li class:list={['turno', `voz-${t.voz}`]}>
+					<div class="quien">
+						{t.voz === 'investigador' && foto ? (
+							<img class="avatar" src={withBase(foto)} alt="" aria-hidden="true" />
+						) : (
+							<span class="avatar avatar-micro" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<rect x="9" y="2" width="6" height="11" rx="3" />
+									<path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8" />
+								</svg>
+							</span>
+						)}
+						<span class="nombre">{t.quien}</span>
+					</div>
+					<p class="dicho">{t.texto}</p>
+				</li>
+			))}
+		</ol>
+
+		{paper && (
+			<p class="meta">
+				A propósito de: {paper.data.titulo}. {paper.data.editorial} ({paper.data.anioPublicacion})
+			</p>
+		)}
+	</div>
 
 	<style>
 		.ent-wrap {
@@ -95,22 +136,22 @@ const tieneVideo = Boolean(entrevista.data.videoUrl);
 			padding-top: 2.5rem;
 			padding-bottom: 3rem;
 		}
-		.preguntas {
-			list-style: none;
-			padding: 0;
-		}
-		.preguntas li {
-			margin-bottom: 1.5rem;
-		}
-		.pregunta {
-			font-weight: 700;
-		}
 		.meta {
 			color: #666;
 			font-size: 0.9rem;
 		}
+		.aviso-ejemplo {
+			margin-top: 1.25rem;
+			padding: 0.9rem 1.1rem;
+			border-left: 4px solid var(--cg-color-amarillo-500, #916802);
+			border-radius: 0 var(--cg-border-radius-s) var(--cg-border-radius-s) 0;
+			background: var(--cg-color-amarillo-100, #f6edd2);
+			color: var(--cg-color-gris-700);
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
 
-		/* ── Modo cine para la entrevista en video (full-bleed) ── */
+		/* ── Modo cine: el video, o el hueco donde irá ── */
 		.cine {
 			background: radial-gradient(120% 100% at 50% 0%, #16181c 0%, #0a0a0b 70%);
 			padding: clamp(1.5rem, 4vw, 3.5rem) 1rem;
@@ -140,6 +181,172 @@ const tieneVideo = Boolean(entrevista.data.videoUrl);
 			color: rgba(255, 255, 255, 0.55);
 			font-size: 0.85rem;
 			margin: 1rem 0 0 0;
+		}
+
+		.cine-hueco {
+			display: grid;
+			place-items: center;
+			background: linear-gradient(145deg, #1c2531 0%, #0e131b 100%);
+			border: 1px dashed rgba(255, 255, 255, 0.22);
+			/* El hueco NO lleva la proporción 16/9 del reproductor: en un teléfono
+			   estrecho esa proporción da menos alto del que ocupa el aviso, y la frase
+			   que explica por qué no hay video salía partida por la mitad. Aquí manda
+			   el contenido, con un mínimo para que siga pareciendo un reproductor. */
+			aspect-ratio: auto;
+			min-height: clamp(11rem, 42vw, 24rem);
+			overflow: visible;
+			padding: 1.5rem 1rem;
+			box-sizing: border-box;
+		}
+		.hueco-centro {
+			position: relative;
+			text-align: center;
+			padding: 1rem;
+		}
+		/* La cara de quien responde, en pequeño y en su sitio. A sangre y ampliada
+		   parecía un fotograma del video, y el video todavía no existe. */
+		.hueco-retrato {
+			position: relative;
+			display: inline-block;
+			width: clamp(4.5rem, 9vw, 6rem);
+			height: clamp(4.5rem, 9vw, 6rem);
+		}
+		.hueco-retrato img {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			filter: grayscale(0.35);
+		}
+		.hueco-inicial {
+			display: grid;
+			place-items: center;
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffffff;
+			font-size: 2rem;
+			font-weight: 700;
+		}
+		.hueco-glifo {
+			position: absolute;
+			right: -0.35rem;
+			bottom: -0.1rem;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.1rem;
+			height: 2.1rem;
+			border-radius: 50%;
+			background: var(--cg-color-naranja-300, #c45620);
+			border: 2px solid #10151c;
+			color: #ffffff;
+		}
+		.hueco-glifo svg {
+			width: 0.85rem;
+			height: 0.85rem;
+			margin-left: 0.1rem;
+		}
+		.hueco-titulo {
+			margin: 0.9rem 0 0.3rem 0;
+			color: #ffffff;
+			font-weight: 600;
+			font-size: clamp(1rem, 2vw, 1.2rem);
+		}
+		.hueco-pie {
+			margin: 0 auto;
+			color: rgba(255, 255, 255, 0.6);
+			font-size: 0.85rem;
+			max-width: 32rem;
+		}
+
+		/* ── Transcripción a dos voces ── */
+		.transcripcion-titulo {
+			font-size: 1rem;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--cg-color-gris-700) !important;
+			margin: 0 0 1.5rem 0;
+		}
+		.transcripcion-nota {
+			text-transform: none;
+			letter-spacing: 0;
+			font-weight: 400;
+			color: #777;
+		}
+		.turnos {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		.turno {
+			display: grid;
+			grid-template-columns: 2.5rem 1fr;
+			gap: 0.35rem 0.85rem;
+			margin-bottom: 1.75rem;
+		}
+		.quien {
+			grid-column: 1 / -1;
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+		}
+		.avatar {
+			width: 2.5rem;
+			height: 2.5rem;
+			border-radius: 50%;
+			object-fit: cover;
+			background: var(--cg-color-gris-300);
+			flex: 0 0 auto;
+		}
+		.avatar-micro {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--cg-color-gris-100);
+			border: 1px solid var(--cg-color-gris-300);
+			color: var(--cg-color-gris-500);
+		}
+		.avatar-micro svg {
+			width: 1.1rem;
+			height: 1.1rem;
+		}
+		.nombre {
+			font-size: 0.82rem;
+			font-weight: 700;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+			color: var(--cg-color-gris-500);
+		}
+		.dicho {
+			grid-column: 2 / -1;
+			margin: 0;
+			line-height: 1.65;
+		}
+		/* La pregunta se distingue de la respuesta a simple vista, como en el video se
+		   distingue por la voz. */
+		.voz-entrevista .dicho {
+			font-weight: 600;
+			color: var(--cg-color-gris-700);
+		}
+		.voz-investigador .dicho {
+			padding-left: 0.9rem;
+			border-left: 3px solid var(--cg-color-naranja-100, #f4d2c1);
+		}
+		.voz-investigador .nombre {
+			color: var(--cg-color-naranja-500);
+		}
+
+		@media (max-width: 480px) {
+			.turno {
+				grid-template-columns: 1fr;
+			}
+			.dicho {
+				grid-column: 1 / -1;
+			}
 		}
 	</style>
 </Base>

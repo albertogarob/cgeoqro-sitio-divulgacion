@@ -1,17 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
 import AcercaNav from '../components/AcercaNav.astro';
+import CabeceraAcerca from '../components/CabeceraAcerca.astro';
+import FilaInvestigadores from '../components/FilaInvestigadores.astro';
 ---
 
 <Base title="¿Qué es el CentroGeo Querétaro?">
 	<AcercaNav activo="centrogeo" />
-	<h1>¿Qué es el CentroGeo Querétaro?</h1>
-	<p>
-		<strong>CentroGeo</strong> es el Centro de Investigación en Ciencias de Información
-		Geoespacial, un centro público de investigación integrado al Sistema Nacional de Centros
-		de Investigación de la Secretaría de Ciencia, Humanidades, Tecnología e Innovación
-		(SECIHTI) del Gobierno de México.
-	</p>
+	<CabeceraAcerca titulo="¿Qué es el CentroGeo Querétaro?">
+		<p>
+			<strong>CentroGeo</strong> es el Centro de Investigación en Ciencias de Información
+			Geoespacial, un centro público de investigación integrado al Sistema Nacional de Centros
+			de Investigación de la Secretaría de Ciencia, Humanidades, Tecnología e Innovación
+			(SECIHTI) del Gobierno de México.
+		</p>
+	</CabeceraAcerca>
 
 	<h2>Ciencias de la Información Geoespacial</h2>
 	<p>
@@ -28,6 +31,11 @@ import AcercaNav from '../components/AcercaNav.astro';
 		el origen de las investigaciones que este sitio divulga: el conocimiento que aquí traducimos
 		para el público general nace del trabajo de sus investigadores.
 	</p>
+
+	<FilaInvestigadores
+		titulo="Quién investiga en la sede"
+		entradilla="Los investigadores de CentroGeo Querétaro cuyo trabajo divulga este sitio."
+	/>
 
 	<h2>Conoce más</h2>
 	<p>

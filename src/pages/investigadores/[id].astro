@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { withBase } from '../../lib/url';
+import { fechaCorta } from '../../lib/fecha';
 
 export async function getStaticPaths() {
   const investigadores = await getCollection('investigadores');
@@ -50,7 +51,12 @@ const { Content } = await render(inv);
 	{entrevistas.length === 0 && <p>Aún no hay entrevistas publicadas.</p>}
 	<ul class="lista">
 		{entrevistas.map((e) => (
-			<li><a href={withBase(`/entrevistas/${e.id}/`)}>Entrevista del {e.data.fechaPublicacion.toLocaleDateString('es-MX')}</a></li>
+			<li>
+					<a href={withBase(`/entrevistas/${e.id}/`)}>Entrevista del {fechaCorta(e.data.fechaPublicacion)}</a>
+					{/* El aviso va también aquí: quien llega por el perfil se metía en una
+					    entrevista inventada sin saberlo hasta estar dentro. */}
+					{e.data.esEjemplo && <span class="etiqueta-muestra">Muestra</span>}
+				</li>
 		))}
 	</ul>
 
@@ -63,6 +69,18 @@ const { Content } = await render(inv);
 	</ul>
 
 	<style>
+		.etiqueta-muestra {
+			margin-left: 0.5rem;
+			padding: 0.1rem 0.5rem;
+			border-radius: 999px;
+			background: #f6edd2;
+			color: #916802;
+			font-size: 0.7rem;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			vertical-align: middle;
+		}
 		.perfil-encabezado {
 			display: flex;
 			gap: 1.5rem;

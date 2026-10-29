@@ -1,38 +1,297 @@
 ---
+// "¿Qué es esto?". Va ilustrada porque lo que explica se entiende mejor de un vistazo:
+// de quién es este sitio (el logo), qué cruza del artículo a la cápsula y qué no (el
+// diagrama), por dónde pasa cada pieza antes de publicarse (la tira de pasos) y quién
+// hace la ciencia (las fotos de los investigadores). El diagrama y los iconos son
+// dibujos propios en SVG, para no depender de imágenes con licencia ajena; las fotos
+// son las del propio centro, las mismas de los perfiles.
 import Base from '../layouts/Base.astro';
 import AcercaNav from '../components/AcercaNav.astro';
+import CabeceraAcerca from '../components/CabeceraAcerca.astro';
+import FilaInvestigadores from '../components/FilaInvestigadores.astro';
 ---
 
 <Base title="¿Qué es esto?">
 	<AcercaNav activo="esto" />
-	<h1>¿Qué es esto?</h1>
+
+	<CabeceraAcerca titulo="¿Qué es esto?">
+		<p>
+			Un sitio para contarle al público general, en lenguaje llano, la ciencia que se hace
+			en <strong>CentroGeo Querétaro</strong>, sede del Centro de Investigación en Ciencias
+			de Información Geoespacial.
+		</p>
+	</CabeceraAcerca>
+
 	<p>
-		Este sitio es un prototipo de divulgación científica de <strong>CentroGeo
-		Querétaro</strong>, sede del Centro de Investigación en Ciencias de Información
-		Geoespacial. Su objetivo es traducir el conocimiento generado por sus investigadores
-		en materiales accesibles para el público general: cápsulas de conocimiento, entrevistas
-		breves ("3 Preguntas a...") y contenido multimedia.
+		Cada contenido nace de una publicación académica real de sus investigadores y se convierte
+		en algo que se puede ver en unos minutos: cápsulas de conocimiento, recorridos interactivos,
+		entrevistas breves ("3 Preguntas a...") y material audiovisual.
 	</p>
 
 	<h2>Política de atribución y derechos de autor</h2>
 	<p>
-		Los papers académicos que dan origen a estos contenidos están protegidos por derechos
-		de autor de las editoriales que los publicaron. En consecuencia:
+		Los artículos que dan origen a estos contenidos están protegidos por derechos de autor de
+		las editoriales que los publicaron. Lo que cruza de un lado al otro son las ideas:
 	</p>
+
+	{/* Los dibujos van en SVG y los rótulos en HTML, a propósito: dentro del SVG el
+	    texto encoge con la figura y en un teléfono quedaba a cinco píxeles. Así los
+	    rótulos conservan su tamaño y el bloque se apila solo en pantalla estrecha. */}
+	<figure class="ilustracion">
+		<div class="cruce">
+			<div class="cruce-pieza">
+				<svg viewBox="0 0 120 120" aria-hidden="true">
+					<rect x="6" y="6" width="108" height="108" rx="8" fill="#ffffff" stroke="#d9d9d9" stroke-width="3" />
+					<rect x="22" y="26" width="76" height="7" rx="3.5" fill="#d9d9d9" />
+					<rect x="22" y="41" width="76" height="7" rx="3.5" fill="#d9d9d9" />
+					<rect x="22" y="56" width="48" height="7" rx="3.5" fill="#d9d9d9" />
+					<rect x="22" y="72" width="76" height="30" rx="4" fill="#f3f3f3" stroke="#d9d9d9" stroke-width="2" />
+					<polyline points="29,95 45,82 56,90 72,74 91,95" fill="none" stroke="#b9b9b9" stroke-width="3" />
+				</svg>
+				<span class="cruce-rotulo">Artículo publicado</span>
+			</div>
+
+			<ul class="cruce-flechas">
+				<li class="cruce-si">
+					<span class="cruce-marca" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="5,13 10,18 19,6" />
+						</svg>
+					</span>
+					<span>Pasan <strong>las ideas y los hallazgos</strong></span>
+				</li>
+				<li class="cruce-no">
+					<span class="cruce-marca" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+							<line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+						</svg>
+					</span>
+					<span>No pasa nunca <strong>el texto literal</strong></span>
+				</li>
+				<li class="cruce-quiza">
+					<span class="cruce-marca" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+							<line x1="12" y1="6" x2="12" y2="13" /><line x1="12" y1="17.5" x2="12" y2="17.6" />
+						</svg>
+					</span>
+					<span>Las <strong>figuras y las fotos</strong>, solo con licencia que lo permita y con su crédito</span>
+				</li>
+			</ul>
+
+			<div class="cruce-pieza">
+				<svg viewBox="0 0 120 120" aria-hidden="true">
+					<rect x="6" y="6" width="108" height="108" rx="8" fill="#ffffff" stroke="#c45620" stroke-width="3" />
+					<rect x="22" y="22" width="76" height="40" rx="4" fill="#f4d2c1" />
+					<circle cx="41" cy="39" r="8" fill="#c45620" />
+					<polyline points="27,58 46,42 61,51 79,34 93,58" fill="none" stroke="#c45620" stroke-width="3" />
+					<rect x="22" y="74" width="76" height="7" rx="3.5" fill="#e3e3e3" />
+					<rect x="22" y="89" width="76" height="7" rx="3.5" fill="#e3e3e3" />
+				</svg>
+				<span class="cruce-rotulo">Cápsula de divulgación</span>
+			</div>
+		</div>
+		<figcaption>
+			El texto se reescribe siempre en palabras propias. Los gráficos se dibujan desde cero,
+			y lo que viene de fuera entra solo cuando su licencia lo permite, con su crédito al lado.
+		</figcaption>
+	</figure>
+
 	<ul>
-		<li>No reproducimos texto verbatim de los papers (citas largas, párrafos completos).</li>
-		<li>No reutilizamos imágenes, figuras, gráficas o tablas originales de los papers.</li>
+		<li>No reproducimos texto literal de los artículos (citas largas, párrafos completos).</li>
 		<li>
-			Todo el contenido de divulgación (resúmenes, guiones, ilustraciones) es una
-			elaboración propia en lenguaje llano, no una copia ni traducción directa del
-			material original.
+			No reutilizamos imágenes, figuras, gráficas ni tablas originales, salvo cuando el
+			artículo tiene una licencia abierta que lo permite. En ese caso van con su autoría y
+			su licencia al lado, y la cápsula cita el artículo completo en su referencia.
 		</li>
-		<li>Cada cápsula cita la publicación de origen (título, editorial, año, DOI cuando existe) sin reproducir su contenido.</li>
+		<li>
+			Todo el contenido de divulgación (resúmenes, guiones, ilustraciones) es una elaboración
+			propia en lenguaje llano.
+		</li>
+		<li>Cada cápsula cita la publicación de origen: título, editorial, año y DOI cuando existe.</li>
 	</ul>
 
 	<h2>Cómo se producen los contenidos</h2>
 	<p>
-		Cada pieza pasa por una revisión humana antes de publicarse, tanto por precisión del
-		contenido como por cumplimiento de esta política de derechos de autor.
+		Ninguna pieza se publica sola. Este es el camino que recorre cada una, de la publicación
+		académica a lo que ves en pantalla:
 	</p>
+
+	<ol class="tira">
+		<li>
+			<span class="paso-icono" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M6 2h8l4 4v16H6z" /><path d="M14 2v4h4" /><path d="M9 13h6M9 17h6" />
+				</svg>
+			</span>
+			<h3>Se elige el artículo</h3>
+			<p>De las publicaciones del propio investigador.</p>
+		</li>
+		<li>
+			<span class="paso-icono" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" /><path d="M14 6l4 4" />
+				</svg>
+			</span>
+			<h3>Se cuenta de nuevo</h3>
+			<p>En palabras propias, para quien no es del gremio.</p>
+		</li>
+		<li>
+			<span class="paso-icono" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9.5" r="1.8" />
+					<path d="M3 17l5-4 4 3 4-5 5 6" />
+				</svg>
+			</span>
+			<h3>Se ilustra</h3>
+			<p>Gráficos y animaciones propios; las fotos y las figuras de fuera, solo con licencia
+			que lo permita y con su crédito.</p>
+		</li>
+		<li>
+			<span class="paso-icono" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M20.5 6.5 10 17l-5.5-5.5" /><circle cx="12" cy="12" r="10" opacity="0.3" />
+				</svg>
+			</span>
+			<h3>Lo revisa una persona</h3>
+			<p>Por precisión y por derechos de autor, antes de publicar.</p>
+		</li>
+	</ol>
+
+	<FilaInvestigadores
+		titulo="Quién hace esta ciencia"
+		entradilla="Los contenidos de este sitio salen del trabajo de los investigadores de CentroGeo Querétaro."
+	/>
+
+	<style>
+		.ilustracion {
+			margin: 1.75rem 0 2rem;
+			padding: 1.5rem 1.25rem;
+			border-radius: var(--cg-border-radius-m);
+			background: var(--cg-color-blanco);
+			border: 1px solid var(--cg-color-gris-300);
+		}
+		.ilustracion figcaption {
+			margin-top: 1.1rem;
+			text-align: center;
+			font-size: 0.85rem;
+			color: #777;
+		}
+		.cruce {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 1.5rem;
+			flex-wrap: wrap;
+		}
+		.cruce-pieza {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 0.6rem;
+			flex: 0 0 auto;
+		}
+		.cruce-pieza svg {
+			width: clamp(5rem, 16vw, 7rem);
+			height: auto;
+		}
+		.cruce-rotulo {
+			font-size: 0.82rem;
+			font-weight: 600;
+			color: var(--cg-color-gris-500);
+			text-align: center;
+			max-width: 8rem;
+		}
+		.cruce-flechas {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			flex: 1 1 15rem;
+			max-width: 22rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.9rem;
+		}
+		.cruce-flechas li {
+			display: flex;
+			align-items: center;
+			gap: 0.65rem;
+			font-size: 0.9rem;
+			line-height: 1.4;
+		}
+		.cruce-marca {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 1.7rem;
+			height: 1.7rem;
+			border-radius: 50%;
+			flex: 0 0 auto;
+			color: var(--cg-color-blanco);
+		}
+		.cruce-marca svg {
+			width: 0.85rem;
+			height: 0.85rem;
+		}
+		.cruce-si .cruce-marca { background: #2a6f4d; }
+		.cruce-si { color: #2a6f4d; }
+		.cruce-no .cruce-marca { background: #767676; }
+		.cruce-no { color: #767676; }
+		/* El tercer carril no es un sí ni un no: es un "depende de la licencia", y por
+		   eso lleva el color de acento y no el verde ni el gris. */
+		.cruce-quiza .cruce-marca { background: var(--cg-color-naranja-300); }
+		.cruce-quiza { color: var(--cg-color-naranja-500); }
+
+		.tira {
+			list-style: none;
+			margin: 1.5rem 0 0;
+			padding: 0;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+			gap: 1rem;
+			counter-reset: paso;
+		}
+		.tira li {
+			position: relative;
+			padding: 1.25rem 1.1rem 1.1rem;
+			border-radius: var(--cg-border-radius-m);
+			background: var(--cg-color-blanco);
+			border: 1px solid var(--cg-color-gris-300);
+		}
+		/* El número del paso, para que la tira se lea en orden aunque las tarjetas se
+		   apilen en una columna en el teléfono. */
+		.tira li::before {
+			counter-increment: paso;
+			content: counter(paso);
+			position: absolute;
+			top: 0.9rem;
+			right: 1rem;
+			font-size: 1.6rem;
+			font-weight: 700;
+			line-height: 1;
+			color: var(--cg-color-gris-300);
+		}
+		.paso-icono {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.5rem;
+			height: 2.5rem;
+			border-radius: 50%;
+			background: var(--cg-color-naranja-100);
+			color: var(--cg-color-naranja-300);
+		}
+		.paso-icono svg {
+			width: 1.3rem;
+			height: 1.3rem;
+		}
+		.tira h3 {
+			margin: 0.75rem 0 0.35rem 0;
+			font-size: 1rem;
+		}
+		.tira p {
+			margin: 0;
+			font-size: 0.88rem;
+			color: var(--cg-color-gris-500);
+		}
+	</style>
 </Base>

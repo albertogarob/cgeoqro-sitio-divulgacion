@@ -1,0 +1,49 @@
+---
+// Cabecera de las páginas de "Acerca de": el logotipo del centro junto al título y la
+// entrada. Las tres páginas de la sección la comparten para no repetir el bloque, y
+// para que el logo aparezca siempre del mismo tamaño y en el mismo sitio.
+import { withBase } from '../lib/url';
+
+interface Props {
+  titulo: string;
+}
+
+const { titulo } = Astro.props;
+---
+
+<div class="portada">
+	<img class="portada-logo" src={withBase('/branding/logo-centrogeo.svg')} alt="CentroGeo" />
+	<div class="portada-texto">
+		<h1>{titulo}</h1>
+		<slot />
+	</div>
+</div>
+
+<style>
+	.portada {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+		flex-wrap: wrap;
+		padding: 1.75rem;
+		margin-bottom: 2rem;
+		border-radius: var(--cg-border-radius-m);
+		background: var(--cg-color-blanco);
+		border: 1px solid var(--cg-color-gris-300);
+	}
+	.portada-texto {
+		flex: 1 1 22rem;
+	}
+	.portada-texto :global(h1) {
+		margin-top: 0;
+	}
+	.portada-texto :global(p) {
+		font-size: 1.05rem;
+		margin-bottom: 0;
+	}
+	.portada-logo {
+		width: clamp(9rem, 22vw, 13rem);
+		height: auto;
+		flex: 0 0 auto;
+	}
+</style>

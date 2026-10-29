@@ -1,0 +1,106 @@
+---
+// Fila de caras de los investigadores del centro, con enlace a su perfil. Se usa en
+// las páginas de "Acerca de", donde el texto solo resultaba muy seco: la ciencia la
+// hace gente, y enseñar quién es ayuda más que otro párrafo.
+import { getCollection } from 'astro:content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  /** Encabezado de la fila. Vacío la deja sin título. */
+  titulo?: string;
+  /** Frase de apoyo bajo el encabezado. */
+  entradilla?: string;
+}
+
+const { titulo = '', entradilla = '' } = Astro.props;
+const investigadores = (await getCollection('investigadores')).sort((a, b) =>
+  a.data.nombre.localeCompare(b.data.nombre, 'es')
+);
+---
+
+{investigadores.length > 0 && (
+	<section class="fila-bloque">
+		{titulo && <h2>{titulo}</h2>}
+		{entradilla && <p class="entradilla">{entradilla}</p>}
+		<ul class="fila">
+			{investigadores.map((inv) => (
+				<li>
+					<a href={withBase(`/investigadores/${inv.id}/`)}>
+						{inv.data.fotoUrl ? (
+							<img src={withBase(inv.data.fotoUrl)} alt="" loading="lazy" />
+						) : (
+							<span class="sin-foto" aria-hidden="true">{inv.data.nombre.slice(0, 1)}</span>
+						)}
+						<span class="nombre">{inv.data.nombre}</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</section>
+)}
+
+<style>
+	.fila-bloque {
+		margin: 2.5rem 0 0;
+	}
+	.fila-bloque h2 {
+		margin: 0 0 0.4rem 0;
+	}
+	.entradilla {
+		margin: 0 0 1.5rem 0;
+		color: var(--cg-color-gris-500);
+	}
+	.fila {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem 1.75rem;
+	}
+	.fila a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.6rem;
+		width: 7rem;
+		text-decoration: none;
+		color: var(--cg-color-gris-700);
+	}
+	.fila img,
+	.sin-foto {
+		width: 5rem;
+		height: 5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		background: var(--cg-color-gris-300);
+		border: 3px solid transparent;
+		transition: border-color 200ms ease, transform 200ms ease;
+	}
+	.sin-foto {
+		display: grid;
+		place-items: center;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--cg-color-gris-500);
+	}
+	.fila a:hover img,
+	.fila a:hover .sin-foto {
+		border-color: var(--cg-color-naranja-300);
+		transform: translateY(-2px);
+	}
+	.fila a:focus-visible img,
+	.fila a:focus-visible .sin-foto {
+		outline: 2px solid var(--cg-color-naranja-300);
+		outline-offset: 3px;
+	}
+	.nombre {
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 1.3;
+		text-align: center;
+	}
+	.fila a:hover .nombre {
+		color: var(--cg-color-naranja-300);
+	}
+</style>

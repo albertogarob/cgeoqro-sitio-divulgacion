@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { withBase } from '../../lib/url';
 import Thumb from '../../components/Thumb.astro';
+import { primeraFrase } from '../../lib/texto';
 
 const entrevistas = (await getCollection('entrevistas')).sort(
   (a, b) => b.data.fechaPublicacion.valueOf() - a.data.fechaPublicacion.valueOf()
@@ -10,12 +11,25 @@ const entrevistas = (await getCollection('entrevistas')).sort(
 const conInvestigador = await Promise.all(
   entrevistas.map(async (e) => ({ entrevista: e, investigador: await getEntry(e.data.investigador) }))
 );
+const hayEjemplos = conInvestigador.some(({ entrevista }) => entrevista.data.esEjemplo);
 ---
 
 <Base title="3 Preguntas a...">
 	<span class="cg-eyebrow">Divulgación</span>
 	<h1>3 Preguntas a...</h1>
-	<p>Entrevistas breves con investigadores de CentroGeo Querétaro sobre su trabajo.</p>
+	<p class="entradilla">
+		Entrevistas breves en video con investigadores de CentroGeo Querétaro sobre su trabajo.
+		Cada una viene con su transcripción, para leerla o verla.
+	</p>
+
+	{hayEjemplos && (
+		<p class="aviso-ejemplo">
+			Algunas de estas entrevistas están marcadas como <strong>muestra</strong>: las redactó
+			el equipo de divulgación para enseñar cómo se verá la sección, y el investigador
+			todavía no las ha grabado ni revisado.
+		</p>
+	)}
+
 	{conInvestigador.length === 0 ? (
 		<p class="vacio">Próximamente publicaremos las primeras entrevistas.</p>
 	) : (
@@ -23,16 +37,32 @@ const conInvestigador = await Promise.all(
 			{conInvestigador.map(({ entrevista, investigador }) => (
 				<li>
 					<a class="cg-list-card" href={withBase(`/entrevistas/${entrevista.id}/`)}>
-						<Thumb kind="entrevista" label={investigador ? investigador.data.nombre : entrevista.id} seed={entrevista.id} />
+						{investigador?.data.fotoUrl ? (
+							<span class="retrato">
+								<img src={withBase(investigador.data.fotoUrl)} alt="" loading="lazy" />
+								<span class="retrato-glifo" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+								</span>
+							</span>
+						) : (
+							<Thumb kind="entrevista" label={investigador ? investigador.data.nombre : entrevista.id} seed={entrevista.id} />
+						)}
 						<div class="cg-list-body">
-							<h3>{investigador ? investigador.data.nombre : entrevista.id}</h3>
-							<p>{entrevista.data.preguntas[0].pregunta}</p>
+							<h3>
+								{investigador ? investigador.data.nombre : entrevista.id}
+								{entrevista.data.esEjemplo && <span class="etiqueta-ejemplo">Muestra</span>}
+							</h3>
+							{/* La primera frase de la respuesta, no la pregunta: las tres preguntas
+						    son las mismas en todas las entrevistas y no distinguen una de otra. */}
+						<p>{primeraFrase(entrevista.data.preguntas[0].respuesta)}</p>
+							{investigador && <p class="linea">{investigador.data.lineasInvestigacion.slice(0, 2).join(' · ')}</p>}
 						</div>
 					</a>
 				</li>
 			))}
 		</ul>
 	)}
+
 	<style>
 		.lista {
 			list-style: none;
@@ -42,6 +72,72 @@ const conInvestigador = await Promise.all(
 		.vacio {
 			color: #666;
 			font-style: italic;
+		}
+		.entradilla {
+			max-width: 44rem;
+		}
+		.aviso-ejemplo {
+			max-width: 44rem;
+			padding: 0.85rem 1.1rem;
+			border-left: 4px solid var(--cg-color-amarillo-500, #916802);
+			border-radius: 0 var(--cg-border-radius-s) var(--cg-border-radius-s) 0;
+			background: var(--cg-color-amarillo-100, #f6edd2);
+			color: var(--cg-color-gris-700);
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
+
+		/* La cara de quien responde, porque una entrevista se reconoce por la persona.
+		   La chapa de play recuerda que viene en video. */
+		.retrato {
+			position: relative;
+			flex: 0 0 auto;
+			display: block;
+			width: 5.5rem;
+			height: 5.5rem;
+		}
+		.retrato img {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			object-fit: cover;
+			background: var(--cg-color-gris-300);
+		}
+		.retrato-glifo {
+			position: absolute;
+			right: -0.1rem;
+			bottom: 0.1rem;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 1.65rem;
+			height: 1.65rem;
+			border-radius: 50%;
+			background: var(--cg-color-naranja-300);
+			border: 2px solid var(--cg-color-blanco);
+			color: var(--cg-color-blanco);
+		}
+		.retrato-glifo svg {
+			width: 0.65rem;
+			height: 0.65rem;
+			margin-left: 0.08rem;
+		}
+		.etiqueta-ejemplo {
+			margin-left: 0.6rem;
+			padding: 0.1rem 0.5rem;
+			border-radius: 999px;
+			background: var(--cg-color-amarillo-100, #f6edd2);
+			color: var(--cg-color-amarillo-500, #916802);
+			font-size: 0.7rem;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			vertical-align: middle;
+		}
+		.linea {
+			margin-top: 0.35rem !important;
+			font-size: 0.8rem;
+			color: #888;
 		}
 	</style>
 </Base>
