@@ -298,6 +298,9 @@ const nota = 'Fotografías de fondo (ilustrativas, licencia libre, no son del ar
 			<g class="clave" style="--i:2"><rect x="650" y="600" width="230" height="60" rx="30" /><text x="765" y="637" text-anchor="middle">Política pública</text></g>
 		</g>
 	</svg>
+	<!-- La tarjeta de cierre la pone la página y pasa de largo hasta el armazón, que
+	     es quien la coloca dentro del alcance de los mandos. -->
+	<slot name="cierre" slot="cierre" />
 </ScrollyShell>
 
 <style>

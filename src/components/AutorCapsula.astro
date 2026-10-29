@@ -1,0 +1,130 @@
+---
+// Ficha de quien firma el artículo del que sale la cápsula: foto, nombre, línea de
+// presentación y enlace a su perfil. Vive en su propio componente porque aparece en
+// dos sitios distintos: al pie de las cápsulas normales, y dentro de la tarjeta de
+// cierre de un recorrido, que es oscura y es donde para la reproducción automática.
+import { withBase } from '../lib/url';
+
+interface Props {
+  /** Entradas de la colección `investigadores`, ya resueltas. */
+  investigadores: any[];
+  /** Sobre fondo claro (por defecto) o dentro de la tarjeta oscura de cierre. */
+  tema?: 'claro' | 'oscuro';
+}
+
+const { investigadores, tema = 'claro' } = Astro.props;
+const lista = investigadores.filter(Boolean);
+const titular = lista.length > 1 ? 'Sobre los investigadores' : 'Sobre el investigador';
+---
+
+{lista.length > 0 && (
+	<section class="autor-bloque" data-tema={tema}>
+		<h2>{titular}</h2>
+		{lista.map((inv) => (
+			<div class="autor-card">
+				{inv.data.fotoUrl ? (
+					<img class="autor-foto" src={withBase(inv.data.fotoUrl)} alt={inv.data.nombre} loading="lazy" />
+				) : (
+					<div class="autor-foto autor-foto-vacia" aria-hidden="true"></div>
+				)}
+				<div class="autor-info">
+					<h3>{inv.data.nombre}</h3>
+					<p>{inv.data.bioBreve}</p>
+					<a href={withBase(`/investigadores/${inv.id}/`)}>Ver perfil completo &rarr;</a>
+				</div>
+			</div>
+		))}
+	</section>
+)}
+
+<style>
+	.autor-bloque {
+		max-width: 46rem;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem 0.5rem;
+	}
+	.autor-bloque h2 {
+		margin: 0 0 1.25rem 0;
+	}
+	.autor-card {
+		display: flex;
+		gap: 1.25rem;
+		align-items: center;
+		padding: 1.25rem;
+		border-radius: var(--cg-border-radius-m);
+		background: var(--cg-color-gris-100);
+		border: 1px solid var(--cg-color-gris-300);
+		margin-bottom: 1rem;
+	}
+	.autor-foto {
+		flex: 0 0 84px;
+		width: 84px;
+		height: 84px;
+		border-radius: 50%;
+		object-fit: cover;
+		background: var(--cg-color-gris-300);
+	}
+	.autor-foto-vacia {
+		background: linear-gradient(140deg, #1c2531, #0e131b);
+	}
+	.autor-info h3 {
+		margin: 0 0 0.35rem 0;
+		font-size: 1.15rem;
+		color: var(--cg-color-gris-700) !important;
+	}
+	.autor-info p {
+		margin: 0 0 0.5rem 0;
+		font-size: 0.92rem;
+	}
+	.autor-info a {
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--cg-color-naranja-300);
+		text-decoration: none;
+	}
+	.autor-info a:hover {
+		color: var(--cg-color-naranja-500);
+	}
+
+	/* Dentro de la tarjeta de cierre del recorrido: el fondo lo pone la tarjeta, así
+	   que aquí solo cambian los colores y se quitan los márgenes de bloque suelto. */
+	.autor-bloque[data-tema='oscuro'] {
+		max-width: none;
+		padding: 0 0 1.25rem;
+	}
+	.autor-bloque[data-tema='oscuro'] h2 {
+		color: #ffffff !important;
+		font-size: 1rem;
+		margin-bottom: 0.9rem;
+	}
+	.autor-bloque[data-tema='oscuro'] .autor-card {
+		background: rgba(255, 255, 255, 0.06);
+		border-color: rgba(255, 255, 255, 0.16);
+		margin-bottom: 0.75rem;
+	}
+	.autor-bloque[data-tema='oscuro'] .autor-foto {
+		flex-basis: 68px;
+		width: 68px;
+		height: 68px;
+		background: rgba(255, 255, 255, 0.12);
+	}
+	.autor-bloque[data-tema='oscuro'] .autor-info h3 {
+		color: #ffffff !important;
+		font-size: 1.05rem;
+	}
+	.autor-bloque[data-tema='oscuro'] .autor-info p {
+		color: rgba(255, 255, 255, 0.72);
+		font-size: 0.88rem;
+	}
+	.autor-bloque[data-tema='oscuro'] .autor-info a {
+		color: #e8843f;
+	}
+
+	@media (max-width: 480px) {
+		.autor-card {
+			flex-direction: column;
+			text-align: center;
+			align-items: center;
+		}
+	}
+</style>

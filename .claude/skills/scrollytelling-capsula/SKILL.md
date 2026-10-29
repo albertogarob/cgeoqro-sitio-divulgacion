@@ -111,10 +111,49 @@ Desde 2026-09, un recorrido son **dos piezas**, y hay que respetarlo:
 
 `ScrollyShell.astro` ya trae hecho, para todos los recorridos: escenario sticky bajo el
 navbar, capa de fotos y figuras con su velo, chip de crédito de la imagen activa,
-subtítulos flotantes, **barra de avance ("4 / 13")**, **botón de volver al inicio** y la
-banda de créditos final. No lo reimplementes por recorrido; si algo le falta, añádeselo
-al armazón. Configurable por props: `camaras`, `atenuar`, `fondo`, `fondoCaption`,
-`velo`, `colorEnlace`, `fondoCreditos`, `offset`, `creditos`, `notaCreditos`.
+subtítulos flotantes, **banda de mandos al pie del escenario** (riel de avance a todo
+lo ancho, anterior/reproducir/siguiente, contador de paradas y **botón de volver al
+inicio**) y la banda de créditos final. El contador cuenta PARADAS, así que un relato
+de 14 pasos se anuncia como "4 / 15": la tarjeta de cierre es la quinceava.
+
+No lo reimplementes por recorrido; si algo le falta, añádeselo al armazón.
+Configurable por props: `camaras`,
+`atenuar`, `fondo`, `fondoCaption`, `velo`, `colorEnlace`, `fondoCreditos`, `offset`,
+`creditos`, `notaCreditos`.
+
+Los **mandos** son anterior, reproducir/pausa y siguiente, más la barra de avance, en la
+que se puede picar para saltar a un paso, y las flechas del teclado. Mueven el scroll,
+no lo sustituyen: quien prefiera desplazarse sigue haciéndolo igual. El motor está en
+`src/scripts/scrolly.ts` y sus cuentas, en `src/scripts/pasos.ts`. **Un recorrido nuevo
+los hereda sin tocar nada**: la duración de cada paso en reproducción automática se saca
+de la longitud de su propio texto.
+
+La **tarjeta de cierre es una parada más del recorrido**, la última: la ficha de quien
+firma el artículo y los botones de compartir. "Siguiente" llega a ella desde el último
+paso, el contador la cuenta (un relato de 14 pasos se anuncia como 15 paradas) y la
+reproducción automática termina ahí. La pone `src/pages/capsulas/[id].astro`, marcada
+con `data-recorrido-cierre`, y se monta DENTRO del recorrido, en el hueco `cierre`.
+
+**Un componente de escena nuevo tiene que reenviar ese hueco**, o ese recorrido se
+queda sin última parada y nadie se entera:
+
+```astro
+<ScrollyShell ...>
+	<svg ...>...</svg>
+	<slot name="cierre" slot="cierre" />
+</ScrollyShell>
+```
+
+`tests/cierre-recorrido.test.mjs` lo comprueba en todas las escenas.
+
+La **entrada de la cápsula** trae un botón de play junto al "Desplázate para recorrer
+la historia": baja al primer paso y arranca la reproducción. Lo pone
+`src/pages/capsulas/[id].astro` llamando a `reproducirRecorrido`, y un recorrido nuevo
+también lo hereda sin tocar nada.
+
+El **ritmo de la reproducción** sale del propio texto, a unas 285 palabras por minuto
+más un margen para mirar el gráfico: un recorrido de 14 pasos dura algo más de minuto
+y medio. Estaba al ritmo de la lectura en voz alta y duraba casi tres minutos.
 
 El esqueleto de un componente nuevo:
 
@@ -145,8 +184,37 @@ que deba seguir viéndose sobre una foto a sangre lleva `data-sobre-foto="si"`.
 - **No lo tape el navbar**: mide la altura del `header` por JS y ponla en
   `--stage-top`; el stage usa `top: var(--stage-top); height: calc(100vh - var(--stage-top))`.
   Reasigna en `resize`.
+- **El salto lo anima el motor, no el navegador**: `viajarA`/`avanzarViaje` en
+  `src/scripts/scrolly.ts` mueven el scroll cuadro a cuadro. No lo cambies por
+  `scrollTo({ behavior: 'smooth' })` para simplificar: el del navegador reinicia su
+  curva en cada llamada, así que con dos o tres clics seguidos se queda casi parado,
+  deja de emitir eventos de scroll, y entonces no hay forma de saber si el salto llegó
+  o lo interrumpieron. Con `prefers-reduced-motion` el salto es instantáneo.
+- **Al cambiar el tamaño de la ventana el recorrido se reencuadra solo**: girar el
+  teléfono o arrastrar el borde mueve de sitio todos los pasos, y el navegador deja el
+  scroll donde estaba, así que quien leía un paso acababa fuera del relato. El
+  `scrollTo` que verás dentro del manejador de `resize` es eso y es deliberado. Va con
+  tres cautelas: solo si el cambio es grande (un giro, no la barra de direcciones del
+  teléfono yendo y viniendo), solo si el recorrido estaba a la vista, y si hay un salto
+  en marcha se le reapunta el destino en vez de reencuadrar.
+- **Los mandos van en una banda ancha al pie del escenario**, al estilo de los de un
+  video: riel de avance a todo lo ancho arriba, y debajo los botones, el contador y la
+  salida. Tres detalles que parecen caprichos y no lo son. Uno: la banda vive en
+  `.scrolly-chrome`, que está FUERA del escenario, porque dentro los subtítulos le
+  pasan por encima al desplazarse. Dos: esa franja va pegada por ABAJO
+  (`position: sticky; bottom: 0`) y es lo ÚLTIMO del bloque; pegada arriba, o puesta la
+  primera, la banda se quedaba flotando sobre el texto que viene después del recorrido,
+  o no se pegaba nunca. Tres: cuelga del bloque entero y no de la sección de los pasos,
+  porque la tarjeta de cierre es una parada más y la banda tiene que seguir ahí al
+  llegar.
+- **Los pasos y la tarjeta de cierre reservan el alto de la banda** con
+  `--mandos-alto`, un relleno de abajo igual para todos los modos. Ese valor está
+  medido a mano y va con holgura: no lo
+  calcules en el navegador, porque cambiar el alto de los pasos con la página ya
+  cargada es justo lo que descoloca el relato.
 - **Texto = subtítulos flotantes glass, NO diapositivas**: panel
-  `rgba(8,18,32,0.72)` + `backdrop-filter: blur(10px)` + borde lateral naranja.
+  `rgba(8, 20, 32, 0.78)` (el valor por omisión de `fondoCaption` en `ScrollyShell.astro`)
+  + `backdrop-filter: blur(10px)` + borde lateral naranja.
 - **Posiciones agrupadas**: no alternes cada paso (marea). Usa tandas de 2-3 por lado
   (patrón validado: `center` → 3× `right` → 3× `left` → `center`).
 - **Texto central estratégico**: apertura y cierre con `pos: center`, tratamiento
@@ -241,8 +309,17 @@ scrollama().setup({ step: '.scrolly .step', offset: 0.75 }).onStepEnter(r => apl
 - **Momento SVG centrado vs caption (solape)**: si un `only` centrado (contador,
   estadística) usa `pos: center`, la caption centrada lo pisa. Solución: baja la caption
   al tercio inferior en esos pasos con
-  `.scrolly[data-mode='svg'] .step[data-pos='center'] { align-items: flex-end; padding-bottom: 7vh; }`
+  `.scrolly[data-mode='svg'] .step[data-pos='center'] { align-items: flex-end; }` más
+  `.scrolly[data-mode='svg'] .step[data-pos='center'] .caption { --alza: -2vh; }`,
   y mantén el contenido SVG en la mitad superior (y < ~460 del viewBox 1000x700).
+  El hueco es pequeño porque el grueso ya lo pone la reserva de la banda de mandos
+  (`--mandos-alto`), que apartan todos los pasos por igual.
+  **El hueco va en `--alza`, que es una transformación, y NUNCA en un relleno ni un
+  margen.** `data-mode` cambia con cada paso: cualquier regla que dependa de él y toque
+  lo que mide una caja cambia el alto de los pasos, mueve todo el relato de abajo en
+  cada cambio, y los mandos empiezan a saltar entre dos pasos sin parar. Pasó, y
+  `tests/maqueta-recorrido.test.mjs` existe para que no vuelva a pasar: si metes aquí
+  un `padding-bottom`, el `npm test` se pone en rojo.
 - **Nunca cierres con un SVG de chips/anillos centrados**: chocan con la caption. El
   último paso es una **foto real full-bleed** (`tipo: 'foto'`, scrim on, caption centrada).
 - **Dos tratamientos de imagen**: `foto` (apertura/impacto/cierre) = `object-fit: cover` a

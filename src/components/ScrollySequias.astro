@@ -288,6 +288,9 @@ const nota = 'Fotografías de fondo (licencia libre, no son figuras del artícul
 			<g class="clave" style="--i:2"><rect x="650" y="600" width="200" height="58" rx="29" /><text x="750" y="636" text-anchor="middle">Proteger cultivos</text></g>
 		</g>
 	</svg>
+	<!-- La tarjeta de cierre la pone la página y pasa de largo hasta el armazón, que
+	     es quien la coloca dentro del alcance de los mandos. -->
+	<slot name="cierre" slot="cierre" />
 </ScrollyShell>
 
 <style>

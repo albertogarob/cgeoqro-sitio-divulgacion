@@ -6,6 +6,9 @@ import ScrollyUtopias from '../../components/ScrollyUtopias.astro';
 import ScrollySequias from '../../components/ScrollySequias.astro';
 import ScrollyInundaciones from '../../components/ScrollyInundaciones.astro';
 import CapsulaCard from '../../components/CapsulaCard.astro';
+import CompartirCapsula from '../../components/CompartirCapsula.astro';
+import ContactoCapsula from '../../components/ContactoCapsula.astro';
+import AutorCapsula from '../../components/AutorCapsula.astro';
 
 export async function getStaticPaths() {
   const capsulas = await getCollection('capsulas');
@@ -39,9 +42,32 @@ const todas = (await getCollection('capsulas'))
 const mismaSerie = todas.filter((c) => c.data.serie.id === capsula.data.serie.id);
 const otras = todas.filter((c) => c.data.serie.id !== capsula.data.serie.id);
 const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
+
+// URL canónica absoluta de la cápsula: la usan los botones de compartir y el mensaje
+// prellenado del formulario de contacto, que tienen que apuntar a esta página desde
+// fuera del sitio.
+const urlCapsula = new URL(withBase(`/capsulas/${capsula.id}/`), Astro.site).toString();
+const nombresInvestigadores = investigadores.filter(Boolean).map((inv) => inv.data.nombre);
+
+// En un recorrido, la ficha del autor y los botones de compartir suben a la tarjeta
+// de cierre, que es donde para la reproducción automática; en los demás formatos se
+// quedan al pie de la página. Se pintan una sola vez: dos bloques de compartir en la
+// misma página dejarían el segundo sin guion, porque solo se engancha al primero.
+const cierreDelRecorrido = Boolean(ScrollyComp);
 ---
 
-<Base title={capsula.data.titulo} bleed={Boolean(ScrollyComp) || esVideo}>
+<Base
+	title={capsula.data.titulo}
+	bleed={Boolean(ScrollyComp) || esVideo}
+	description={capsula.data.resumenCorto}
+	imagen={capsula.data.imagenPortada}
+	tipo="article"
+	analytics={{
+		capsula: capsula.id,
+		serie: capsula.data.serie.id,
+		investigadores: nombresInvestigadores,
+	}}
+>
 	{ScrollyComp ? (
 		<>
 			<div class="cap-wrap cap-intro">
@@ -52,21 +78,46 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 					{' · Recorrido interactivo'}
 				</p>
 				<p class="resumen"><strong>{capsula.data.resumenCorto}</strong></p>
-				<p class="scroll-hint">Desplázate para recorrer la historia ↓</p>
+				<p class="scroll-hint">
+					Desplázate para recorrer la historia ↓ o da clic en
+					<button type="button" class="hint-play" aria-label="Reproducir el recorrido desde el principio">
+						<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 2.5 13 8l-8.5 5.5z" /></svg>
+					</button>
+				</p>
 			</div>
 
-			<ScrollyComp />
+			<ScrollyComp>
+					{/* Última parada del recorrido, y una más de los mandos: desde el último
+					    paso, "siguiente" y la reproducción automática llegan aquí, y el
+					    contador la cuenta. Se monta dentro del recorrido (hueco "cierre")
+					    para quedar bajo la banda de mandos, que si no desaparecería justo
+					    al llegar. El motor la busca por `data-recorrido-cierre`: con otro
+					    nombre, el recorrido se queda sin su última parada. Va como
+					    comentario de Astro y no de HTML para que no viaje al navegador. */}
+				<section class="cap-final" data-recorrido-cierre slot="cierre">
+					<div class="cap-wrap">
+						<h2 class="cap-final-kicker">Fin del recorrido</h2>
 
-			<section class="cap-final">
-				<div class="cap-wrap">
-					<h2 class="cap-final-kicker">Fin del recorrido</h2>
-					<div class="cap-final-acciones">
-						<button type="button" class="volver-recorrido">↑ Volver al inicio del recorrido</button>
-						{serie && <a href={withBase(`/series/${serie.id}/`)}>Más de {serie.data.nombre}</a>}
-						<a href={withBase('/capsulas/')}>Todas las cápsulas</a>
+						<AutorCapsula investigadores={investigadores} tema="oscuro" />
+
+						<CompartirCapsula
+							url={urlCapsula}
+							titulo={capsula.data.titulo}
+							resumen={capsula.data.resumenCorto}
+							capsulaId={capsula.id}
+							tema="oscuro"
+							titular="Compártelo"
+							entradilla="Difundir esta cápsula ayuda a que la investigación de CentroGeo Querétaro llegue más lejos."
+						/>
+
+						<div class="cap-final-acciones">
+							<button type="button" class="volver-recorrido">↑ Volver al inicio del recorrido</button>
+							{serie && <a href={withBase(`/series/${serie.id}/`)}>Más de {serie.data.nombre}</a>}
+							<a href={withBase('/capsulas/')}>Todas las cápsulas</a>
+						</div>
 					</div>
-				</div>
-			</section>
+				</section>
+			</ScrollyComp>
 
 			<div class="cap-wrap cap-outro">
 				<article><Content /></article>
@@ -172,25 +223,24 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 		<p class="portada-credito">{capsula.data.imagenCredito}</p>
 	)}
 
-	{investigadores.filter(Boolean).length > 0 && (
-		<section class="autor-bloque">
-			<h2>{investigadores.length > 1 ? 'Sobre los investigadores' : 'Sobre el investigador'}</h2>
-			{investigadores.filter(Boolean).map((inv) => (
-				<div class="autor-card">
-					{inv.data.fotoUrl ? (
-						<img class="autor-foto" src={withBase(inv.data.fotoUrl)} alt={inv.data.nombre} loading="lazy" />
-					) : (
-						<div class="autor-foto autor-foto-vacia" aria-hidden="true"></div>
-					)}
-					<div class="autor-info">
-						<h3>{inv.data.nombre}</h3>
-						<p>{inv.data.bioBreve}</p>
-						<a href={withBase(`/investigadores/${inv.id}/`)}>Ver perfil completo &rarr;</a>
-					</div>
-				</div>
-			))}
-		</section>
+	{!cierreDelRecorrido && (
+		<>
+			<CompartirCapsula
+				url={urlCapsula}
+				titulo={capsula.data.titulo}
+				resumen={capsula.data.resumenCorto}
+				capsulaId={capsula.id}
+			/>
+			<AutorCapsula investigadores={investigadores} />
+		</>
 	)}
+
+	<ContactoCapsula
+		tituloCapsula={capsula.data.titulo}
+		url={urlCapsula}
+		investigadores={nombresInvestigadores}
+		capsulaId={capsula.id}
+	/>
 
 	{relacionadas.length > 0 && (
 		<section class="relacionadas">
@@ -210,60 +260,6 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			color: #999;
 			text-align: center;
 		}
-		.autor-bloque {
-			max-width: 46rem;
-			margin: 0 auto;
-			padding: 2.5rem 1.5rem 0.5rem;
-		}
-		.autor-bloque h2 {
-			margin: 0 0 1.25rem 0;
-		}
-		.autor-card {
-			display: flex;
-			gap: 1.25rem;
-			align-items: center;
-			padding: 1.25rem;
-			border-radius: var(--cg-border-radius-m);
-			background: var(--cg-color-gris-100);
-			border: 1px solid var(--cg-color-gris-300);
-			margin-bottom: 1rem;
-		}
-		.autor-foto {
-			flex: 0 0 84px;
-			width: 84px;
-			height: 84px;
-			border-radius: 50%;
-			object-fit: cover;
-			background: var(--cg-color-gris-300);
-		}
-		.autor-foto-vacia {
-			background: linear-gradient(140deg, #1c2531, #0e131b);
-		}
-		.autor-info h3 {
-			margin: 0 0 0.35rem 0;
-			font-size: 1.15rem;
-			color: var(--cg-color-gris-700) !important;
-		}
-		.autor-info p {
-			margin: 0 0 0.5rem 0;
-			font-size: 0.92rem;
-		}
-		.autor-info a {
-			font-weight: 600;
-			font-size: 0.9rem;
-			color: var(--cg-color-naranja-300);
-			text-decoration: none;
-		}
-		.autor-info a:hover {
-			color: var(--cg-color-naranja-500);
-		}
-		@media (max-width: 480px) {
-			.autor-card {
-				flex-direction: column;
-				text-align: center;
-				align-items: center;
-			}
-		}
 
 		.relacionadas {
 			max-width: 64rem;
@@ -279,10 +275,15 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
 			gap: 1.25rem;
 		}
-		/* Tarjeta de cierre del recorrido: salidas claras cuando el relato termina. */
+		/* Tarjeta de cierre del recorrido, y última parada de la reproducción: quién
+		   firma el artículo, los botones de compartir y las salidas claras. */
 		.cap-final {
 			background: linear-gradient(180deg, #0c1a2b 0%, #101f30 100%);
-			padding: 2.75rem 0 3rem;
+			padding: 2.25rem 0 2.5rem;
+			/* Es la última parada del recorrido y la banda de mandos sigue encima, así
+			   que hay que dejarle su hueco o tapa las salidas del final. La medida la
+			   declara el armazón del recorrido, que es quien sabe cuánto mide. */
+			padding-bottom: calc(var(--mandos-alto, 0px) + 2.5rem);
 		}
 		/* Es un h2 por accesibilidad, pero se ve como el antetítulo que era: hay que
 		   repetir familia, interlineado y espaciado para ganarle al estilo global. */
@@ -300,6 +301,9 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.7rem;
+			margin-top: 1.5rem;
+			padding-top: 1.5rem;
+			border-top: 1px solid rgba(255, 255, 255, 0.14);
 		}
 		.cap-final-acciones a,
 		.cap-final-acciones button {
@@ -342,10 +346,45 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 			padding-bottom: 3rem;
 		}
 		.scroll-hint {
+			display: flex;
+			align-items: center;
+			gap: 0.45rem;
+			flex-wrap: wrap;
 			color: var(--cg-color-naranja-300);
 			font-weight: 600;
 			font-size: 0.95rem;
 			margin-top: 1.5rem;
+		}
+		/* Atajo para quien prefiere que se lo cuenten: arranca el recorrido desde el
+		   primer paso en vez de tener que desplazarse hasta encontrarlo. */
+		.hint-play {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2rem;
+			height: 2rem;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			background: var(--cg-color-naranja-300);
+			color: var(--cg-color-blanco);
+			cursor: pointer;
+			transition: background 200ms ease, transform 200ms ease;
+		}
+		.hint-play svg {
+			width: 0.85rem;
+			height: 0.85rem;
+			fill: currentColor;
+			/* El triángulo pesa a la izquierda: sin este empujón se ve descentrado. */
+			margin-left: 0.1rem;
+		}
+		.hint-play:hover {
+			background: var(--cg-color-naranja-500);
+			transform: scale(1.08);
+		}
+		.hint-play:focus-visible {
+			outline: 2px solid var(--cg-color-naranja-300);
+			outline-offset: 3px;
 		}
 		.meta {
 			color: #666;
@@ -417,9 +456,14 @@ const relacionadas = [...mismaSerie, ...otras].slice(0, 3);
 	<script>
 		// Botón de la tarjeta de cierre: regresa al primer paso del recorrido. Comparte
 		// el mismo salto que el botón flotante del escenario.
-		import { irAlInicioDelRecorrido } from '../../scripts/scrolly';
+		import { irAlInicioDelRecorrido, reproducirRecorrido } from '../../scripts/scrolly';
 
 		document.querySelector<HTMLButtonElement>('.volver-recorrido')
 			?.addEventListener('click', irAlInicioDelRecorrido);
+
+		// Botón de play de la entrada: baja al primer paso y arranca la reproducción,
+		// para quien prefiere que el recorrido se cuente solo.
+		document.querySelector<HTMLButtonElement>('.hint-play')
+			?.addEventListener('click', reproducirRecorrido);
 	</script>
 </Base>

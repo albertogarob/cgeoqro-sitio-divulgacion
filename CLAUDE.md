@@ -64,7 +64,13 @@ sobre lo que se puede construir, y deben respetarse en todo el desarrollo:
 - **Sin secretos en el cliente**: sin backend propio, cualquier API key (ej. para
   transcripción, generación de video/audio con IA) debe usarse solo en tiempo de
   build (GitHub Actions secrets) o en un servicio externo, nunca embebida en el
-  bundle del navegador.
+  bundle del navegador. Hoy la única variable de build es `PUBLIC_GA_ID`, el ID de
+  medición de Google Analytics, que no es secreto pero sí propio de la instalación:
+  viene de `.env` en local y del secreto del repositorio en la publicación. Ver
+  [docs/contacto-y-analytics.md](docs/contacto-y-analytics.md).
+- **Formularios sin servidor**: el bloque de contacto del final de cada cápsula publica
+  contra un formulario de Google, que es la vía que admite un sitio estático. Mismo
+  documento.
 - **Rutas sensibles a mayúsculas/minúsculas**: el file system del build y el CDN de
   GitHub Pages distinguen mayúsculas; mantener slugs siempre en minúsculas.
 - **Despliegue**: vía GitHub Actions (`.github/workflows/deploy.yml`, usando
@@ -311,8 +317,49 @@ Un recorrido está partido en dos piezas, a propósito:
 - **El relato** (`src/content/recorridos/<id>.yaml`): un paso por bloque, con su texto,
   su imagen y el crédito de la imagen. Es contenido, no código.
 - **La escena** (`src/components/Scrolly<Tema>.astro`): solo el SVG y su coreografía,
-  envuelto en el armazón común `ScrollyShell.astro` (escenario, subtítulos, barra de
-  avance, botón de volver al inicio, créditos).
+  envuelto en el armazón común `ScrollyShell.astro` (escenario, subtítulos, banda de
+  mandos, botón de volver al inicio, créditos).
+
+Los **mandos** (anterior, reproducir/pausa, siguiente, barra en la que se puede picar y
+flechas del teclado) viven en el armazón, así que un recorrido nuevo los hereda sin
+tocar nada. Van en una **banda ancha al pie del escenario**, como los de un video: el
+riel de avance ocupa todo el ancho y debajo van los botones, el contador y la salida.
+La banda cuelga del bloque entero del recorrido, no de la sección de los pasos, y va
+pegada al borde de abajo de la ventana: así acompaña hasta la última parada y luego se
+despega, en vez de quedarse flotando sobre lo que viene después. Los pasos y la tarjeta
+de cierre le reservan su alto con `--mandos-alto`, igual en todos los modos.
+
+La entrada de la cápsula ofrece las dos vías: desplazarse, o darle al **botón de play**,
+que baja al primer paso y lo cuenta solo.
+
+Los mandos mueven el scroll en vez de sustituirlo, pero el motor
+(`src/scripts/scrolly.ts`, con sus cuentas en `src/scripts/pasos.ts`) no espera a que
+scrollama le diga dónde ha caído: **anima el viaje él mismo**, cuadro a cuadro, y aplica
+el paso de destino al terminarlo. Cuando el scroll lo mueve el usuario, sí es scrollama
+quien manda, y el motor deduce el paso por su cuenta al detenerse para no quedarse
+contando uno que ya no es el que se ve.
+
+Tres reglas de esta parte, aprendidas rompiéndolas:
+
+- **El salto cuadra la caja del paso con la ventana**, no apunta a la línea de disparo
+  de scrollama. Ahí el paso ya cuenta como activo pero su texto está por debajo del
+  pliegue, así que el salto cambiaba el gráfico y dejaba la pantalla sin nada que leer.
+- **La tarjeta de cierre es una parada más del recorrido**, la última: la ficha de
+  quien firma el artículo y los botones de compartir. No es solo donde acaba la
+  reproducción automática; "siguiente" llega a ella desde el último paso, el contador
+  la cuenta (14 pasos se anuncian como 15 paradas) y la barra le reserva su tramo. Por
+  eso se monta **dentro** del recorrido, en el hueco `cierre` del armazón: fuera, la
+  banda de mandos desaparecía justo al llegar. El contrato cruza cuatro archivos y
+  ninguna de sus roturas hace ruido (la página la marca con `data-recorrido-cierre` y
+  la mete en el hueco; cada escena reenvía el hueco; el armazón lo pinta; el motor la
+  busca por la marca y la suma a las paradas), así que lo vigila entero
+  `tests/cierre-recorrido.test.mjs`.
+- **Ninguna regla de CSS que dependa de `data-mode` puede tocar lo que mide una caja**,
+  ni la del paso ni la de nada de dentro. El modo cambia con cada paso: un relleno ahí
+  cambia el alto de los pasos, mueve el relato entero y los mandos se ponen a saltar
+  entre dos pasos indefinidamente. El hueco que el modo sí necesita se pone con la
+  variable `--alza`, que es una transformación y no participa en la maqueta.
+  `tests/maqueta-recorrido.test.mjs` lo vigila.
 
 Cada paso lleva una clave `visual` que amarra el texto con su gráfico. **Las escenas se
 enganchan por esa clave, nunca por número de paso**: así se puede insertar un paso sin
@@ -352,6 +399,45 @@ Drive está en el skill `ficha-recorrido`.
 - [x] Sacar el texto de los recorridos del código a contenido editable y abrir la vía
       de corrección por los autores vía ficha en Drive (2026-09-15, colección
       `recorridos` + `ScrollyShell.astro` + `scripts/ficha-recorrido.mjs`).
+- [x] Mandos de reproducción en los recorridos: anterior, reproducir/pausa, siguiente,
+      barra en la que se puede picar y flechas del teclado (2026-10-27,
+      `ScrollyShell.astro` + `src/scripts/scrolly.ts` + `src/scripts/pasos.ts`).
+      Reparados el mismo día: la primera versión saltaba entre dos pasos sin parar,
+      aterrizaba con el texto bajo el pliegue, se comía los clics seguidos y el botón de
+      reproducir no movía nada. Las dos reglas que salieron de ahí están arriba, en la
+      sección de los recorridos, con una prueba cada una: la del salto que cuadra la
+      caja del paso con la ventana, en `tests/pasos.test.mjs`; la de que el modo del
+      escenario no toque lo que mide una caja, en `tests/maqueta-recorrido.test.mjs`.
+- [x] Botones de compartir en redes en cada cápsula, más las etiquetas Open Graph del
+      layout, sin las cuales un enlace pegado en WhatsApp o Facebook salía sin título,
+      resumen ni imagen (2026-10-27, `CompartirCapsula.astro`, `src/lib/compartir.ts`,
+      `src/layouts/Base.astro`). Van al pie de la página, salvo en los recorridos, donde
+      desde el 28 de octubre viven en la tarjeta de cierre.
+- [x] Mandos en banda ancha al pie del escenario, al estilo de los de un video, con el
+      riel de avance a todo lo ancho (2026-10-28, `ScrollyShell.astro`).
+- [x] La tarjeta de cierre, con la ficha de quien firma el artículo y los botones de
+      compartir, es la última parada del recorrido: llegan a ella los mandos y la
+      reproducción automática, y el contador la cuenta (2026-10-29; empezó el 28 como
+      final solo de la reproducción. `AutorCapsula.astro` + hueco `cierre` en
+      `ScrollyShell.astro` + `capsulas/[id].astro` + `scrolly.ts`).
+- [x] Botón de play en la entrada de la cápsula, que baja al primer paso y lo cuenta
+      solo, para quien no quiere desplazarse (2026-10-29, `capsulas/[id].astro` +
+      `reproducirRecorrido` en `src/scripts/scrolly.ts`).
+- [x] Ritmo de la reproducción automática a casi la mitad: de unos 170 segundos por
+      recorrido a unos 100 (2026-10-29, `duracionPaso` en `src/scripts/pasos.ts`).
+- [x] Logotipos de las redes en los botones de compartir (2026-10-28, `src/lib/iconos.ts`;
+      WhatsApp, Facebook y X vienen de Simple Icons, que es CC0; el de LinkedIn se
+      dibujó aquí porque ese catálogo ya no lo trae).
+- [~] Contacto al final de cada cápsula, pidiendo solo el correo y con el mensaje
+      prellenado (2026-10-27, `ContactoCapsula.astro` + `src/lib/contacto.ts`).
+      **Falta el dato**: sin el formulario de Google configurado, el bloque no se
+      publica. Pasos en [docs/contacto-y-analytics.md](docs/contacto-y-analytics.md).
+- [~] Google Analytics con desglose por cápsula, serie e investigador, para que cada
+      quien reporte el tráfico de su contenido (2026-10-27, `Analytics.astro` +
+      `src/lib/analytics.ts`). **Falta el dato**: sin `PUBLIC_GA_ID` no se carga nada.
+      Mismo documento.
+- [ ] Decidir si el sitio necesita aviso de cookies cuando Analytics esté activo y el
+      prototipo deje de serlo.
 - [ ] Ampliar el recorrido de Utopías, que se queda a la mitad del relato del artículo
       (petición de Ivvan). Cierra con pregunta abierta, por decisión del usuario.
 - [ ] Explicar el "cómo" en el recorrido de sequías: hoy el método ocupa un solo paso
