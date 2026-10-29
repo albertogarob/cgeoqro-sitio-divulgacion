@@ -93,6 +93,24 @@ medidas, y un sobrecosto por lámina que sigue siendo **un supuesto sin medir**.
 Las que no se tocan son las dos del concepto, el catálogo, el recorrido, las
 entrevistas, lo que no se ve y lo que se pide.
 
+## Las herramientas que aquí no aplican
+
+El pipeline del curso trae más herramientas de las que esta visita necesita, y varias
+dan rojo o avisos que no significan nada aquí. Comprobado el 29 de octubre de 2026,
+corriéndolas todas:
+
+| Herramienta | Qué dice aquí | Por qué no aplica |
+|---|---|---|
+| `anclas.py` | renumera los `data-sinc` y rompe el deck | ver el apartado siguiente |
+| `citas.py` | "la bibliografía no tiene entradas con id" | esta visita no cita nada: no hay lámina de bibliografía |
+| `parcelas.py` | "el deck no declara `<template id="mapa-parcelas">`" | el terreno de la brigada es del curso, no de aquí |
+| `apuntes.py` | "0 de 14 láminas con apunte" | los apuntes son material de estudio para un grupo; esto es una junta de quince minutos |
+| `figuras.py` | "0 figuras" | las figuras de esta visita están dentro del sitio, no en las láminas |
+| `terminos.py` | 31 términos sin definir | mide contra el vocabulario de un curso. Lo único que merece una mirada es que "recorrido interactivo" sale en la lámina 2 y se ve en la 5, y "transcripción" en la 9 antes de la 10 |
+
+Las que sí mandan aquí son las seis de la tabla de arriba, y sobre todo `barrido.py`,
+que es la que entiende la tira de puntos.
+
 ## `anclas.py` NO se corre sobre este deck
 
 El pipeline del curso lo incluye, y aquí rompe el deck. `anclas.py` renumera los
@@ -107,7 +125,34 @@ párrafo, se mira con `barrido.py`, que es el que entiende esta clase de lámina
 
 ## El riesgo que hay que mirar antes de entrar
 
-**Si no hay conexión, las ocho paradas en vivo se quedan en blanco.** No hay respaldo
-grabado todavía. Si la sala es dudosa, hay dos salidas: levantar el sitio en local y
-apuntar los iframes a `http://localhost:4321`, o grabar un video de cada parada y
-cambiarlas por video. Las dos cuestan trabajo y ninguna está hecha.
+**Si no hay conexión, las ocho paradas en vivo se quedan en blanco.** La salida está
+probada, de principio a fin, el 29 de octubre de 2026: se levanta el sitio en la propia
+máquina y se apuntan los marcos ahí. Queda idéntico, resaltado y penumbra incluidos.
+
+Son tres órdenes, desde la raíz del repositorio. Primero el sitio, en una terminal que
+se queda abierta:
+
+```bash
+npm run build && npm run preview -- --port 4321 --host 127.0.0.1
+```
+
+Después se apuntan los marcos a esa copia y se rehace el paquete:
+
+```bash
+sed -i 's#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#http://localhost:4321/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
+python3 presentacion/tools/empaquetar.py presentacion/sesiones/S01-sitio-de-divulgacion/index.html --con-apuntador
+cp presentacion/salidas/S01-sitio-de-divulgacion.html presentacion/salidas/S01-para-presentar.html
+```
+
+Y para volver a la copia publicada, la misma sustitución al revés:
+
+```bash
+sed -i 's#http://localhost:4321/cgeoqro-sitio-divulgacion/#https://albertogarob.github.io/cgeoqro-sitio-divulgacion/#g' presentacion/sesiones/S01-sitio-de-divulgacion/index.html
+```
+
+Dos cosas que hay que saber. El paquete **sigue necesitando el servidor local levantado**
+mientras dure la junta, así que la terminal no se cierra. Y el sitio que se enseña es el
+del último `npm run build`, no el publicado: si hay algo sin subir, aquí sí se ve.
+
+Lo que sigue sin existir es un respaldo grabado en video, que es la única salida que
+funcionaría sin máquina propia.

@@ -60,6 +60,6 @@ Te pedimos tres cosas. La primera, decidir si podemos usar la identidad del cent
 
 ## 14. Gracias
 
-En pantalla: 4 cápsulas, de cuatro artículos de investigadores de la sede. Tres son recorridos interactivos; una es el video de Joaquín Piña que ya existía.; 3 series temáticas, las mismas de la página de Ivvan: Agua, El espacio donde vivimos y Sociedad justa.; 5 investigadores con ficha, y 5 entrevistas, de las cuales cuatro están marcadas como muestra sin validar.; Sin configurar: el formulario de contacto y la cuenta de analíticas. Las dos funciones están hechas y quedan apagadas hasta tener el dato.
+En pantalla: 4 cápsulas, de cuatro artículos de investigadores de la sede. Tres son recorridos interactivos; una es el video de Joaquín Piña que ya existía.; 3 series temáticas, las mismas de la página de Ivvan: Agua, El espacio donde vivimos y Sociedad justa.; 5 investigadores con ficha, y 5 entrevistas, una por persona. Ninguna grabada todavía: se ven con su hueco de video y su transcripción.; Sin configurar: el formulario de contacto y la cuenta de analíticas. Las dos funciones están hechas y quedan apagadas hasta tener el dato.
 
 Ahí está el enlace. Ábrelo cuando quieras, desde el teléfono también funciona, y dime qué le falta.
