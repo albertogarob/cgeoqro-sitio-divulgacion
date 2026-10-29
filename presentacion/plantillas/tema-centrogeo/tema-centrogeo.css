@@ -1,0 +1,557 @@
+/* ============================================================================
+   Tema CentroGeo / Secihti 2026 para reveal.js
+   Port de "Presentación Secihti-CentroGeo 2026.pptx".
+
+   Todas las geometrías salen del XML de la plantilla, en porcentaje del lienzo
+   (12192000 x 6858000 EMU = 13.333 x 7.5 pulgadas). El lienzo de reveal se fija
+   en 1280x720 px, así 1 pt = 1.3333 px y 1% horizontal = 12.8 px.
+
+   PowerPoint aplica por defecto un margen interno (lIns/rIns) de 91440 EMU,
+   que aquí son 9.6 px, y ancla el texto arriba salvo indicación contraria.
+   ========================================================================= */
+@import url("fuentes/fuentes.css");
+
+:root {
+  --guinda:        #A42145;
+  --guinda-medio:  #9C2148;
+  --guinda-oscuro: #6E152E;
+  --verde:         #155B4E;
+  --dorado:        #E7D395;
+  --texto:         #404040;
+  --secundario:    #5A5A5A;   /* programa, fecha, pie de firma */
+
+  --pt: 1.3333px;      /* un punto de la plantilla */
+  --lIns: 9.6px;       /* margen interno de PowerPoint */
+}
+
+/* El guion corto de una lámina, la versión de treinta o cuarenta segundos que
+   el apuntador lee cuando la sesión va tarde. Vive al lado del guion largo,
+   dentro de la lámina, y nunca se ve: reveal solo esconde aside.notes, que es
+   la suya, así que esta hay que esconderla aquí. */
+.reveal aside.corto { display: none; }
+
+/* Los apuntes de estudio de la lámina, lo único de los cuatro bloques de notas que
+   viaja al paquete del grupo. En el deck de trabajo no se ven: los lee el lector
+   que tools/empaquetar.py inyecta en el archivo de salidas/. */
+.reveal aside.apuntes { display: none; }
+
+/* La nota didáctica de la lámina, el cuarto bloque, y el único que no tiene
+   lector en el paquete porque no viaja: es de Alberto y solo la ve él, en el
+   lector de estudio que abre la tecla I. Necesita SU PROPIA regla, igual que el
+   guion corto y los apuntes: si se añade el bloque al deck sin esta línea, el
+   texto se proyecta en clase. Es el mismo fallo de las dos mitades que costó el
+   CSS del reproductor, el comportamiento sin su estilo. */
+.reveal aside.didactica { display: none; }
+
+/* La ficha de la sesión: su bibliografía y sus créditos. Va en la lámina de
+   cierre, no se ve en pantalla, y el lector de apuntes la pone al final del
+   apuntes. Es obligatoria en todas las sesiones. */
+.reveal aside.ficha { display: none; }
+
+/* Marca de cita: el número de la referencia, en superíndice y pegado a lo que
+   cita. El número lo escribe tools/citas.py en el propio HTML, tomándolo del
+   orden de la bibliografía, así que se ve igual en la lámina, en el paquete del
+   grupo y en los apuntes impresos. */
+/* Va sin volar y entre corchetes. Volada y pegada a la palabra, la marca se
+   leía como parte del nombre: Alberto leyó "ACT6" y entendió que el sistema se
+   llamaba así. Lo pidió el 29 de septiembre de 2026, después de dar la sesión 8.
+   Los corchetes los pone el CSS y no el HTML, para que el contenido siga siendo
+   el número a secas y tools/apuntes.py lo siga leyendo.
+   El selector no va acotado a .reveal: el guion de orador se pinta fuera. */
+cite[data-ref] {
+  font-style: normal;
+  font-weight: 600;
+  font-size: .82em;
+  vertical-align: baseline;
+  line-height: inherit;
+  color: var(--guinda);
+  margin-left: .22em;
+  white-space: nowrap;
+}
+cite[data-ref]::before { content: "["; }
+cite[data-ref]::after  { content: "]"; }
+
+/* --- lienzo ---------------------------------------------------------- */
+.reveal { font-family: 'Noto Sans', 'Segoe UI', system-ui, sans-serif; }
+.reveal .slides { text-align: left; }
+.reveal .slides section {
+  width: 1280px; height: 720px; padding: 0; margin: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center 1px;   /* alinea con el render del pptx */
+}
+
+/* --- fondos oficiales, uno por layout -------------------------------- */
+.reveal section.portada,
+.reveal section.cierre         { background-image: url("fondos/fondo-3.webp"); }
+.reveal section.seccion        { background-image: url("fondos/fondo-6.webp"); }
+.reveal section.guinda-linea   { background-image: url("fondos/fondo-7.webp"); }
+.reveal section.guinda-lateral { background-image: url("fondos/fondo-8.webp"); }
+.reveal section.guinda-sello   { background-image: url("fondos/fondo-9.webp"); }
+.reveal section.guinda-banda   { background-image: url("fondos/fondo-10.webp"); }
+.reveal section.verde-linea    { background-image: url("fondos/fondo-11.webp"); }
+.reveal section.verde-lateral  { background-image: url("fondos/fondo-12.webp"); }
+.reveal section.verde-sello    { background-image: url("fondos/fondo-13.webp"); }
+.reveal section.verde-banda    { background-image: url("fondos/fondo-14.webp"); }
+
+/* --- banner Secihti + CentroGeo -------------------------------------- */
+.reveal .slides section::before {
+  content: ""; position: absolute;
+  left: 66.86%; top: 3.81%; width: 31.05%; height: 4.98%;
+  background: url("img/banner-secihti-centrogeo.webp") no-repeat center;
+  background-size: 100% 100%;
+}
+.reveal section.portada::before { left: 29.54%; top: 14.27%; width: 61.54%; height: 9.88%; }
+.reveal section.cierre::before  { left: 28.30%; top: 26.96%; width: 61.54%; height: 9.88%; }
+
+/* --- título de diapositiva de contenido ------------------------------
+   Ancho oficial 69.436%. Con el texto anclado arriba (como hace
+   PowerPoint) un título de dos líneas crece hacia abajo y ya no invade
+   el banner, así que no hace falta recortar la caja.
+   Sin flex: rompía los espacios alrededor de <em>, <strong> y <code>.   */
+.reveal .slides section > h1,
+.reveal .slides section > h2 {
+  position: absolute;
+  left: 2.406%; top: 3.673%; width: 69.436%;
+  height: auto; max-height: 12.901%;
+  margin: 0; padding: 4.8px var(--lIns);
+  display: block;
+  font-family: 'Noto Sans', sans-serif; font-weight: 600;
+  font-size: calc(40 * var(--pt)); line-height: 1.05;
+  color: var(--guinda-medio);
+  text-transform: none; letter-spacing: normal; text-wrap: balance;
+}
+/* Reserva el hueco del banner solo en la primera línea del título: mantiene
+   la caja oficial de 69.436% y evita que un título largo se meta debajo. */
+.reveal .slides section > h1::before,
+.reveal .slides section > h2::before {
+  content: ""; float: right; width: 9%; height: 1.15em;
+}
+.reveal section.seccion > h1::before,
+.reveal section.seccion > h2::before { display: none; }
+.reveal section[class*="verde"] > h1,
+.reveal section[class*="verde"] > h2 { color: var(--verde); }
+
+/* --- cuerpo -----------------------------------------------------------
+   La altura oficial es 68.517%, pero el sello "Margarita Maza" y las
+   bandas de color entran en esa caja. Cada altura se midió contra el
+   fondo correspondiente, buscando la primera fila con mobiliario dentro
+   de la columna de texto y dejando 8 px de aire.                        */
+.reveal .slides section > .cuerpo {
+  position: absolute;
+  left: 2.406%; top: 23.5%; width: 69.436%; height: 61.5%;
+  padding-left: var(--lIns);
+  font-weight: 500; font-size: calc(24 * var(--pt)); line-height: 1.25;
+  color: var(--texto);
+  overflow: hidden;
+}
+.reveal section[class*="lateral"] > .cuerpo { height: 75.4%; }
+.reveal section[class*="banda"]   > .cuerpo { height: 55.3%; }
+
+.reveal .cuerpo ul,
+.reveal .cuerpo ol { margin: 0; padding-inline-start: 1.2em; }
+.reveal .cuerpo li { margin-bottom: .27em; text-wrap: pretty; hyphens: auto; }
+.reveal .cuerpo ul ul { margin-top: .25em; font-size: .85em; }
+.reveal .cuerpo ul ul > li { margin-bottom: .2em; }
+.reveal .cuerpo p { margin: 0 0 .5em; text-wrap: pretty; }
+.reveal .cuerpo strong { font-weight: 600; color: var(--guinda-medio); }
+.reveal section[class*="verde"] .cuerpo strong { color: var(--verde); }
+.reveal .cuerpo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.reveal .cuerpo table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+.reveal .cuerpo th, .reveal .cuerpo td { padding: .4em .8em; text-align: left;
+  border-bottom: 1px solid #D0D0D0; }
+.reveal .cuerpo th { font-weight: 600; color: var(--guinda-medio); }
+.reveal section[class*="verde"] .cuerpo th { color: var(--verde); }
+.reveal .cuerpo code { font-size: .85em; background: #EAEAEA; padding: .05em .3em;
+  border-radius: 3px; }
+.reveal .cuerpo pre { font-size: .62em; line-height: 1.3; background: #EAEAEA;
+  padding: .5em .7em; border-radius: 4px; margin: 0 0 .5em; }
+.reveal .cuerpo pre code { background: none; padding: 0; }
+
+/* --- expresiones matemáticas -----------------------------------------
+   Las componen MathJax con salida SVG, no el tema. El motor está en
+   vendor/mathjax/tex-svg.js y el deck lo carga con un <script src> normal
+   para que tools/empaquetar.py lo incruste. Aquí solo se ajusta el tamaño,
+   que MathJax calcula sobre el cuerpo y en la lámina queda algo grande.    */
+.reveal .cuerpo mjx-container { font-size: 92%; }
+.reveal .cuerpo mjx-container svg { vertical-align: -0.1em; }
+
+/* --- diapositiva de sección ------------------------------------------
+   Layout 6: el título va en su propia caja, más grande y más abajo.     */
+.reveal section.seccion > h1,
+.reveal section.seccion > h2 {
+  left: 2.979%; bottom: 52.2%; top: auto; width: 88%; height: auto; max-height: none;
+  display: block;
+  font-size: calc(44 * var(--pt));
+}
+/* La caja termina en 47.85%, la regla dorada del fondo está en la fila 353
+   de 720, o sea 49.03%. Con el texto anclado abajo queda apoyado sobre ella
+   en lugar de flotar a media altura, que es como se veía antes. */
+
+/* --- portada ----------------------------------------------------------
+   El título y la bajada se centran en la mitad de la lámina, no en el eje
+   del banner: 19.23 + 61.54/2 = 2.979 + 94.042/2 = 50%. Así las dos líneas
+   comparten una misma vertical.
+   El marcador real del título es el de 24.658%, centrado verticalmente
+   en su caja y alineado a la izquierda (verificado midiendo el render
+   oficial: la tinta empieza en x=330, o sea el borde de la caja más el
+   margen interno). El otro shape del layout está vacío y es decorativo. */
+.reveal section.portada > .titulo {
+  position: absolute;
+  left: 19.23%; bottom: 52.2%; width: 61.54%; height: auto;
+  padding: 0 var(--lIns);
+  display: block;
+  font-family: 'Noto Sans', sans-serif; font-weight: 600;
+  font-size: calc(44 * var(--pt)); line-height: 1.1;
+  color: var(--guinda-medio); text-align: center; text-wrap: balance;
+}
+.reveal section.portada > .bajada {
+  position: absolute;
+  left: 2.979%; top: 50.464%; width: 94.042%;
+  height: auto; max-height: 25%;
+  padding: 0 var(--lIns);
+  font-weight: 500; font-size: calc(20 * var(--pt)); line-height: 1.3;
+  color: var(--guinda-oscuro); text-align: center; text-wrap: pretty;
+}
+/* En la bajada, el nombre manda; el programa y la fecha van en gris. */
+.reveal section.portada > .bajada .secundario { color: var(--secundario); }
+
+/* --- cierre -----------------------------------------------------------
+   El agradecimiento va por debajo de la regla dorada del fondo, que está a la
+   altura del 49%, y centrado sobre la lámina entera y no sobre la caja del
+   logotipo, que es donde lo dejaba la plantilla. Debajo va la firma.
+   El tamaño conserva el fontScale de 92.5% de la plantilla: 44pt * 0.925 *
+   ajuste medido = 35pt.                                                 */
+.reveal section.cierre > .gracias {
+  position: absolute;
+  left: 2.979%; top: 50.5%; width: 94.042%; height: auto;
+  padding: 0 var(--lIns);
+  display: block;
+  font-weight: 600; font-size: calc(40 * var(--pt)); line-height: 1.1;
+  color: var(--guinda-medio); text-align: center;
+}
+/* La firma tiene que caber entre el agradecimiento y el sello de Margarita
+   Maza del fondo, que empieza al 79%. Cuatro renglones a 16pt lo consiguen. */
+.reveal section.cierre > .firma {
+  position: absolute;
+  left: 2.979%; top: 60%; width: 94.042%;
+  padding: 0 var(--lIns);
+  font-weight: 500; font-size: calc(16 * var(--pt)); line-height: 1.45;
+  color: var(--guinda-oscuro); text-align: center;
+}
+.reveal section.cierre > .firma .nombre { font-weight: 600; font-size: 1.15em; }
+.reveal section.cierre > .firma .programa { color: var(--secundario); }
+
+/* --- ayuda de autoría: marca en rojo lo que se desborda ---------------
+   Se activa añadiendo la clase "depurar" al div.reveal.                 */
+.reveal.depurar .cuerpo { outline: 2px dashed #C00; overflow: visible; }
+.reveal.depurar h2      { outline: 2px dashed #06C; }
+
+@page { size: 1280px 720px; margin: 0; }
+
+/* --- glosas al pasar el ratón ------------------------------------------
+   La etiqueta corta enseña lo que esconde: una regla entera, la casilla de
+   una parcela en su rejilla. Es la versión interactiva de "una etiqueta
+   corta nunca va sola", y por eso la glosa posicional sale de la lámina:
+   el dibujo la da. Lo que NO sale es la glosa del guion, porque el grupo
+   la oye y no puede pasar el ratón por una proyección.
+
+   Estrenado en la sesión 8 el 29 de septiembre de 2026 y subido al tema el
+   30, para que las 29 sesiones lo hereden. El JavaScript va en glosas.js,
+   al lado. Su prueba de regresión es tools/prueba-glosas.py.
+
+   El original vive dentro de la lámina, fuera de la pantalla pero con su
+   posición calculada, que es lo que MathJax necesita para componerlo al
+   cargar. El globo que se ve es un clon colgado de <body>, y va ahí y no
+   dentro de la lámina por dos razones: .cuerpo lleva overflow oculto y lo
+   recortaría, y position:fixed no funciona dentro de un elemento
+   transformado, que es lo que reveal le hace a cada lámina para escalarla. */
+.reveal .gl { position: relative; cursor: help;
+  border-bottom: 1px dotted var(--guinda-medio); }
+.reveal section[class*="verde"] .gl { border-bottom-color: var(--verde); }
+.reveal .gl:focus { outline: 2px solid var(--guinda-medio); outline-offset: 2px; }
+.reveal .gl > .gl-eti { display: inline; }
+
+/* El globo original se queda en la lámina, fuera de la pantalla pero con su
+   posición calculada: MathJax lo necesita así para componerlo al cargar, y
+   con display:none saldría sin medidas. Es un <aside> a propósito, para que
+   las herramientas del proyecto, que quitan los aside, no lo lean como texto
+   proyectado ni lo peguen a la prosa en guion.md. */
+.reveal .gl-pop { position: absolute; left: -9999px; top: 0;
+  visibility: hidden; pointer-events: none; display: block; width: 20em; }
+
+#glosa-flotante { position: fixed; z-index: 60; display: none;
+  background: #ffffff; color: #1a1a1a;
+  border: 1px solid #c9c9c9; border-left: 4px solid var(--guinda-medio);
+  border-radius: 4px; box-shadow: 0 6px 22px rgba(0,0,0,.22);
+  padding: 10px 14px; max-width: 460px;
+  font-family: inherit; font-size: 17px; line-height: 1.35; text-align: left; }
+#glosa-flotante.visible { display: block; }
+#glosa-flotante .gl-exp { display: block; text-align: center; margin: 0 0 .2em; }
+#glosa-flotante .gl-glosa { display: block; font-size: .82em; color: #555;
+  font-style: italic; margin-top: .25em; }
+#glosa-flotante .gl-rej { display: block; margin: 0 auto .1em; }
+/* La expresión completa de un número de probabilidad. Alberto pidió el 13 de
+   octubre de 2026 que ningún número suelto se proyecte sin ella, y como en la
+   lámina no cabe, va en el globo. */
+#glosa-flotante .gl-expr { display: block; text-align: center; font-size: 1.05em; }
+/* El número con globo se marca con un subrayado de puntos, igual que las demás
+   etiquetas con glosa, para que se sepa que hay algo que mirar. */
+.reveal .gl-cifra .gl-eti { border-bottom: 1px dotted var(--guinda-medio); }
+#glosa-flotante .gl-celda { fill: #f2f2f2; stroke: #bbbbbb; stroke-width: 1; }
+#glosa-flotante .gl-celda.gl-on { fill: var(--guinda-medio); stroke: #ffffff;
+  stroke-width: 1.5; }
+
+/* --- el reproductor de las animaciones, y sus controles ----------------
+   Subido al tema el 30 de septiembre de 2026, junto con reproductor.js. La
+   primera mudanza se llevó el JavaScript y dejó este CSS dentro del generador
+   de la sesión 8, así que la sesión 9 salió con un elemento de video sin
+   tamaño ni posición y la lámina se veía vacía. Las dos piezas viven ahora en
+   el mismo sitio.
+
+   El video y la barra cuelgan los dos de <body>, SUELTOS, y no dentro de una
+   caja común. Metidos en una caja con z-index, la caja crea su propio contexto
+   de apilado y la mezcla multiplicativa del video deja de alcanzar el fondo de
+   la lámina: el video se pintaba como un rectángulo blanco opaco. Visto en una
+   captura. La caja solo existe mientras dura la pantalla completa, que es
+   cuando el fondo es blanco y la mezcla da igual. */
+#reproductor {
+  /* La posición y el tamaño los fija reproductor.js EN PIXELES, a partir de la
+     lámina de verdad: reveal escala y centra el deck cuando la ventana no mide
+     1280 por 720, y en porcentajes contra la ventana la barra se salía. Lo de
+     aquí es solo el arranque. */
+  position: absolute;
+  top: 25%; height: 59%;
+  left: 2.41%; width: 95.19%;
+  /* contain, no fill: la caja mide 1218 por 475, o sea 2.56 de proporción, y
+     el video es 16:9, o sea 1.78. Con fill se estiraba 1.44 veces a lo ancho. */
+  object-fit: contain; background: transparent;
+  /* El video trae su propio fondo claro, y tapaba el sello del fondo del tema.
+     Con mezcla multiplicativa ese fondo deja pasar la textura, igual que hace
+     un diagrama en SVG, y el dibujo oscuro se sigue viendo entero. */
+  mix-blend-mode: multiply;
+  display: none; z-index: 12;
+}
+
+/* La barra, debajo del video. Empieza en el 20% y no en el borde: el sello de
+   la esquina de abajo a la izquierda llega hasta el 17% y se dibujaba por
+   delante de los botones. Visto en una captura. */
+#repro-barra {
+  position: absolute; top: 85.5%; left: 20%; width: 77%;
+  height: calc(48 * var(--pt));
+  display: none; align-items: center; gap: .45em;
+  z-index: 20; font-family: 'Noto Sans', sans-serif;
+  background: rgba(255,255,255,.92); border-radius: 8px;
+  padding: 0 .7em; box-sizing: border-box;
+  /* Nada de lo de dentro puede empujar la barra fuera de la lámina: lo que no
+     quepa se recorta aquí. El nombre del tramo, que es lo que la alargaba, ya
+     no se escribe: va en el title. */
+  overflow: hidden;
+}
+#repro-barra.visible { display: flex; }
+#repro-barra button {
+  flex: 0 0 auto; width: calc(34 * var(--pt)); height: calc(34 * var(--pt));
+  padding: 0; border: 0; border-radius: 6px; cursor: pointer;
+  background: transparent; color: var(--guinda-medio);
+  display: flex; align-items: center; justify-content: center;
+}
+#repro-barra button svg { width: 76%; height: 76%; fill: currentColor; }
+#repro-barra button:hover:not(:disabled) { background: rgba(156,33,72,.12); }
+#repro-barra button:disabled { opacity: .28; cursor: default; }
+#repro-barra button.encendido { background: var(--guinda-medio); color: #FFFFFF; }
+
+/* La pista: el avance sobre el video entero, con las marcas de los tramos y el
+   tramo en curso resaltado. Se puede pinchar para saltar. */
+#repro-pista {
+  position: relative; flex: 1 1 auto; min-width: 0;
+  height: calc(20 * var(--pt));
+  background: #E2E2E2; border-radius: 99px; cursor: pointer; overflow: hidden;
+}
+#repro-tramo { position: absolute; top: 0; bottom: 0;
+  background: rgba(156,33,72,.17); }
+#repro-llena { position: absolute; top: 0; bottom: 0; left: 0; width: 0;
+  background: var(--guinda-medio); border-radius: 99px; }
+#repro-marcas i { position: absolute; top: 0; bottom: 0; width: 2px;
+  background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
+/* El número de cada tramo, dentro de su banda. Va en una pastilla blanca para
+   que se lea igual sobre la parte ya reproducida, que es guinda, y sobre la que
+   falta, que es gris. Es lo que ata el guion, que habla de "el tramo tres", con
+   lo que se ve en la pista. */
+#repro-nums i { position: absolute; top: 50%; transform: translate(-50%, -50%);
+  font-style: normal; font-size: calc(12 * var(--pt)); font-weight: 700;
+  line-height: 1; color: var(--guinda-medio); background: #FFFFFF;
+  border-radius: 99px; padding: .12em .34em; pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.14); }
+#repro-nums i.aqui { color: #FFFFFF; background: var(--guinda-medio);
+  box-shadow: 0 0 0 1.5px #FFFFFF; }
+#repro-tiempo, #repro-cuenta {
+  flex: 0 0 auto; font-size: calc(15 * var(--pt)); font-weight: 600;
+  white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+#repro-tiempo { color: #404040; }
+#repro-cuenta { color: var(--guinda-medio); }
+
+/* La pantalla completa. La caja se crea al pedirla y se deshace al salir, con
+   el video y la barra dentro, para que los controles sigan estando. El fondo
+   va blanco: el video lleva mezcla multiplicativa y sobre negro no se vería. */
+#repro-lleno {
+  display: flex; flex-direction: column; background: #FFFFFF;
+  width: 100%; height: 100%; padding: 1.4vh 1.6vw; box-sizing: border-box;
+}
+#repro-lleno #reproductor {
+  position: static; transform: none; width: 100%; height: auto;
+  flex: 1 1 auto; min-height: 0; display: block;
+}
+#repro-lleno #repro-barra {
+  position: static; width: 100%; margin-top: 1.2vh;
+  height: 7.4vh; z-index: auto;
+}
+#repro-lleno #repro-barra button { width: 5.4vh; height: 5.4vh; }
+#repro-lleno :is(#repro-tiempo, #repro-cuenta) { font-size: 2.3vh; }
+#repro-lleno #repro-pista { height: 3vh; }
+#repro-lleno #repro-nums i { font-size: 1.7vh; }
+
+/* El rótulo del tramo no se proyecta por su cuenta: su nombre va en el title de
+   la barra. Escrito en la lámina salía apilado bajo el título y, puesto en la
+   barra, la alargaba hasta salirse de la diapositiva. */
+.reveal .tramo { position: absolute; left: -9999px; }
+
+/* --- resaltado de sintaxis en los bloques de código -------------------
+   Los tokens los marca tools/codigo.py desde Python, no highlight.js: el
+   plugin de reveal pesa 900 KB por paquete y sus temas son oscuros. La
+   paleta es la institucional, para que el código no parezca de otro sitio.
+   Pedido por Alberto el 30 de septiembre de 2026. */
+.reveal .cuerpo code .cd-kw   { color: var(--guinda-medio); font-weight: 600; }
+.reveal .cuerpo code .cd-tipo { color: var(--verde); font-weight: 600; }
+.reveal .cuerpo code .cd-str  { color: #8a6d12; }
+.reveal .cuerpo code .cd-num  { color: #1d5c86; }
+.reveal .cuerpo code .cd-com  { color: #7c7c7c; font-style: italic; }
+
+/* --- sincronía del guion con la lámina --------------------------------
+   Mientras se lee un párrafo del guion en el apuntador, la lámina resalta la
+   pieza de la que ese párrafo habla. Alberto lo pidió el 12 de octubre de 2026:
+   que el grupo asocie lo que oye con un elemento de la lámina, y que él vea a
+   qué elemento corresponde lo que está diciendo.
+
+   El emparejamiento lo escribe tools/anclas.py como data-pieza en el elemento y
+   data-sinc en el párrafo del guion; el motor está en apuntador.js y se
+   enciende con la tecla Y.
+
+   TODO cuelga de la clase `sinc` en el <html>, que solo se pone cuando la
+   sincronía está encendida Y la lámina tiene anclas. Apagada, el deck se ve
+   exactamente igual que antes de que esto existiera, y eso es lo que permite
+   que viva en el tema de las 30 sesiones. */
+html.sinc .reveal .slides section.present [data-pieza] {
+  transition: opacity .18s ease, filter .18s ease;
+}
+/* Lo que no se está diciendo se atenúa, en vez de pintar lo que sí: atenuar no
+   mueve nada de sitio, y cualquier recuadro sobre una viñeta larga desplazaba
+   el texto de la lámina.
+
+   El 0.45 está medido en captura, no elegido a ojo. Por debajo, el resto de la
+   lámina se pierde proyectado con luz ambiente, y lo que se quiere es que el
+   grupo ASOCIE lo que oye con una pieza, no que deje de ver las demás. Quien
+   carga con la asociación es la marca guinda de la pieza en curso, así que el
+   atenuado puede ser suave. */
+html.sinc .reveal .slides section.present [data-pieza]:not(.sinc-aqui) {
+  opacity: .45;
+}
+html.sinc .reveal .slides section.present [data-pieza].sinc-aqui {
+  opacity: 1;
+}
+/* La pieza de texto en curso se marca con un fondo del mismo rojo, muy diluido,
+   y con su propia viñeta en ese rojo a plena fuerza. Así se ve cuál es, y no
+   solo cuáles no son.
+
+   **Ni barra al costado ni recuadro, y las dos cosas se probaron.** La barra
+   quedaba pegada al círculo de la viñeta y se leía como un segundo adorno
+   peleándose con él; Alberto la rechazó el 12 de octubre de 2026. El recuadro
+   tampoco sirve aquí: entre dos viñetas solo hay 3 px, medidos, así que dos
+   viñetas contiguas resaltadas juntaban sus recuadros y la lámina se leía como
+   una tabla. El fondo no choca con nada, no mueve el texto y se funde solo
+   cuando hay dos seguidas.
+
+   El `box-shadow` ensancha el fondo a los lados sin tocar la caja: por la
+   izquierda hasta cubrir el círculo de la viñeta, que vive fuera del `li`. */
+html.sinc .reveal .slides section.present [data-pieza].sinc-aqui {
+  background: rgba(224, 27, 61, .12); border-radius: 4px;
+  box-shadow: -14px 0 0 rgba(224, 27, 61, .12), 8px 0 0 rgba(224, 27, 61, .12);
+}
+html.sinc .reveal .slides section.present li[data-pieza].sinc-aqui::marker {
+  color: #E01B3D;
+}
+/* Un dibujo, un video o un bloque de código no llevan barra al costado, que no
+   tienen margen donde ponerla: llevan un recuadro rojo alrededor, del mismo
+   rojo y del mismo grosor que los recuadros dibujados dentro de los diagramas,
+   para que el grupo lea las dos cosas como la misma señal.
+
+   **El recuadro va por FUERA del dibujo**, como manda la regla de los recuadros
+   de los diagramas: por dentro se superpone al contenido, y medido el 12 de
+   octubre de 2026 pisaba los rótulos de los periodos del dibujo de la rebanada.
+
+   Y para que quepa hay que levantar el recorte del cuerpo, que es la regla de
+   abajo. El dibujo de la rebanada llega al píxel 872, exactamente el borde del
+   cuerpo, así que sin levantarlo el recuadro salía abierto por la derecha. Se
+   levanta **solo con la sincronía encendida**, que es cuando hace falta; y si
+   alguna lámina desbordara, con la sincronía puesta se vería en vez de
+   recortarse, que tampoco es mal trato. */
+html.sinc .reveal .slides section.present .cuerpo { overflow: visible; }
+html.sinc .reveal .slides section.present :is(svg, video, pre, img,
+    table, figure)[data-pieza].sinc-aqui {
+  outline: 5px solid #E01B3D; outline-offset: 5px; border-radius: 3px;
+}
+/* Un dibujo no lleva fondo: ya lleva su recuadro, y el fondo se le vería por
+   detrás como un halo sucio. */
+html.sinc .reveal .slides section.present :is(svg, video, pre, img,
+    table, figure)[data-pieza].sinc-aqui {
+  background: none; box-shadow: none;
+}
+
+/* --- el bloque de código, y sus líneas -------------------------------
+
+   Dos cosas que Alberto pidió el 13 de octubre de 2026, al revisar las dos
+   láminas de pgmpy de la sesión 12.
+
+   **Primera: el bloque de código no se atenúa nunca.** "En las láminas de
+   código mantén siempre resaltados los bloques de código". El código es lo que
+   la lámina viene a enseñar y es lo que él señala con el dedo mientras habla de
+   las viñetas; atenuarlo al 0.45 lo deja ilegible proyectado justo cuando hace
+   falta leerlo. Las viñetas de esas láminas siguen atenuándose como siempre. */
+html.sinc .reveal .slides section.present pre[data-pieza]:not(.sinc-aqui) {
+  opacity: 1;
+}
+/* **Segunda: dentro del bloque se encienden las líneas de las que habla el
+   párrafo**, y se atenúan las demás. "No se puede hacer un highlighting para
+   líneas o bloques individuales de código. Eso sería mucho mejor".
+
+   El atenuado vive aquí dentro y no choca con la regla de arriba: el bloque
+   entero se queda a plena opacidad, y lo que baja son las líneas que no
+   tocan. Y solo cuando hay alguna encendida, que es lo que marca la clase
+   `sinc-cl-hay`: un párrafo que habla del código sin nombrar ninguna línea
+   deja el bloque entero legible, como antes de esto.
+
+   La línea encendida lleva el mismo fondo rojo diluido que una viñeta, para
+   que el grupo lea las dos cosas como la misma señal, y se ensancha a los
+   lados con `box-shadow` para que el fondo no corte justo en el último
+   carácter. */
+html.sinc .reveal .slides section.present pre .cl {
+  transition: opacity .18s ease;
+  display: inline-block; width: 100%;
+}
+html.sinc .reveal .slides section.present pre.sinc-cl-hay .cl:not(.sinc-cl) {
+  opacity: .38;
+}
+html.sinc .reveal .slides section.present pre .cl.sinc-cl {
+  background: rgba(224, 27, 61, .14); border-radius: 3px;
+  box-shadow: -6px 0 0 rgba(224, 27, 61, .14), 6px 0 0 rgba(224, 27, 61, .14);
+}
+
+/* El aviso de encendido y apagado, abajo a la derecha, un segundo y medio. */
+#sincAviso {
+  position: fixed; right: 14px; bottom: 14px; z-index: 60;
+  padding: 6px 11px; border-radius: 4px;
+  background: rgba(110, 21, 46, .92); color: #fff;
+  font: 600 13px/1 Verdana, Geneva, sans-serif;
+  opacity: 0; transition: opacity .25s ease; pointer-events: none;
+}
+#sincAviso.ver { opacity: 1; }

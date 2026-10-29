@@ -1,0 +1,10 @@
+{
+  "_comentario": "Calibración de tools/tiempos.py para una junta ejecutiva, no para una clase.",
+  "_de-donde-sale-el-ritmo": "ritmo_ppm = 135 palabras/min viene calibrado del curso AIF-CGeo-Sep26 contra tres clases impartidas. Se conserva tal cual: es Alberto hablando, y eso no cambia según el auditorio.",
+  "_de-donde-sale-el-sobrecosto": "SUPUESTO, NO MEDIDO. El curso trae 1.494 a 2.021 min por lámina, medidos en clases de dos horas ante un grupo de posgrado, donde el sobrecosto incluye dejar que treinta personas lean la lámina y contestar preguntas. Aquí es una junta de diez minutos con una sola persona, y ese término no transfiere. Se fija en 0.25 a 0.50 min, o sea 15 a 30 segundos por lámina: lo que cuesta pasarla y que el interlocutor le eche un ojo. NADIE LO HA MEDIDO en este escenario. Para recuperar la calibración del curso: sobrecosto_lo 1.494, sobrecosto_hi 2.021. Para calibrarlo de verdad, correr tiempos.py --observar=N/M después de la junta.",
+  "ritmo_ppm": 135.0,
+  "sobrecosto_lo": 0.25,
+  "sobrecosto_hi": 0.5,
+  "sobrecosto_leve": 0.3,
+  "observaciones": []
+}

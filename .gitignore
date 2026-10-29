@@ -31,3 +31,6 @@ fichas/
 
 # artefactos del navegador de pruebas (capturas y volcados de página)
 .playwright-mcp/
+
+# Notas del anotador de la presentación: son de trabajo, no del repositorio.
+presentacion/sesiones/*/notas.json

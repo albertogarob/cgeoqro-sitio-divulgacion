@@ -1,0 +1,159 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>{{TITULO}}</title>
+<link rel="stylesheet" href="{{RUTA}}/vendor/reveal/dist/reveal.css">
+<link rel="stylesheet" href="{{RUTA}}/tema-centrogeo.css">
+</head><body>
+<div class="reveal"><div class="slides">
+
+<!-- ===================================================================
+     Plantilla de sesión. Copiar a sesiones/SNN-slug/index.html y
+     sustituir {{TITULO}}, {{RUTA}}, {{SESION}}, {{TEMA}} y {{FECHA}}.
+     Lo hace solo `python3 tools/nueva-sesion.py NN`.
+
+     Clases de lámina disponibles y su capacidad real en viñetas de una
+     línea, medida contra el mobiliario de cada fondo:
+
+       portada          primera lámina, con .titulo y .bajada
+       seccion          separador de bloque, solo h2
+       guinda-linea     contenido, 8 viñetas
+       guinda-lateral   contenido, 9 viñetas
+       guinda-sello     contenido, 8 viñetas
+       guinda-banda     contenido, 7 viñetas
+       verde-linea      las mismas cuatro variantes en verde, mismo
+       verde-lateral    reparto de capacidad. El color distingue el
+       verde-sello      bloque temático, no la jerarquía.
+       verde-banda
+       cierre           última lámina, con .gracias
+
+     Cada lámina lleva su guion completo en su bloque de notas de orador.
+     Las acotaciones van entre corchetes: no se leen en voz alta ni
+     cuentan tiempo. Los bloques de duración fija, como una ronda de
+     presentaciones o una discusión, se declaran con data-min.
+
+     Una lámina puede declarar además cuánto cuesta perderla, con
+     data-recorte en su section, y así el apuntador puede recortarla en
+     vivo si la sesión va tarde:
+
+       sin marca         núcleo, no se recorta nunca
+       data-recorte="1"  se pierde y nadie se entera: repite o refuerza
+                         algo ya dicho. Se corta sin avisar al grupo
+       data-recorte="2"  se pierde, pero hay que decirlo en clase y queda
+                         pendiente de retomar
+
+     La lámina de cierre lleva la ficha de la sesión, en un bloque de notas
+     con la clase "ficha": su bibliografía y sus créditos. Es obligatoria en
+     todas las sesiones, y el lector de apuntes la pone al final de ellos
+     que se entrega al grupo.
+
+     Toda lámina lleva además su guion corto, en un segundo bloque de
+     notas con la clase "corto": lo que se dice de ella cuando hay que
+     abreviarla, en dos o tres frases. También las de núcleo, porque el
+     núcleo no se pierde nunca pero sí se puede contar corto, y porque
+     escribirlo obliga a saber cuál es el argumento de la lámina en una
+     frase. Sin guion corto la única salida es saltarla entera. Solo se
+     libran la portada, el cierre y los separadores de bloque, cuyo
+     guion ya son dos frases. tiempos.py lista las que se queden sin él.
+
+     Y puede llevar un cuarto bloque, con la clase "didactica": la nota con
+     la que Alberto entiende el tema y decide cómo explicarlo, escrita para
+     leerse con la lámina delante. Es la única de las cuatro que no se lee
+     en el apuntador: se lee con la tecla I, al costado de la lámina o en
+     ventana aparte. No viaja al paquete, como el guion y el guion corto.
+     La escribe el skill didactica-sesion.
+
+     No escribas etiquetas HTML literales dentro de este comentario: las
+     herramientas del proyecto leen el archivo con expresiones regulares
+     y las tomarían por láminas reales.
+     =================================================================== -->
+
+<section class="portada" data-min="3">
+  <div class="titulo">Fundamentos de IA</div>
+  <div class="bajada"><strong>Sesión {{SESION}}. {{TEMA}}</strong><br>
+    Dr. Alberto García Robledo<br><span class="secundario">Programa Interdisciplinario en Ciencias de la Información Geoespacial<br>{{FECHA}}</span></div>
+  <aside class="notes"><p>[Esperar a que entren todos. Compartir la ventana del deck, no la
+    pantalla completa.]</p><p>Guion de apertura.</p></aside>
+</section>
+
+<section class="seccion"><h2>Título del bloque</h2>
+  <aside class="notes"><p>Guion de transición.</p></aside>
+</section>
+
+<section class="guinda-linea" data-recorte="1"><h2>Título de la lámina</h2><div class="cuerpo">
+  <ul>
+    <li>Punto de contenido con una <strong>idea clave</strong> resaltada.</li>
+    <li>El resaltado va a nivel de lámina, no de viñeta.</li>
+    <li>En listas de categorías paralelas no se resalta nada.</li>
+  </ul>
+  </div>
+  <aside class="notes"><p>Guion hablado de esta lámina, en prosa dicha en voz alta.</p>
+  <p>Frases cortas, una idea por frase, cifras en letra.</p></aside>
+  <aside class="corto"><p>Lo mismo en dos frases, para cuando la sesión va tarde.</p></aside>
+</section>
+
+<section class="verde-banda" data-min="15"><h2>Discusión</h2><div class="cuerpo">
+  <ul><li>Pregunta abierta.</li></ul>
+  </div>
+  <aside class="notes"><p>[Discusión abierta, quince minutos. No dar respuesta.]</p></aside>
+  <aside class="corto"><p>El corte de participación reducido al mínimo: una sola pregunta,
+    o contar la conclusión en vez de abrir la discusión.</p></aside>
+</section>
+
+<section class="cierre"><div class="gracias">Muchas Gracias</div>
+    <div class="firma">
+    <span class="nombre">Dr. Alberto García Robledo</span><br>
+    agarcia@centrogeo.edu.mx<br>
+    <span class="programa">Programa Interdisciplinario en Ciencias de la Información Geoespacial</span>
+  </div>
+<aside class="notes"><p>Cierre y anuncio de la sesión siguiente.</p></aside>
+  <aside class="ficha"><h3>Bibliografía</h3>
+  <ul>
+    <li><strong>Lectura del curso.</strong> Russell, S. y Norvig, P. <em>Artificial Intelligence:
+      A Modern Approach</em>, tercera edición. Para esta sesión, el capítulo y las secciones que
+      fije admin/plan/SNN.md.</li>
+    <li>Las demás fuentes que la sesión cite, con su publicación y su fecha.</li>
+  </ul>
+  <h3>Créditos</h3>
+  <p>Fundamentos de Inteligencia Artificial. Sesión {{SESION}}, {{FECHA}}.</p>
+  <p>Diapositivas, guion y apuntes: <strong>Dr. Alberto García Robledo</strong>,
+    <a href="mailto:agarcia@centrogeo.edu.mx">agarcia@centrogeo.edu.mx</a></p>
+  <p>Elaborados con asistencia de un modelo de lenguaje (Claude, de Anthropic) para redacción, diagramas y verificación de fuentes. La selección de contenidos, las decisiones didácticas y la revisión final son del autor, que responde de lo que aquí se afirma.</p>
+  <p>Centro de Investigación en Ciencias de Información Geoespacial, CentroGeo. Programa
+    Interdisciplinario en Ciencias de la Información Geoespacial, orientación Geointeligencia
+    Computacional.</p>
+  </aside>
+</section>
+
+</div></div>
+<!-- El reproductor de las animaciones. Vive aquí aunque la sesión no tenga
+     video: se queda oculto hasta que una lámina declara data-video, y así
+     reproductor.js no tiene que crearlo. -->
+<video id="reproductor" muted preload="auto" playsinline></video>
+<script src="{{RUTA}}/vendor/reveal/dist/reveal.js"></script>
+<script src="{{RUTA}}/vendor/reveal/dist/plugin/notes.js"></script>
+<script>Reveal.initialize({width:1280,height:720,margin:0,center:false,hash:true,controls:false,progress:false,slideNumber:'c/t',transition:'none',plugins:[RevealNotes]});</script>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],processEscapes:true},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code'],
+           ignoreHtmlClass:'apuntes|ficha|didactica'},
+  svg:{fontCache:'local'}};
+</script>
+<script src="{{RUTA}}/vendor/mathjax/tex-svg.js"></script>
+<script src="{{RUTA}}/reproductor.js"></script>
+<!-- Las glosas al pasar el ratón. Va antes del apuntador porque empaquetar.py
+     quita el apuntador y este se queda: el globo es del grupo, no mío. -->
+<script src="{{RUTA}}/glosas.js"></script>
+<!-- Ampliar una figura con un clic. Va antes del pincel para que su capa, en
+     z-index 15, quede por debajo del lienzo del lápiz, que está en 20, y se
+     pueda dibujar sobre la figura ampliada. -->
+<script src="{{RUTA}}/zoom.js"></script>
+<script src="{{RUTA}}/apuntador.js"></script>
+<!-- El lector de estudio, tecla I: la nota didáctica de la lámina y su apunte,
+     al costado o en ventana aparte. Es mío y empaquetar.py lo quita, igual que
+     el apuntador, el anotador y el pincel. -->
+<script src="{{RUTA}}/estudio.js"></script>
+<script src="{{RUTA}}/revisar.js"></script>
+<!-- El mapa flotante del terreno. No hace nada si el deck no declara su
+     <template id="mapa-parcelas">, que es lo que lo activa. -->
+<script src="{{RUTA}}/parcelas.js"></script>
+<script src="{{RUTA}}/pincel.js"></script>
+</body></html>
