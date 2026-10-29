@@ -1,0 +1,248 @@
+---
+// Botones de compartir de una cápsula. Para que un enlace pegado en WhatsApp o
+// Facebook se vea decente hacen falta además las etiquetas Open Graph del layout
+// (ver src/layouts/Base.astro): sin ellas la red no tiene título, resumen ni imagen.
+//
+// Cada botón lleva el logotipo de su red y el nombre escrito al lado. El logotipo
+// solo nombra el destino del botón, y el nombre escrito es lo que de verdad lo
+// identifica: de dónde sale cada trazado y por qué, en src/lib/iconos.ts.
+import { enlacesCompartir } from '../lib/compartir';
+import { atributosIcono, CAJA_ICONO, icono } from '../lib/iconos';
+
+interface Props {
+  /** URL canónica absoluta de la cápsula. */
+  url: string;
+  titulo: string;
+  resumen?: string;
+  /** Identificador de la cápsula, para distinguir el evento en Analytics. */
+  capsulaId?: string;
+  /** Sobre fondo claro (por defecto) o dentro de la tarjeta oscura de cierre. */
+  tema?: 'claro' | 'oscuro';
+  /** Encabezado del bloque. La tarjeta de cierre lo quiere más corto. */
+  titular?: string;
+  /** Frase de apoyo bajo el encabezado. Vacía la quita. */
+  entradilla?: string;
+}
+
+const {
+  url,
+  titulo,
+  resumen = '',
+  capsulaId = '',
+  tema = 'claro',
+  titular = '¿Te sirvió? Compártelo',
+  entradilla = 'Difundir esta cápsula ayuda a que la investigación de CentroGeo Querétaro llegue más lejos.',
+} = Astro.props;
+const redes = enlacesCompartir({ url, titulo, resumen });
+const nombres: Record<string, string> = {
+  whatsapp: 'WhatsApp',
+  facebook: 'Facebook',
+  x: 'X',
+  linkedin: 'LinkedIn',
+};
+---
+
+<section class="compartir" data-tema={tema} data-capsula={capsulaId} data-url={url}>
+	<div class="compartir-wrap">
+		<h2>{titular}</h2>
+		{entradilla && <p>{entradilla}</p>}
+		<div class="compartir-botones">
+			{redes.map((r) => (
+				<a
+					class:list={['compartir-boton', `red-${r.red}`]}
+					href={r.href}
+					target="_blank"
+					rel="noopener"
+					data-red={r.red}
+					aria-label={r.etiqueta}
+				>
+					<svg class="icono" viewBox={CAJA_ICONO} aria-hidden="true" focusable="false" {...atributosIcono(r.red)}>
+						<path d={icono(r.red).d} />
+					</svg>
+					<span>{nombres[r.red] ?? r.red}</span>
+				</a>
+			))}
+
+			<!-- Hoja de compartir del propio teléfono. Se muestra solo donde existe. -->
+			<button type="button" class="compartir-boton compartir-nativo" data-red="nativo" hidden>
+				<svg class="icono" viewBox={CAJA_ICONO} aria-hidden="true" focusable="false" {...atributosIcono('nativo')}>
+					<path d={icono('nativo').d} />
+				</svg>
+				<span>Compartir…</span>
+			</button>
+
+			<button type="button" class="compartir-boton compartir-copiar" data-red="copiar">
+				<svg class="icono" viewBox={CAJA_ICONO} aria-hidden="true" focusable="false" {...atributosIcono('copiar')}>
+					<path d={icono('copiar').d} />
+				</svg>
+				<span class="etiqueta-copiar">Copiar enlace</span>
+			</button>
+		</div>
+		<p class="compartir-aviso" role="status" aria-live="polite"></p>
+	</div>
+</section>
+
+<style>
+	.compartir {
+		border-top: 1px solid var(--cg-color-gris-300);
+		background: var(--cg-color-gris-100);
+	}
+	.compartir-wrap {
+		max-width: 46rem;
+		margin: 0 auto;
+		padding: 2.25rem 1.5rem;
+	}
+	.compartir h2 {
+		margin: 0 0 0.4rem 0;
+		font-size: 1.15rem;
+	}
+	.compartir-wrap > p {
+		margin: 0 0 1.1rem 0;
+		font-size: 0.95rem;
+		color: var(--cg-color-gris-500);
+	}
+	.compartir-botones {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+	.compartir-boton {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.55rem 1.05rem;
+		border-radius: 999px;
+		border: 1px solid var(--cg-color-gris-300);
+		background: var(--cg-color-blanco);
+		color: var(--cg-color-gris-700);
+		font-family: var(--cg-font-cuerpo);
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+	}
+	/* El logotipo hereda el color del botón, así que cambia con él al pasar por
+	   encima y no hay que repetir una paleta de marca que no es nuestra. */
+	.compartir-boton .icono {
+		width: 1.05rem;
+		height: 1.05rem;
+		flex: 0 0 auto;
+	}
+	.compartir-boton:hover {
+		border-color: var(--cg-color-naranja-300);
+		color: var(--cg-color-naranja-300);
+	}
+	.compartir-boton:focus-visible {
+		outline: 2px solid var(--cg-color-naranja-300);
+		outline-offset: 2px;
+	}
+	.compartir-copiar.copiado,
+	.compartir-copiar.copiado:hover {
+		background: var(--cg-color-naranja-300);
+		border-color: var(--cg-color-naranja-300);
+		color: var(--cg-color-blanco);
+	}
+	.compartir-aviso {
+		min-height: 1.2rem;
+		margin: 0.75rem 0 0 0;
+		font-size: 0.85rem;
+		color: var(--cg-color-naranja-500);
+	}
+	.compartir-boton[hidden] { display: none; }
+
+	/* Dentro de la tarjeta de cierre del recorrido, que es oscura y ya trae su propio
+	   fondo: aquí el bloque no pone fondo ni línea, solo cambia de colores. */
+	.compartir[data-tema='oscuro'] {
+		border-top: 0;
+		background: transparent;
+	}
+	.compartir[data-tema='oscuro'] .compartir-wrap {
+		max-width: none;
+		padding: 0;
+	}
+	.compartir[data-tema='oscuro'] h2 {
+		color: #ffffff !important;
+		font-size: 1rem;
+	}
+	.compartir[data-tema='oscuro'] .compartir-wrap > p {
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.9rem;
+	}
+	.compartir[data-tema='oscuro'] .compartir-boton {
+		border-color: rgba(255, 255, 255, 0.28);
+		background: rgba(255, 255, 255, 0.06);
+		color: #ffffff;
+	}
+	.compartir[data-tema='oscuro'] .compartir-boton:hover {
+		background: rgba(196, 86, 32, 0.85);
+		border-color: #e8843f;
+		color: #ffffff;
+	}
+	.compartir[data-tema='oscuro'] .compartir-copiar.copiado,
+	.compartir[data-tema='oscuro'] .compartir-copiar.copiado:hover {
+		background: #c45620;
+		border-color: #c45620;
+	}
+	.compartir[data-tema='oscuro'] .compartir-aviso {
+		color: #e8843f;
+	}
+</style>
+
+<script>
+	// Copiar al portapapeles, hoja de compartir del móvil y aviso de cada clic a
+	// Analytics (si está configurado, que es lo único que mira este guion).
+	const bloque = document.querySelector<HTMLElement>('.compartir');
+
+	function avisarAnalytics(red: string, capsula: string) {
+		const gtag = (window as any).gtag;
+		if (typeof gtag !== 'function') return;
+		gtag('event', 'share', { method: red, content_type: 'capsula', item_id: capsula });
+	}
+
+	if (bloque) {
+		const url = bloque.dataset.url ?? window.location.href;
+		const capsula = bloque.dataset.capsula ?? '';
+		const aviso = bloque.querySelector<HTMLElement>('.compartir-aviso');
+		const titulo = document.title;
+
+		bloque.querySelectorAll<HTMLElement>('[data-red]').forEach((el) => {
+			if (el.dataset.red === 'copiar' || el.dataset.red === 'nativo') return;
+			el.addEventListener('click', () => avisarAnalytics(el.dataset.red ?? '', capsula));
+		});
+
+		const copiar = bloque.querySelector<HTMLButtonElement>('.compartir-copiar');
+		const etiqueta = copiar?.querySelector<HTMLElement>('.etiqueta-copiar');
+		copiar?.addEventListener('click', async () => {
+			try {
+				// navigator.clipboard solo existe en contextos seguros (https o
+				// localhost); sin él se deja el enlace seleccionable como respaldo.
+				if (!navigator.clipboard) throw new Error('sin portapapeles');
+				await navigator.clipboard.writeText(url);
+				copiar.classList.add('copiado');
+				if (etiqueta) etiqueta.textContent = 'Enlace copiado';
+				if (aviso) aviso.textContent = '';
+				avisarAnalytics('copiar', capsula);
+				window.setTimeout(() => {
+					copiar.classList.remove('copiado');
+					if (etiqueta) etiqueta.textContent = 'Copiar enlace';
+				}, 2200);
+			} catch {
+				if (aviso) aviso.textContent = `Copia el enlace a mano: ${url}`;
+			}
+		});
+
+		const nativo = bloque.querySelector<HTMLButtonElement>('.compartir-nativo');
+		if (nativo && typeof navigator.share === 'function') {
+			nativo.hidden = false;
+			nativo.addEventListener('click', async () => {
+				try {
+					await navigator.share({ title: titulo, url });
+					avisarAnalytics('nativo', capsula);
+				} catch {
+					// Cancelar la hoja de compartir no es un error que haya que contar.
+				}
+			});
+		}
+	}
+</script>

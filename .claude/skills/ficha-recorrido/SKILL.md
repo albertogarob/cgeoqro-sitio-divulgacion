@@ -31,7 +31,9 @@ Reglas del proyecto (derechos de autor, escritura, despliegue): [CLAUDE.md](../.
    npm run ficha:exportar -- <recorrido>
    ```
 
-   Deja `fichas/<recorrido>-ficha.csv` (carpeta ignorada por git).
+   Deja `fichas/<recorrido>-ficha.csv` (carpeta ignorada por git). Si ese archivo ya
+   existe de una exportación anterior, el comando se niega a pisarlo: añade `--forzar`
+   para rehacerlo.
 
 2. **Subirla a Drive como hoja de cálculo**, con Composio. El truco es crear el archivo
    desde el texto del CSV pidiendo el tipo de Hoja de cálculo, y Drive lo convierte:

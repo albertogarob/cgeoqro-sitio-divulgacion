@@ -1,12 +1,40 @@
 ---
 import { withBase } from '../lib/url';
+import Analytics from '../components/Analytics.astro';
+import type { DatosCapsulaAnalytics } from '../lib/analytics';
 
 interface Props {
   title: string;
   bleed?: boolean;
+  /** Resumen de la página para buscadores y para la tarjeta de las redes. */
+  description?: string;
+  /** Imagen de la tarjeta de las redes: ruta bajo /public. */
+  imagen?: string;
+  /** Tipo Open Graph: "article" en las páginas de contenido. */
+  tipo?: 'website' | 'article';
+  /** Datos para desglosar el tráfico en Analytics (cápsula, serie, investigadores). */
+  analytics?: DatosCapsulaAnalytics;
 }
 
-const { title, bleed = false } = Astro.props;
+const DESCRIPCION_SITIO =
+  'Divulgación científica de CentroGeo Querétaro: cápsulas, recorridos interactivos y ' +
+  'entrevistas que traducen la investigación geoespacial a lenguaje para todo público.';
+
+const {
+  title,
+  bleed = false,
+  description = DESCRIPCION_SITIO,
+  imagen,
+  tipo = 'website',
+  analytics = {},
+} = Astro.props;
+
+const NOMBRE_SITIO = 'Ciencia Geoespacial para Todos · CentroGeo Querétaro';
+const tituloCompleto = `${title} · ${NOMBRE_SITIO}`;
+// URL canónica absoluta. Hace falta para el enlace canónico y, sobre todo, para que
+// al compartir en redes la tarjeta apunte a la página buena y no a la raíz.
+const urlCanonica = new URL(Astro.url.pathname, Astro.site).toString();
+const urlImagen = imagen ? new URL(withBase(imagen), Astro.site).toString() : '';
 
 const nav = [
   { href: '/', label: 'Inicio' },
@@ -34,7 +62,26 @@ const redes = [
 		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title} · Ciencia Geoespacial para Todos · CentroGeo Querétaro</title>
+		<title>{tituloCompleto}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={urlCanonica} />
+
+		<!-- Tarjeta de las redes. Sin esto, un enlace pegado en WhatsApp o Facebook
+		     sale sin título, sin resumen y sin imagen. -->
+		<meta property="og:type" content={tipo} />
+		<meta property="og:site_name" content={NOMBRE_SITIO} />
+		<meta property="og:locale" content="es_MX" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={urlCanonica} />
+		{urlImagen && <meta property="og:image" content={urlImagen} />}
+		<meta name="twitter:card" content={urlImagen ? 'summary_large_image' : 'summary'} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		{urlImagen && <meta name="twitter:image" content={urlImagen} />}
+
+		<Analytics datos={analytics} />
+
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link

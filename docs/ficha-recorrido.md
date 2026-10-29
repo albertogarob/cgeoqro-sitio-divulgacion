@@ -46,6 +46,13 @@ npm run ficha:exportar -- utopias
 Deja `fichas/utopias-ficha.csv` (esa carpeta no se sube al repositorio). Una fila por
 paso, con las columnas de la tabla de arriba más `paso` y `comentarios`.
 
+Si ya exportaste antes ese recorrido, el comando se niega a pisar el archivo y lo dice.
+Para rehacerlo, `--forzar`:
+
+```bash
+npm run ficha:exportar -- utopias --forzar
+```
+
 ### 2. Subirla a Drive y compartirla
 
 Se sube como hoja de cálculo de Google a la carpeta del investigador y se comparte con

@@ -1,0 +1,262 @@
+---
+// Contacto al cierre de la cápsula. Al lector solo se le pide el correo; el mensaje
+// viaja prellenado con el título de la cápsula, su enlace y los investigadores.
+//
+// El destino se configura en un solo sitio, src/lib/contacto.ts. Mientras no haya
+// nada configurado el bloque no se publica: en el build de producción desaparece y
+// en desarrollo se muestra con un aviso, para no dejar un botón que no lleva a nada.
+import {
+  FORMULARIO_CONTACTO,
+  mensajePrellenado,
+  modoContacto,
+  urlEnvio,
+  urlFormularioPrellenado,
+  urlMailto,
+} from '../lib/contacto';
+
+interface Props {
+  tituloCapsula: string;
+  /** URL canónica absoluta de la cápsula. */
+  url: string;
+  investigadores?: string[];
+  capsulaId?: string;
+}
+
+const { tituloCapsula, url, investigadores = [], capsulaId = '' } = Astro.props;
+
+const datos = { tituloCapsula, url, investigadores };
+const modo = modoContacto(FORMULARIO_CONTACTO);
+const mensaje = mensajePrellenado(datos);
+const cfg = FORMULARIO_CONTACTO;
+
+if (modo === 'ninguno' && !import.meta.env.DEV) {
+  console.warn(
+    `[contacto] Sin destino configurado: el bloque de contacto no se publica en "${capsulaId || tituloCapsula}". ` +
+    'Rellena FORMULARIO_CONTACTO en src/lib/contacto.ts (ver docs/contacto-y-analytics.md).'
+  );
+}
+
+const visible = modo !== 'ninguno' || import.meta.env.DEV;
+// Un mismo id de iframe por cápsula: la página solo pinta este bloque una vez, pero
+// el nombre del destino tiene que ser único dentro del documento.
+const sumidero = `contacto-sumidero-${capsulaId || 'capsula'}`;
+const quien = investigadores.filter(Boolean).join(', ');
+---
+
+{visible && (
+	<section class="contacto" data-capsula={capsulaId} data-modo={modo}>
+		<div class="contacto-wrap">
+			<h2>¿Quieres saber más?</h2>
+			<p class="contacto-intro">
+				Déjanos tu correo y te escribimos. {quien
+					? `El mensaje llega con el tema de esta cápsula y la investigación de ${quien} ya anotados.`
+					: 'El mensaje llega con el tema de esta cápsula ya anotado.'}
+			</p>
+
+			{modo === 'google' && (
+				<>
+					<form
+						class="contacto-form"
+						action={urlEnvio(cfg)}
+						method="POST"
+						target={sumidero}
+					>
+						<input type="hidden" name={cfg.entryMensaje.trim()} value={mensaje} />
+						<label class="contacto-label" for={`correo-${capsulaId}`}>Tu correo</label>
+						<div class="contacto-fila">
+							<input
+								id={`correo-${capsulaId}`}
+								class="contacto-correo"
+								type="email"
+								name={cfg.entryCorreo.trim()}
+								required
+								autocomplete="email"
+								placeholder="tucorreo@ejemplo.com"
+							/>
+							<button type="submit" class="contacto-enviar">Quiero saber más</button>
+						</div>
+					</form>
+					<p class="contacto-estado" role="status" aria-live="polite"></p>
+					<p class="contacto-alterna">
+						¿Prefieres escribir tú el mensaje?{' '}
+						<a href={urlFormularioPrellenado(mensaje, cfg)} target="_blank" rel="noopener">
+							Abre el formulario completo
+						</a>.
+					</p>
+					<!-- Destino del envío. El formulario de Google no admite peticiones
+					     desde otro dominio por JavaScript, así que se publica contra un
+					     iframe oculto, que es la vía que sí funciona en un sitio estático. -->
+					<iframe class="contacto-sumidero" name={sumidero} title="Destino del envío del formulario" tabindex="-1"></iframe>
+				</>
+			)}
+
+			{modo === 'correo' && (
+				<p class="contacto-fila">
+					<a class="contacto-enviar" href={urlMailto(datos, cfg)}>Escribirnos sobre esta cápsula</a>
+				</p>
+			)}
+
+			{modo === 'ninguno' && (
+				<p class="contacto-pendiente">
+					<strong>Pendiente de configurar.</strong> Rellena <code>FORMULARIO_CONTACTO</code>{' '}
+					en <code>src/lib/contacto.ts</code> con el formulario de Google o un correo de respaldo.
+					Este aviso solo se ve en desarrollo; en el sitio publicado el bloque no aparece.
+				</p>
+			)}
+
+			<p class="contacto-privacidad">
+				Solo usamos tu correo para responderte sobre esta cápsula.
+			</p>
+		</div>
+	</section>
+)}
+
+<style>
+	.contacto {
+		border-top: 1px solid var(--cg-color-gris-300);
+		background: linear-gradient(180deg, #0c1a2b 0%, #101f30 100%);
+		color: rgba(255, 255, 255, 0.86);
+	}
+	.contacto-wrap {
+		max-width: 46rem;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem;
+	}
+	.contacto h2 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.3rem;
+		color: var(--cg-color-blanco) !important;
+	}
+	.contacto-intro {
+		margin: 0 0 1.25rem 0;
+		font-size: 0.98rem;
+		color: rgba(255, 255, 255, 0.78);
+	}
+	.contacto-label {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-size: 0.82rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #e8843f;
+	}
+	.contacto-fila {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin: 0;
+	}
+	.contacto-correo {
+		flex: 1 1 16rem;
+		min-width: 0;
+		padding: 0.7rem 0.95rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		background: rgba(255, 255, 255, 0.08);
+		color: var(--cg-color-blanco);
+		font-family: var(--cg-font-cuerpo);
+		font-size: 0.95rem;
+	}
+	.contacto-correo::placeholder { color: rgba(255, 255, 255, 0.45); }
+	.contacto-correo:focus-visible {
+		outline: 2px solid #e8843f;
+		outline-offset: 1px;
+	}
+	.contacto-enviar {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.7rem 1.4rem;
+		border-radius: 999px;
+		border: 1px solid var(--cg-color-naranja-300);
+		background: var(--cg-color-naranja-300);
+		color: var(--cg-color-blanco);
+		font-family: var(--cg-font-cuerpo);
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background 200ms ease, border-color 200ms ease;
+	}
+	.contacto-enviar:hover {
+		background: #e8843f;
+		border-color: #e8843f;
+	}
+	.contacto-enviar:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
+	.contacto-estado {
+		min-height: 1.3rem;
+		margin: 0.8rem 0 0 0;
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: #ffc89c;
+	}
+	.contacto-alterna,
+	.contacto-privacidad {
+		margin: 0.5rem 0 0 0;
+		font-size: 0.82rem;
+		color: rgba(255, 255, 255, 0.55);
+	}
+	.contacto-alterna a { color: #e8843f; }
+	.contacto-pendiente {
+		margin: 0;
+		padding: 0.9rem 1.1rem;
+		border-radius: var(--cg-border-radius-s);
+		border: 1px dashed rgba(232, 132, 63, 0.7);
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+	.contacto-pendiente code {
+		font-size: 0.85em;
+		color: #ffc89c;
+	}
+	/* El destino del envío no se ve, pero tiene que seguir cargando. */
+	.contacto-sumidero {
+		position: absolute;
+		width: 0;
+		height: 0;
+		border: 0;
+		opacity: 0;
+		pointer-events: none;
+	}
+</style>
+
+<script>
+	// Envío del formulario contra el iframe oculto: no se puede leer la respuesta de
+	// Google desde otro dominio, así que el acuse es que el iframe termine de cargar.
+	const bloque = document.querySelector<HTMLElement>('.contacto[data-modo="google"]');
+	const form = bloque?.querySelector<HTMLFormElement>('.contacto-form');
+	const sumidero = bloque?.querySelector<HTMLIFrameElement>('.contacto-sumidero');
+	const estado = bloque?.querySelector<HTMLElement>('.contacto-estado');
+	const boton = bloque?.querySelector<HTMLButtonElement>('.contacto-enviar');
+
+	if (form && sumidero) {
+		let enviando = false;
+
+		form.addEventListener('submit', () => {
+			// La validación nativa del campo de correo corre antes de este evento.
+			enviando = true;
+			if (boton) boton.disabled = true;
+			if (estado) estado.textContent = 'Enviando…';
+		});
+
+		sumidero.addEventListener('load', () => {
+			// El iframe también carga una vez al abrir la página (about:blank); solo
+			// cuenta la carga que viene de un envío.
+			if (!enviando) return;
+			enviando = false;
+			if (boton) boton.disabled = false;
+			form.reset();
+			if (estado) estado.textContent = 'Listo, recibimos tu correo. Te escribimos pronto.';
+			const gtag = (window as any).gtag;
+			if (typeof gtag === 'function') {
+				gtag('event', 'generate_lead', {
+					content_type: 'capsula',
+					item_id: bloque?.dataset.capsula ?? '',
+				});
+			}
+		});
+	}
+</script>

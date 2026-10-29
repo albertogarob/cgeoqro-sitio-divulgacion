@@ -22,6 +22,10 @@ jobs:
       - uses: withastro/action@v3
         with:
           node-version: 22
+        env:
+          # ID de medicion de Google Analytics 4. Secreto del repositorio del mismo
+          # nombre; si no existe, el sitio se publica sin Analytics.
+          PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID }}
 
   deploy:
     needs: build
